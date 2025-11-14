@@ -2,7 +2,7 @@
   <div class="space-y-8">
     <div class="section-header">
       <h1>Producción de Contenido</h1>
-      <p>Crea, gestiona y programa tus publicaciones</p>
+      <p>Crea, gestiona y programa tus publicacioness</p>
     </div>
 
     <!-- Stats -->
