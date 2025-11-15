@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-white">
-    <!-- Toast Notification -->
     <Transition name="toast">
       <div 
         v-if="toast.show"
@@ -13,67 +12,55 @@
       </div>
     </Transition>
 
-    <!-- Login View -->
     <div v-if="!isLoggedIn" class="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
       <LoginView @login="handleLogin" />
     </div>
 
-    <!-- Main App Layout -->
-    <div v-else class="flex h-screen bg-white">
-      <!-- Sidebar -->
+    <div v-else class="flex h-screen bg-gray-900">
       <Sidebar 
         @navigate="currentView = $event" 
         :activeView="currentView"
         @logout="handleLogout"
       />
 
-      <!-- Main Content Area -->
-      <main class="flex-1 overflow-y-auto bg-white">
+      <main class="flex-1 overflow-y-auto bg-white rounded-tl-2xl">
         <div class="p-10">
-          <!-- Dashboard View -->
           <Dashboard 
             v-show="currentView === 'dashboard'" 
             @showToast="showToast" 
           />
           
-          <!-- Image Generation View -->
           <ImageGenerator 
             v-show="currentView === 'generation'" 
             @showToast="showToast"
             @navigate="currentView = $event"
           />
           
-          <!-- Production View -->
           <Production 
             v-show="currentView === 'production'" 
             @showToast="showToast" 
           />
           
-          <!-- Scheduling View -->
           <Scheduling 
             v-show="currentView === 'scheduling'" 
             @showToast="showToast" 
           />
           
-          <!-- Interactions View -->
           <Interactions 
             v-show="currentView === 'interactions'" 
             @showToast="showToast" 
           />
           
-          <!-- CRM View -->
           <CRM 
             v-show="currentView === 'crm'" 
             @showToast="showToast" 
           />
           
-          <!-- Reports View -->
           <Reports 
             v-show="currentView === 'reports'" 
             @showToast="showToast" 
           />
           
-          <!-- Settings View -->
           <Settings 
             v-show="currentView === 'settings'" 
             @showToast="showToast" 
