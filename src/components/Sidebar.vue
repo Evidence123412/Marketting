@@ -12,7 +12,7 @@
       
       <SidebarItem
         id="dashboard"
-        label="Dashboard"
+        label="Inicio"
         icon="fa-chart-line"
         :active-view="activeView"
         @navigate="$emit('navigate', $event)"
@@ -55,7 +55,8 @@
 
 <script setup>
 import { defineProps, defineEmits } from 'vue'
-import SidebarItem from './SidebarItem.vue' // Importar componente hijo
+// Se asegura que la importación exista y la ruta sea correcta
+import SidebarItem from './SidebarItem.vue' 
 
 defineProps({
   activeView: String
@@ -63,14 +64,13 @@ defineProps({
 
 defineEmits(['navigate', 'logout'])
 
-// Se añaden grupos a los ítems para estructurar el menú
 const navItems = [
-  // Dashboard se maneja por separado por su importancia
+  // Dashboard se maneja por separado
   { id: 'generation', label: 'Generar', icon: 'fa-wand-magic-sparkles', group: 'creation' },
   { id: 'production', label: 'Producción', icon: 'fa-pen-fancy', group: 'creation' },
   { id: 'scheduling', label: 'Programación', icon: 'fa-calendar-alt', group: 'creation' },
   
-  { id: 'reports', label: 'Reportes', icon: 'fa-chart-bar', group: 'tools' },
+  { id: 'reports', label: 'Reportes', icon: 'fa-bar-chart', group: 'tools' },
   { id: 'interactions', label: 'Interacciones', icon: 'fa-comments', group: 'tools' },
   { id: 'crm', label: 'CRM', icon: 'fa-address-card', group: 'tools' },
   { id: 'settings', label: 'Configuración', icon: 'fa-cog', group: 'tools' }
