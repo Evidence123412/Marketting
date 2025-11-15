@@ -2,7 +2,7 @@
   <aside
     :class="[
       isExpanded ? 'w-56' : 'w-20',
-      'bg-gray-900 text-gray-300 flex flex-col h-screen justify-between shadow-lg transition-all duration-300 ease-in-out'
+      'bg-kapital-night text-gray-300 flex flex-col h-screen justify-between shadow-lg transition-all duration-300 ease-in-out'
     ]"
   >
     
@@ -13,7 +13,7 @@
           isExpanded ? 'justify-between px-4' : 'justify-center px-3'
         ]"
       >
-        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+        <div class="w-8 h-8 bg-kapital-dark rounded-lg flex items-center justify-center flex-shrink-0">
           <span class="text-white font-bold text-lg">K</span>
         </div>
         
@@ -26,7 +26,7 @@
           :title="isExpanded ? 'Colapsar' : 'Expandir'"
           :class="[
             'text-gray-500 hover:text-white transition-colors',
-            isExpanded ? 'ml-auto' : 'ml-auto' // Mantenemos ml-auto para consistencia
+            isExpanded ? 'ml-auto' : 'ml-auto'
           ]"
         >
           <i :class="['fas', isExpanded ? 'fa-chevron-left' : 'fa-chevron-right', 'w-5 text-center text-lg']"></i>
@@ -52,11 +52,11 @@
               @click="$emit('navigate', item.id)"
               :title="item.label"
               :class="[
-                'flex items-center gap-3 py-2.5 rounded-lg w-full transition-all duration-200 group relative', // Añadido 'group relative'
+                'flex items-center gap-3 py-2.5 rounded-lg w-full transition-all duration-200 group relative',
                 isExpanded ? 'px-4' : 'px-3 justify-center',
                 activeView === item.id
-                  ? 'bg-blue-600 text-white font-semibold shadow-md'
-                  : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                  ? 'bg-kapital-dark text-white font-semibold shadow-md' // <-- Color de marca
+                  : 'text-gray-400 hover:bg-kapital-night-hover hover:text-white' // <-- Color de marca
               ]"
             >
               <i :class="['fas', item.icon, 'w-5 text-center text-lg flex-shrink-0']"></i>
@@ -67,10 +67,10 @@
 
               <span 
                 :class="[
-                  'absolute left-16 p-2 px-3 text-sm font-medium bg-gray-700 text-white rounded-md shadow-lg',
+                  'absolute left-16 p-2 px-3 text-sm font-medium bg-kapital-night-hover text-white rounded-md shadow-lg', // <-- Color de marca
                   'transition-all duration-200 scale-0 origin-left z-10',
-                  'group-hover:scale-100', // Muestra en hover
-                  isExpanded ? 'hidden' : 'block' // Oculta si está expandido
+                  'group-hover:scale-100',
+                  isExpanded ? 'hidden' : 'block'
                 ]"
               >
                 {{ item.label }}
@@ -81,18 +81,17 @@
       </nav>
     </div>
 
-    <div class="p-3 border-t border-gray-700">
-      <div class="flex flex-col gap-2">
+    <div class="p-3 border-t border-gray-700"> <div class="flex flex-col gap-2">
         
         <button
           @click="$emit('navigate', 'settings')"
           title="Configuración"
           :class="[
-            'flex items-center gap-3 py-2.5 rounded-lg w-full transition-all duration-200 group relative', // Añadido 'group relative'
+            'flex items-center gap-3 py-2.5 rounded-lg w-full transition-all duration-200 group relative',
             isExpanded ? 'px-4' : 'px-3 justify-center',
             activeView === 'settings'
-              ? 'bg-blue-600 text-white font-semibold shadow-md'
-              : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+              ? 'bg-kapital-dark text-white font-semibold shadow-md' // <-- Color de marca
+              : 'text-gray-400 hover:bg-kapital-night-hover hover:text-white' // <-- Color de marca
           ]"
         >
           <i class="fas fa-cog w-5 text-center text-lg flex-shrink-0"></i>
@@ -101,7 +100,7 @@
           </Transition>
           <span 
             :class="[
-              'absolute left-16 p-2 px-3 text-sm font-medium bg-gray-700 text-white rounded-md shadow-lg',
+              'absolute left-16 p-2 px-3 text-sm font-medium bg-kapital-night-hover text-white rounded-md shadow-lg', // <-- Color de marca
               'transition-all duration-200 scale-0 origin-left z-10',
               'group-hover:scale-100',
               isExpanded ? 'hidden' : 'block'
@@ -115,7 +114,7 @@
           @click="$emit('logout')"
           title="Cerrar sesión"
           :class="[
-            'flex items-center gap-3 py-2.5 rounded-lg w-full transition-all duration-200 text-gray-400 hover:bg-red-800 hover:text-red-100 group relative', // Añadido 'group relative'
+            'flex items-center gap-3 py-2.5 rounded-lg w-full transition-all duration-200 text-gray-400 hover:bg-red-800 hover:text-red-100 group relative',
             isExpanded ? 'px-4' : 'px-3 justify-center'
           ]"
         >
@@ -125,7 +124,7 @@
           </Transition>
           <span 
             :class="[
-              'absolute left-16 p-2 px-3 text-sm font-medium bg-gray-700 text-white rounded-md shadow-lg',
+              'absolute left-16 p-2 px-3 text-sm font-medium bg-kapital-night-hover text-white rounded-md shadow-lg', // <-- Color de marca
               'transition-all duration-200 scale-0 origin-left z-10',
               'group-hover:scale-100',
               isExpanded ? 'hidden' : 'block'
@@ -155,7 +154,6 @@ defineProps({
 
 defineEmits(['navigate', 'logout']);
 
-// MEJORA: Se agrupan los items para mejorar la Arquitectura de la Información
 const navGroups = [
   {
     title: 'Análisis',
@@ -188,10 +186,10 @@ button {
 }
 
 button:focus-visible {
-  @apply ring-2 ring-blue-500 ring-offset-2 ring-offset-gray-900;
+  /* ¡CORREGIDO! Se usa ring-offset-gray-900 que es el color #111827 */
+  @apply ring-2 ring-kapital-dark ring-offset-2 ring-offset-gray-900;
 }
 
-/* MEJORA: Animación de fundido para las etiquetas de texto */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
@@ -200,6 +198,6 @@ button:focus-visible {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-  transform: translateX(-10px); /* El texto aparece desde la izquierda */
+  transform: translateX(-10px);
 }
 </style>
