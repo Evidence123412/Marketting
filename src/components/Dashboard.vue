@@ -4,7 +4,7 @@
     <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
       <div>
         <h1 class="text-2xl font-bold text-gray-900">Bienvenido a tu Dashboard</h1>
-        <p class="text-gray-600">Resumen de tu actividad y desempeño.</p>
+        <p class="text-gray-600">Centro de comando de actividad y clientes.</p>
       </div>
       <select class="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:border-kapital-dark">
         <option>Últimos 7 días</option>
@@ -19,9 +19,7 @@
         <div 
           v-for="metric in metrics" 
           :key="metric.id"
-          class="card hover:shadow-lg cursor-pointer transition-all"
-          :class="{ 'ring-2 ring-kapital-dark shadow-md': selectedMetricId === metric.id }"
-          @click="handleMetricClick(metric.id)"
+          class="card"
         >
           <div class="flex items-start gap-4">
             <div :class="['w-12 h-12 rounded-lg flex items-center justify-center text-lg', metric.bgColor]">
@@ -41,22 +39,143 @@
     </div>
 
     <div>
-      <h2 class="text-xl font-bold text-gray-900 mb-4">Análisis de Rendimiento</h2>
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Foco Principal: Clientes</h2>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
-        <div class="lg:col-span-2 card">
+        <div class="card flex flex-col">
           <div class="flex justify-between items-center mb-6">
-            <div>
-              <h2 class="text-lg font-bold text-gray-900">{{ weeklyChartTitle }}</h2>
-              <p class="text-sm text-gray-600">Rendimiento de la última semana</p>
+            <h2 class="text-lg font-bold text-gray-900">Interacciones Pendientes</h2>
+            <span class="text-sm font-bold bg-red-100 text-red-700 px-3 py-1 rounded-full">
+              {{ pendingMessages.length }} Pendientes
+            </span>
+          </div>
+          <div class="space-y-3 h-72 overflow-y-auto pr-2">
+            <div v-for="msg in pendingMessages" :key="msg.id" class="flex gap-3 p-3 rounded-lg hover:bg-gray-50">
+              <div class="w-10 h-10 rounded-full bg-yellow-500 text-white flex-shrink-0 flex items-center justify-center font-bold">
+                {{ msg.initials }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900">{{ msg.name }}</p>
+                <p class="text-xs text-gray-600 truncate">{{ msg.preview }}</p>
+              </div>
+              <small class="text-gray-500 text-xs whitespace-nowrap">{{ msg.time }}</small>
             </div>
-            <button
-              v-if="selectedMetricId"
-              @click="handleMetricClick(null)"
-              class="text-sm text-kapital-dark font-medium hover:underline"
-            >
+          </div>
+          <button @click="goTo('interactions')" class="btn-primary w-full mt-6 text-sm">
+            <i class="fas fa-comments"></i> Gestionar Todos los Mensajes
+          </button>
+        </div>
+
+        <div class="card flex flex-col">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-lg font-bold text-gray-900">Nuevos Leads</h2>
+            <span class="text-sm font-bold bg-green-100 text-green-700 px-3 py-1 rounded-full">
+              {{ newLeads.length }} Nuevos
+            </span>
+          </div>
+          <div class="space-y-3 h-72 overflow-y-auto pr-2">
+            <div v-for="lead in newLeads" :key="lead.id" class="flex gap-3 p-3 rounded-lg hover:bg-gray-50">
+              <div class="w-10 h-10 rounded-full bg-green-600 text-white flex-shrink-0 flex items-center justify-center font-bold">
+                {{ lead.initials }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900">{{ lead.name }}</p>
+                <p class="text-xs text-gray-600">{{ lead.origin }}</p>
+              </div>
+              <small class="text-gray-500 text-xs whitespace-nowrap">{{ lead.date }}</small>
+            </div>
+          </div>
+          <button @click="goTo('crm')" class="btn-primary w-full mt-6 text-sm">
+            <i class="fas fa-address-card"></i> Ver CRM
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-4">
+        <h2 class="text-xl font-bold text-gray-900">Gestión de Contenido</h2>
+        <div class="flex gap-3">
+          <button @click="goTo('generation')" class="btn-secondary text-sm">
+            <i class="fas fa-wand-magic-sparkles"></i> Generar con IA
+          </button>
+          <button @click="goTo('production')" class="btn-primary text-sm">
+            <i class="fas fa-plus"></i> Crear Publicación
+          </button>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="card">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-lg font-bold text-gray-900">Actividad Reciente</h2>
+            <button @click="goTo('production')" class="text-sm text-kapital-dark font-medium hover:underline">
               Ver todo
             </button>
+          </div>
+          <div class="space-y-4">
+            <div 
+              v-for="activity in activities"
+              :key="activity.id"
+              class="flex gap-4 pb-4 border-b border-gray-200 last:border-b-0 last:pb-0"
+            >
+              <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" :style="{ backgroundColor: activity.bgColor }">
+                <i :class="['fas', activity.icon, 'text-white']"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900">{{ activity.title }}</p>
+                <p class="text-sm text-gray-600 mt-1">{{ activity.description }}</p>
+              </div>
+              <span :class="['text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap text-center inline-flex items-center justify-center', activity.statusClass]">
+                {{ activity.status }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-lg font-bold text-gray-900">Próximas Publicaciones</h2>
+            <button @click="goTo('scheduling')" class="text-sm text-kapital-dark font-medium hover:underline">
+              Ver calendario
+            </button>
+          </div>
+          <div class="space-y-4">
+            <div 
+              v-for="item in scheduled"
+              :key="item.id"
+              class="flex gap-4"
+            >
+              <div class="flex flex-col items-center">
+                <span class="text-xs font-bold text-kapital-dark">{{ item.date.split(' ')[0] }}</span>
+                <span class="text-sm font-semibold text-gray-900">{{ item.date.split(' ')[1] }}</span>
+              </div>
+              <div class="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-3">
+                <p class="text-sm font-medium text-gray-900">{{ item.title }}</p>
+                <div class="flex gap-2 mt-2">
+                  <i v-for="channel in item.channels" :key="channel" :class="[channel, 'text-gray-500']"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div>
+      <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-4">
+        <h2 class="text-xl font-bold text-gray-900">Análisis de Rendimiento</h2>
+        <button @click="goTo('reports')" class="btn-secondary text-sm">
+          <i class="fas fa-bar-chart"></i> Ver Reportes Completos
+        </button>
+      </div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 card">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-lg font-bold text-gray-900">Rendimiento Semanal</h2>
           </div>
           <div class="h-64">
             <Bar v-if="filteredWeeklyChartData" :data="filteredWeeklyChartData" :options="weeklyChartOptions" />
@@ -85,70 +204,10 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
-    <div>
-      <h2 class="text-xl font-bold text-gray-900 mb-4">Actividad y Canales</h2>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
-        <div class="card">
-          <h2 class="text-lg font-bold text-gray-900 mb-6">Rendimiento por Red Social</h2>
-          <div class="space-y-4">
-            <div v-for="network in networkPerformance" :key="network.id" class="space-y-2">
-              <div class="flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                  <i :class="[network.icon, 'text-xl']" :style="{ color: network.color }"></i>
-                  <span class="font-medium text-gray-900">{{ network.name }}</span>
-                </div>
-                <span class="font-bold text-gray-900">{{ network.percentage }}%</span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                <div 
-                  class="h-3 rounded-full transition-all duration-500" 
-                  :style="{ width: network.percentage + '%', backgroundColor: network.color }"
-                ></div>
-              </div>
-              <div class="flex justify-between text-xs text-gray-600">
-                <span>{{ network.followers }} seguidores</span>
-                <span>{{ network.engagement }}% engagement</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h2 class="text-lg font-bold text-gray-900 mb-6">Actividad Reciente</h2>
-          <div class="space-y-4">
-            <div 
-              v-for="activity in activities"
-              :key="activity.id"
-              class="flex gap-4 pb-4 border-b border-gray-200 last:border-b-0 last:pb-0"
-            >
-              <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" :style="{ backgroundColor: activity.bgColor }">
-                <i :class="['fas', activity.icon, 'text-white']"></i>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-900">{{ activity.title }}</p>
-                <p class="text-sm text-gray-600 mt-1">{{ activity.description }}</p>
-                <small class="text-gray-500 flex items-center gap-1 mt-2">
-                  <i class="fas fa-clock"></i> {{ activity.time }}
-                </small>
-              </div>
-              <span 
-                v-if="activity.status"
-                :class="['w-24 px-2 py-0.5 text-xs font-bold rounded-full text-center inline-flex items-center justify-center', activity.statusClass]"
-              >
-                {{ activity.status }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    </div>
+  </div>
 </template>
 
 <script setup>
@@ -163,6 +222,13 @@ ChartJS.register(
   Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement
 )
 
+// Emitir evento de navegación para App.vue
+const emit = defineEmits(['navigate', 'showToast'])
+
+function goTo(view) {
+  emit('navigate', view)
+}
+
 const selectedMetricId = ref(null)
 
 function handleMetricClick(metricId) {
@@ -174,8 +240,9 @@ function handleMetricClick(metricId) {
 }
 
 // ----- DATOS DEL COMPONENTE -----
+// (Datos simulados para resumir las otras vistas)
 
-// --- Métricas Principales (Paleta Profesional) ---
+// --- 1. Resumen Ejecutivo (KPIs) ---
 const metrics = [
   { 
     id: 'publications', icon: 'fa-share-alt', label: 'Publicaciones', value: '18', 
@@ -195,10 +262,52 @@ const metrics = [
   }
 ]
 
-// --- Tarjetas de Estadísticas (ELIMINADAS) ---
-// La variable 'statCards' fue removida ya que no se utiliza.
+// --- 2. Foco Principal: Clientes (Resumen de Interactions y CRM) ---
+const pendingMessages = [
+  { id: 1, initials: 'CA', name: 'Carlos Alarcón', preview: '¿Cuál es el precio?', time: 'Hace 5 min' },
+  { id: 2, initials: 'MR', name: 'María Rodríguez', preview: 'Información sobre servicios', time: 'Hace 20 min' },
+  { id: 4, initials: 'LG', name: 'Laura García', preview: '¿Tienen descuentos para empresas?', time: 'Hace 1h' },
+  { id: 5, initials: 'RL', name: 'Roberto López', preview: 'Problema con mi suscripción', time: 'Hace 2h' },
+]
 
-// --- Gráfico de Barras: Datos y Opciones (Doble Eje Y) ---
+const newLeads = [
+  { id: 1, initials: 'AM', name: 'Ana Martínez', origin: 'Instagram', date: '15 Nov 2025' },
+  { id: 4, initials: 'CJ', name: 'Carlos Jiménez', origin: 'Web', date: '13 Nov 2025' },
+]
+
+// --- 3. Gestión de Contenido (Resumen de Production y Scheduling) ---
+const activities = [
+  { 
+    id: 1, icon: 'fa-check-circle', title: 'Imagen generada', description: 'Campaña de verano Instagram con IA',
+    bgColor: '#10B981', status: 'Completado', statusClass: 'bg-green-100 text-green-700'
+  },
+  { 
+    id: 3, icon: 'fa-edit', title: 'Contenido creado', description: 'Post de Facebook para promoción',
+    bgColor: '#3B82F6', status: 'Revisión', statusClass: 'bg-blue-100 text-blue-700'
+  },
+  { 
+    id: 4, icon: 'fa-message', title: 'Mensaje recibido', description: 'Cliente pregunta sobre precios',
+    bgColor: '#8B5CF6', status: 'Respondido', statusClass: 'bg-purple-100 text-purple-700'
+  }
+]
+
+const scheduled = [
+  { 
+    id: 2, 
+    date: 'NOV 20', 
+    title: 'Tips de Marketing Digital', 
+    channels: ['fa-brands fa-linkedin']
+  },
+  { 
+    id: 5, 
+    date: 'NOV 27', 
+    title: 'Webinar en Vivo', 
+    channels: ['fa-brands fa-facebook', 'fa-brands fa-linkedin']
+  },
+]
+
+
+// --- 4. Análisis de Rendimiento (Reportes) ---
 const weeklyChartData = ref({
   labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
   datasets: [
@@ -229,34 +338,13 @@ const weeklyChartOptions = ref({
   }
 })
 
-// --- Lógica de Gráfico Interactivo ---
-const weeklyChartTitle = computed(() => {
-  if (selectedMetricId.value === 'publications') return 'Rendimiento: Publicaciones'
-  if (selectedMetricId.value === 'engagement') return 'Rendimiento: Engagement'
-  return 'Rendimiento Semanal'
-})
+const weeklyChartTitle = computed(() => 'Rendimiento Semanal')
 
+// ***** LÍNEA CORREGIDA AQUÍ *****
 const filteredWeeklyChartData = computed(() => {
-  if (!weeklyChartData.value) return null
-  if (!selectedMetricId.value) return weeklyChartData.value
-
-  let filteredDatasets = []
-  if (selectedMetricId.value === 'publications') {
-    filteredDatasets = [weeklyChartData.value.datasets[0]]
-  } else if (selectedMetricId.value === 'engagement') {
-    filteredDatasets = [weeklyChartData.value.datasets[1]]
-  } else {
-    return weeklyChartData.value
-  }
-
-  return {
-    labels: weeklyChartData.value.labels,
-    datasets: filteredDatasets
-  }
+  return weeklyChartData.value
 })
 
-
-// --- Gráfico de Dona: Datos y Opciones ---
 const contentChartData = ref({
   labels: ['Productos', 'Promociones', 'Educativo'],
   datasets: [
@@ -274,46 +362,41 @@ const contentChartOptions = ref({
   responsive: true, maintainAspectRatio: false,
   cutout: '75%', plugins: { legend: { display: false } }
 })
-
-// --- Datos de Listas (Iconos Font Awesome) ---
-const networkPerformance = [
-  { id: 1, name: 'Instagram', icon: 'fa-brands fa-instagram', color: '#E4405F', percentage: 42, followers: '5.2K', engagement: '5.2%'},
-  { id: 2, name: 'Facebook', icon: 'fa-brands fa-facebook', color: '#1877F2', percentage: 28, followers: '3.8K', engagement: '3.1%'},
-  { id: 3, name: 'LinkedIn', icon: 'fa-brands fa-linkedin', color: '#0A66C2', percentage: 20, followers: '2.1K', engagement: '4.5%'},
-  { id: 4, name: 'Twitter X', icon: 'fa-brands fa-twitter', color: '#1DA1F2', percentage: 10, followers: '1.4K', engagement: '2.8%'}
-]
-
-const activities = [
-  { 
-    id: 1, icon: 'fa-check-circle', title: 'Imagen generada', description: 'Campaña de verano Instagram con IA',
-    time: 'Hace 2 horas', bgColor: '#10B981', // Verde: Completado
-    status: 'Completado', statusClass: 'bg-green-100 text-green-700'
-  },
-  { 
-    id: 2, icon: 'fa-clock', title: 'Publicación programada', description: 'Post profesional en LinkedIn',
-    time: 'Hace 1 hora', bgColor: '#F59E0B', // Naranja/Amarillo: Pendiente/Urgente
-    status: 'Pendiente', statusClass: 'bg-yellow-100 text-yellow-700'
-  },
-  { 
-    id: 3, icon: 'fa-edit', title: 'Contenido creado', description: 'Post de Facebook para promoción',
-    time: 'Hace 30 minutos', bgColor: '#3B82F6', // Azul: Informativo
-    status: 'Revisión', statusClass: 'bg-blue-100 text-blue-700'
-  },
-  { 
-    id: 4, icon: 'fa-message', title: 'Mensaje recibido', description: 'Cliente pregunta sobre precios',
-    time: 'Hace 15 minutos', bgColor: '#8B5CF6', // Púrpura: Notificación
-  }
-]
 </script>
 
 <style scoped>
+.btn-primary {
+  @apply px-6 py-3 bg-kapital-dark text-white font-medium rounded-md transition-all hover:bg-blue-700 active:scale-95 flex items-center gap-2 justify-center;
+}
+
+.btn-secondary {
+  @apply px-6 py-3 bg-gray-100 text-gray-800 font-medium rounded-md border border-gray-300 transition-all hover:bg-gray-200 flex items-center gap-2 justify-center;
+}
+
 .card {
   @apply bg-white border border-gray-200 rounded-lg p-6 shadow-sm;
 }
+
 /* Definición de colores de marca */
 .text-kapital-dark { color: #2B66FF; }
 .bg-kapital-dark { background-color: #2B66FF; }
 .bg-kapital-light-2 { background-color: #61A3FF; }
 .border-kapital-dark { border-color: #2B66FF; }
 .ring-kapital-dark { --tw-ring-color: #2B66FF; }
+
+/* Estilo para el scroll de las tarjetas */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 6px;
+}
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #C9C9C9; /* Usando tu color 'kapital-gray' */
+  border-radius: 6px;
+}
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #a9a9a9;
+}
 </style>
