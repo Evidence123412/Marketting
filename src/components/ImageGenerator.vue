@@ -123,6 +123,7 @@
               </div>
             </fieldset>
 
+            
             <fieldset class="fieldset-style">
               <legend class="legend-style"><i class="fas fa-palette"></i> Paleta de Colores (Tu Marca)</legend>
               <label class="block text-sm font-medium text-gray-700 mb-2">Sugerencia (Psicología del Color)</label>
@@ -152,24 +153,13 @@
           <div v-show="currentStep === 4" class="space-y-6">
             
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Red Social (Canal de Entrega)</label>
-              <select v-model="form.network" @change="updateFormatOptions" class="input-field">
-                <option value="">Seleccionar...</option>
-                <option value="instagram">Instagram</option>
-                <option value="facebook">Facebook</option>
-                <option value="linkedin">LinkedIn</option>
-                <option value="tiktok">TikTok</option>
-              </select>
-            </div>
-
-            <div v-if="form.network">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Formato / Tamaño (Usabilidad)</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">1. Selecciona el Formato / Tamaño</label>
               <div class="grid grid-cols-3 gap-3">
                 <button 
                   type="button" 
-                  v-for="format in availableFormats" 
+                  v-for="format in allFormats" 
                   :key="format.name"
-                  @click="form.format = format.value"
+                  @click="selectFormat(format.value)"
                   :class="['visual-selector', form.format === format.value ? 'selected' : '']"
                 >
                   <i :class="['fas', format.icon, 'text-xl mb-1 block']"></i>
@@ -177,8 +167,32 @@
                 </button>
               </div>
             </div>
+
+            <div v-if="form.format">
+              <label class="block text-sm font-medium text-gray-700 mb-2">2. Selecciona las Redes (Canales)</label>
+              <div class="grid grid-cols-2 gap-3">
+                <label 
+                  v-for="network in availableNetworks" 
+                  :key="network.id"
+                  :class="[
+                    'checkbox-label p-3 border rounded-lg',
+                    isNetworkCompatible(network.id) ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'
+                  ]"
+                >
+                  <input 
+                    type="checkbox" 
+                    :value="network.id"
+                    v-model="form.networks"
+                    :disabled="!isNetworkCompatible(network.id)"
+                    class="checkbox-input"
+                  />
+                  <i :class="['bi', network.icon, 'text-lg']" :style="{ color: network.color }"></i>
+                  {{ network.name }}
+                </label>
+              </div>
+            </div>
             
-            <button type="submit" class="btn-primary w-full text-base" :disabled="generating || !form.format">
+            <button type="submit" class="btn-primary w-full text-base" :disabled="generating || form.networks.length === 0">
               <i :class="['fas', generating ? 'fa-spinner fa-spin' : 'fa-magic']"></i>
               {{ generating ? 'Generando...' : 'Generar Contenido' }}
             </button>
@@ -198,7 +212,7 @@
       <div class="card flex flex-col">
         <h2 class="text-lg font-bold text-gray-900 mb-4">Prototipo y Resultados</h2>
         
-        <div class="flex-1 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center min-h-96 mb-4 p-4">
+        <div class="flex-1 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center p-4 min-h-96">
           
           <div v-if="generating" class="text-center text-kapital-night p-8">
             <i class="fas fa-spinner fa-spin text-4xl mb-4"></i>
@@ -206,25 +220,36 @@
             <p class="text-sm text-gray-600">{{ generationStatus }}</p>
           </div>
 
-          <div v-else-if="!generated" class="text-center text-gray-500">
+          <div v-else-if="!generated && !form.format" class="text-center text-gray-500">
             <i class="fas fa-image text-4xl text-kapital-gray mb-3 block"></i>
             <p class="text-sm">El prototipo de imagen aparecerá aquí</p>
           </div>
           
           <div 
-            v-else
-            class="w-full h-full rounded-lg flex items-center justify-center text-white font-semibold p-8 text-center"
+            v-if="!generating && (generated || form.format)"
+            :class="[
+              'rounded-lg flex items-center justify-center text-white font-semibold p-4 text-center transition-all duration-300 ease-in-out shadow-lg',
+              previewSizingClass,
+              {
+                'aspect-square': form.format === '1:1',
+                'aspect-[9/16]': form.format === '9:16',
+                'aspect-video': form.format === '16:9',
+                'aspect-[4/5]': form.format === '4:5',
+                'aspect-square': !form.format,
+              }
+            ]"
             :style="{ background: `linear-gradient(135deg, ${form.colorPrimary} 0%, ${form.colorSecondary} 100%)` }"
           >
             <span :style="{ color: getContrastingTextColor(form.colorPrimary) }">
-              Imagen para {{ form.network }} ({{ form.format }})
-              <br> Estilo: {{ form.segment.psycho.lifestyle }}
+              Formato: ({{ form.format }})
+              <br> 
+              <span v-if="generated">Redes: {{ form.networks.join(', ') }}</span>
             </span>
           </div>
         </div>
 
         <Transition name="fade">
-          <div v-if="generated" class="space-y-4">
+          <div v-if="generated" class="space-y-4 mt-4">
             <div class="result-box">
               <h3 class="result-title">Copy Persuasivo (Neuromarketing)</h3>
               <p class="text-sm text-gray-700">{{ generatedData.copy }}</p>
@@ -271,16 +296,16 @@ const wizardSteps = [
 
 // ESTRUCTURA DE DATOS DEL FORMULARIO
 const form = ref({
-  // Paso 1: Segmentación
+  // Paso 1
   segment: {
     geo: { zone: 'all', city: '' },
     demo: { age: 'all', sex: 'all' },
     psycho: { lifestyle: 'all' }
   },
-  // Paso 2: Mensaje
+  // Paso 2
   description: '',
   contentType: '',
-  // Paso 3: Ideación
+  // Paso 3
   tone: 'professional',
   triggers: {
     urgency: false,
@@ -289,13 +314,15 @@ const form = ref({
   },
   colorPrimary: '#2B66FF', // Default a kapital-dark
   colorSecondary: '#00FFFF', // Default a kapital-light-2
-  // Paso 4: Prototipo
-  network: '',
-  format: '',
-  style: 'modern' // Estilo visual (Moderno, Lujo, etc. - movido aquí)
+  // Paso 4
+  networks: [], // Array para selección múltiple
+  format: '1:1', // Default a 1:1 para que la vista previa no esté vacía
+  style: 'modern'
 })
 
-// --- LÓGICA DE FORMATOS DINÁMICOS ---
+// --- LÓGICA DE FORMATOS DINÁMICOS (Paso 4) ---
+
+// 1. Definir todos los formatos posibles
 const allFormats = {
   post: { name: 'Post (1:1)', value: '1:1', icon: 'fa-square' },
   story: { name: 'Story (9:16)', value: '9:16', icon: 'fa-mobile-alt' },
@@ -303,23 +330,40 @@ const allFormats = {
   portrait: { name: 'Post (4:5)', value: '4:5', icon: 'fa-tablet-alt' }
 }
 
-const networkFormats = {
-  instagram: [allFormats.post, allFormats.story, allFormats.portrait],
-  facebook: [allFormats.post, allFormats.landscape, allFormats.story],
-  linkedin: [allFormats.post, allFormats.landscape],
-  tiktok: [allFormats.story]
+// 2. Definir todas las redes y qué formatos soportan (LÓGICA CORREGIDA)
+const availableNetworks = ref([
+  { id: 'instagram', name: 'Instagram', icon: 'bi-instagram', color: '#E4405F', formats: ['1:1', '9:16', '4:5', '16:9'] },
+  { id: 'facebook', name: 'Facebook', icon: 'bi-facebook', color: '#1877F2', formats: ['1:1', '16:9', '9:16', '4:5'] },
+  { id: 'linkedin', name: 'LinkedIn', icon: 'bi-linkedin', color: '#0A66C2', formats: ['1:1', '16:9', '4:5'] },
+  { id: 'tiktok', name: 'TikTok', icon: 'bi-tiktok', color: '#010101', formats: ['9:16', '1:1', '16:9', '4:5'] }
+])
+
+// 3. Lógica de UI para el Paso 4
+function selectFormat(formatValue) {
+  form.value.format = formatValue
+  form.value.networks = [] // Limpia las redes al cambiar el formato
 }
 
-const availableFormats = computed(() => {
-  return networkFormats[form.value.network] || []
-})
+function isNetworkCompatible(networkId) {
+  const network = availableNetworks.value.find(n => n.id === networkId)
+  return network && network.formats.includes(form.value.format)
+}
 
-function updateFormatOptions() {
-  form.value.format = ''
-  if (availableFormats.value.length > 0) {
-    form.value.format = availableFormats.value[0].value
+// COMPUTED PROPERTY CORREGIDA (solo devuelve clases de tamaño)
+const previewSizingClass = computed(() => {
+  switch (form.value.format) {
+    case '1:1':
+      return 'w-full max-w-sm mx-auto'; // Cuadrado
+    case '9:16':
+      return 'w-full max-w-[270px] mx-auto'; // Vertical (Story/TikTok)
+    case '16:9':
+      return 'w-full max-w-md mx-auto'; // Horizontal (Video)
+    case '4:5':
+      return 'w-full max-w-sm mx-auto'; // Vertical (Post IG)
+    default:
+      return 'w-full max-w-sm mx-auto'; // Default
   }
-}
+});
 
 // --- ESTADO DE GENERACIÓN ---
 const generated = ref(false)
@@ -341,8 +385,7 @@ function prevStep() {
 }
 
 function generateImage() {
-  // Validación
-  if (currentStep.value !== 4 || !form.value.network || !form.value.format) {
+  if (currentStep.value !== 4 || form.value.networks.length === 0 || !form.value.format) {
     emit('showToast', 'Por favor completa todos los pasos del asistente', 'error')
     return
   }
@@ -350,10 +393,9 @@ function generateImage() {
   generating.value = true
   generated.value = false
   
-  // Neuromarketing: Storytelling en la carga [cite: 412, 413, 417]
   setTimeout(() => { generationStatus.value = `Analizando Buyer Persona (Psicográfica: ${form.value.segment.psycho.lifestyle})...` }, 500)
   setTimeout(() => { generationStatus.value = `Aplicando tono '${form.value.tone}' y disparadores mentales...` }, 1500)
-  setTimeout(() => { generationStatus.value = `Adaptando a formato ${form.value.format} para ${form.value.network}...` }, 2500)
+  setTimeout(() => { generationStatus.value = `Adaptando a formato ${form.value.format} para ${form.value.networks.join(', ')}...` }, 2500)
   
   setTimeout(() => {
     generatedData.value = {
@@ -369,7 +411,6 @@ function generateImage() {
 
 function generateCopy() {
   let baseCopy = ''
-  // 1. Tono de Voz (Storytelling)
   switch (form.value.tone) {
     case 'emotional': baseCopy = `Conecta con lo que más importa. ${form.value.description}.`; break;
     case 'professional': baseCopy = `Presentamos una solución profesional: ${form.value.description}.`; break;
@@ -379,7 +420,6 @@ function generateCopy() {
     default: baseCopy = `Descubre más sobre: ${form.value.description}.`;
   }
 
-  // 2. Estilo de Vida (Arellano)
   let lifestyleAdj = ''
   switch(form.value.segment.psycho.lifestyle) {
     case 'sofisticados': lifestyleAdj = 'Una experiencia exclusiva.'; break;
@@ -389,7 +429,6 @@ function generateCopy() {
     case 'austeros': lifestyleAdj = 'El mejor precio y rendimiento.'; break;
   }
 
-  // 3. Disparadores Mentales (Neuromarketing) [cite: 1842, 1855, 1872]
   let triggers = ''
   if (form.value.triggers.urgency) triggers += ' ¡Solo por tiempo limitado!'
   if (form.value.triggers.exclusivity) triggers += ' Una oferta exclusiva para nuestra comunidad.'
@@ -399,7 +438,7 @@ function generateCopy() {
 }
 
 function generateHashtags() {
-  const base = ['kapital', 'marketing', form.value.network]
+  const base = ['kapital', 'marketing', ...form.value.networks]
   if (form.value.segment.geo.city) base.push(form.value.segment.geo.city.toLowerCase().replace(' ', ''))
   
   const types = {
@@ -422,7 +461,6 @@ function generateHashtags() {
     ...(lifestyleTags[form.value.segment.psycho.lifestyle] || [])
   ]
   
-  // Filtra vacíos y duplicados
   return [...new Set(tags.filter(t => t))].slice(0, 8).map(t => '#' + t)
 }
 
@@ -447,15 +485,13 @@ function getContrastingTextColor(hexcolor) {
 </script>
 
 <style scoped>
-/* Estilos de Botones consistentes con tu style.css global
-  (Basado en tu tailwind.config.js)
-*/
+/* Estilos de Botones consistentes con tu style.css global */
 .btn-primary {
   @apply px-6 py-3 bg-kapital-night text-white font-medium rounded-md transition-all hover:bg-kapital-night-hover active:scale-95 flex items-center gap-2 justify-center;
 }
 
 .btn-secondary {
-  @apply px-6 py-3 bg-gray-100 text-gray-800 font-medium rounded-md border border-gray-300 transition-all hover:bg-gray-200 flex items-center gap-2 justify-center;
+  @apply bg-gray-100 text-gray-800 font-medium rounded-md border border-gray-300 transition-all hover:bg-gray-200 flex items-center gap-2 justify-center;
 }
 
 /* Clases de utilidad para los nuevos elementos */
@@ -481,7 +517,11 @@ function getContrastingTextColor(hexcolor) {
 }
 
 .checkbox-label {
-  @apply flex items-center gap-2 text-sm text-gray-700 cursor-pointer;
+  @apply flex items-center gap-2 text-sm text-gray-700;
+}
+
+.checkbox-label[disabled] {
+  @apply cursor-not-allowed;
 }
 
 .checkbox-input {
@@ -499,10 +539,6 @@ function getContrastingTextColor(hexcolor) {
   transform: translateY(10px);
 }
 
-.badge {
-  @apply px-3 py-1 bg-gray-200 text-gray-700 text-xs font-medium rounded-full cursor-pointer hover:bg-gray-300;
-}
-
 .result-box {
   @apply bg-kapital-dark/5 border border-kapital-dark/20 rounded-lg p-4;
 }
@@ -510,4 +546,13 @@ function getContrastingTextColor(hexcolor) {
 .result-title {
   @apply text-xs font-semibold text-kapital-dark uppercase tracking-wider mb-2;
 }
+
+/* Estas clases vacías son un "truco" para que el compilador JIT de Tailwind
+  genere el CSS que se usa dinámicamente en el :class de la vista previa.
+  Esto soluciona el error de PostCSS.
+*/
+.aspect-square {}
+.aspect-video {}
+.aspect-\[9\/16\] {}
+.aspect-\[4\/5\] {}
 </style>
