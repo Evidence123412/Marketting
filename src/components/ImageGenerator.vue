@@ -547,12 +547,9 @@ function getContrastingTextColor(hexcolor) {
   @apply text-xs font-semibold text-kapital-dark uppercase tracking-wider mb-2;
 }
 
-/* Estas clases vacías son un "truco" para que el compilador JIT de Tailwind
-  genere el CSS que se usa dinámicamente en el :class de la vista previa.
-  Esto soluciona el error de PostCSS.
+/* *** CORRECCIÓN FINAL ***
+  Estas clases vacías se eliminaron porque causaban el error de PostCSS.
+  Las clases correctas (aspect-square, aspect-[9/16], etc.) están en el bloque
+  :class del <template> y serán detectadas por el compilador JIT de Tailwind.
 */
-.aspect-square {}
-.aspect-video {}
-.aspect-\[9\/16\] {}
-.aspect-\[4\/5\] {}
 </style>
