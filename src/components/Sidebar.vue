@@ -1,35 +1,51 @@
 <template>
-  <aside class="w-45 bg-white border-r border-gray-200 flex flex-col items-center py-5 gap-6 overflow-y-auto shadow-sm">
-    <!-- Logo -->
-    <div class="w-12 h-12 bg-gradient-to-br from-kapital-dark to-kapital-light-1 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:shadow-lg transition-all"
+  <aside class="w-20 bg-white border-r border-gray-200 flex flex-col items-center py-5 gap-7 overflow-y-auto shadow-xl">
+    
+    <div class="w-10 h-10 bg-gradient-to-br from-kapital-dark to-kapital-light-1 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer shadow-lg hover:scale-110 transition-all duration-300"
       @click="$emit('navigate', 'dashboard')"
+      title="Dashboard - K"
     >
-      <span class="text-white font-bold text-lg">K</span>
+      <span class="text-white font-extrabold text-base">K</span>
     </div>
 
-    <!-- Navigation -->
-    <nav class="flex flex-col gap-2 flex-1 w-full px-2">
-      <button
-        v-for="item in navItems"
+    <nav class="flex flex-col gap-1 flex-1 w-full px-2">
+      
+      <SidebarItem
+        id="dashboard"
+        label="Dashboard"
+        icon="fa-chart-line"
+        :active-view="activeView"
+        @navigate="$emit('navigate', $event)"
+        class="mb-3"
+      />
+
+      <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider px-2 py-1 mt-2">Creación</h3>
+      <SidebarItem
+        v-for="item in navItems.filter(i => i.group === 'creation')"
         :key="item.id"
-        @click="$emit('navigate', item.id)"
-        :class="[
-          'flex flex-col items-center justify-center gap-1.5 py-3 px-3 rounded-lg transition-all duration-200',
-          activeView === item.id
-            ? 'bg-gradient-to-br from-blue-50 to-blue-100 text-kapital-dark border border-blue-200 shadow-sm'
-            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-        ]"
-        :title="item.label"
-      >
-        <i :class="['fas', item.icon, 'text-lg']"></i>
-        <span class="text-xs text-center leading-tight font-medium">{{ item.label }}</span>
-      </button>
+        :id="item.id"
+        :label="item.label"
+        :icon="item.icon"
+        :active-view="activeView"
+        @navigate="$emit('navigate', $event)"
+      />
+
+      <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider px-2 py-1 mt-4">Recursos</h3>
+      <SidebarItem
+        v-for="item in navItems.filter(i => i.group === 'tools')"
+        :key="item.id"
+        :id="item.id"
+        :label="item.label"
+        :icon="item.icon"
+        :active-view="activeView"
+        @navigate="$emit('navigate', $event)"
+      />
+      
     </nav>
 
-    <!-- Logout Button -->
     <button
       @click="$emit('logout')"
-      class="w-12 h-12 flex items-center justify-center text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all duration-200 border border-transparent hover:border-red-200"
+      class="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all duration-200 border border-gray-200 hover:border-red-300 shadow-md"
       title="Cerrar sesión"
     >
       <i class="fas fa-sign-out-alt text-lg"></i>
@@ -39,6 +55,7 @@
 
 <script setup>
 import { defineProps, defineEmits } from 'vue'
+import SidebarItem from './SidebarItem.vue' // Importar componente hijo
 
 defineProps({
   activeView: String
@@ -46,24 +63,25 @@ defineProps({
 
 defineEmits(['navigate', 'logout'])
 
+// Se añaden grupos a los ítems para estructurar el menú
 const navItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: 'fa-chart-line' },
-  { id: 'generation', label: 'Generar', icon: 'fa-wand-magic-sparkles' },
-  { id: 'production', label: 'Producción', icon: 'fa-pen-fancy' },
-  { id: 'scheduling', label: 'Programación', icon: 'fa-calendar-alt' },
-  { id: 'interactions', label: 'Interacciones', icon: 'fa-comments' },
-  { id: 'crm', label: 'CRM', icon: 'fa-address-card' },
-  { id: 'reports', label: 'Reportes', icon: 'fa-bar-chart' },
-  { id: 'settings', label: 'Configuración', icon: 'fa-cog' }
+  // Dashboard se maneja por separado por su importancia
+  { id: 'generation', label: 'Generar', icon: 'fa-wand-magic-sparkles', group: 'creation' },
+  { id: 'production', label: 'Producción', icon: 'fa-pen-fancy', group: 'creation' },
+  { id: 'scheduling', label: 'Programación', icon: 'fa-calendar-alt', group: 'creation' },
+  
+  { id: 'reports', label: 'Reportes', icon: 'fa-chart-bar', group: 'tools' },
+  { id: 'interactions', label: 'Interacciones', icon: 'fa-comments', group: 'tools' },
+  { id: 'crm', label: 'CRM', icon: 'fa-address-card', group: 'tools' },
+  { id: 'settings', label: 'Configuración', icon: 'fa-cog', group: 'tools' }
 ]
 </script>
 
 <style scoped>
-/* Animación suave para cambio de vista */
+/* Las clases de foco se mantienen aquí para un manejo de accesibilidad */
 button {
   @apply outline-none;
 }
-
 button:focus-visible {
   @apply ring-2 ring-kapital-dark ring-offset-2;
 }
