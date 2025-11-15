@@ -1,88 +1,205 @@
 <template>
-  <aside class="w-20 bg-white border-r border-gray-200 flex flex-col items-center py-5 gap-7 overflow-y-auto shadow-xl">
+  <aside
+    :class="[
+      isExpanded ? 'w-56' : 'w-20',
+      'bg-gray-900 text-gray-300 flex flex-col h-screen justify-between shadow-lg transition-all duration-300 ease-in-out'
+    ]"
+  >
     
-    <div class="w-10 h-10 bg-gradient-to-br from-kapital-dark to-kapital-light-1 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer shadow-lg hover:scale-110 transition-all duration-300"
-      @click="$emit('navigate', 'dashboard')"
-      title="Dashboard - K"
-    >
-      <span class="text-white font-extrabold text-base">K</span>
+    <div class="flex flex-col overflow-y-auto">
+      <div 
+        :class="[
+          'flex items-center py-5 mb-2',
+          isExpanded ? 'justify-between px-4' : 'justify-center px-3'
+        ]"
+      >
+        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+          <span class="text-white font-bold text-lg">K</span>
+        </div>
+        
+        <Transition name="fade">
+          <span v-show="isExpanded" class="text-white font-bold text-2xl tracking-wider ml-2 whitespace-nowrap">Kapital</span>
+        </Transition>
+
+        <button
+          @click="toggleSidebar"
+          :title="isExpanded ? 'Colapsar' : 'Expandir'"
+          :class="[
+            'text-gray-500 hover:text-white transition-colors',
+            isExpanded ? 'ml-auto' : 'ml-auto' // Mantenemos ml-auto para consistencia
+          ]"
+        >
+          <i :class="['fas', isExpanded ? 'fa-chevron-left' : 'fa-chevron-right', 'w-5 text-center text-lg']"></i>
+        </button>
+      </div>
+
+      <nav class="flex-1 flex flex-col gap-y-6 px-3">
+        <div v-for="group in navGroups" :key="group.title">
+          
+          <Transition name="fade">
+            <span 
+              v-show="isExpanded" 
+              class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-2 block"
+            >
+              {{ group.title }}
+            </span>
+          </Transition>
+
+          <div class="flex flex-col gap-2">
+            <button
+              v-for="item in group.items"
+              :key="item.id"
+              @click="$emit('navigate', item.id)"
+              :title="item.label"
+              :class="[
+                'flex items-center gap-3 py-2.5 rounded-lg w-full transition-all duration-200 group relative', // Añadido 'group relative'
+                isExpanded ? 'px-4' : 'px-3 justify-center',
+                activeView === item.id
+                  ? 'bg-blue-600 text-white font-semibold shadow-md'
+                  : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+              ]"
+            >
+              <i :class="['fas', item.icon, 'w-5 text-center text-lg flex-shrink-0']"></i>
+              
+              <Transition name="fade">
+                <span v-show="isExpanded" class="text-sm font-medium whitespace-nowrap">{{ item.label }}</span>
+              </Transition>
+
+              <span 
+                :class="[
+                  'absolute left-16 p-2 px-3 text-sm font-medium bg-gray-700 text-white rounded-md shadow-lg',
+                  'transition-all duration-200 scale-0 origin-left z-10',
+                  'group-hover:scale-100', // Muestra en hover
+                  isExpanded ? 'hidden' : 'block' // Oculta si está expandido
+                ]"
+              >
+                {{ item.label }}
+              </span>
+            </button>
+          </div>
+        </div>
+      </nav>
     </div>
 
-    <nav class="flex flex-col gap-1 flex-1 w-full px-2">
-      
-      <SidebarItem
-        id="dashboard"
-        label="Inicio"
-        icon="fa-chart-line"
-        :active-view="activeView"
-        @navigate="$emit('navigate', $event)"
-        class="mb-3"
-      />
+    <div class="p-3 border-t border-gray-700">
+      <div class="flex flex-col gap-2">
+        
+        <button
+          @click="$emit('navigate', 'settings')"
+          title="Configuración"
+          :class="[
+            'flex items-center gap-3 py-2.5 rounded-lg w-full transition-all duration-200 group relative', // Añadido 'group relative'
+            isExpanded ? 'px-4' : 'px-3 justify-center',
+            activeView === 'settings'
+              ? 'bg-blue-600 text-white font-semibold shadow-md'
+              : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+          ]"
+        >
+          <i class="fas fa-cog w-5 text-center text-lg flex-shrink-0"></i>
+          <Transition name="fade">
+            <span v-show="isExpanded" class="text-sm font-medium whitespace-nowrap">Configuración</span>
+          </Transition>
+          <span 
+            :class="[
+              'absolute left-16 p-2 px-3 text-sm font-medium bg-gray-700 text-white rounded-md shadow-lg',
+              'transition-all duration-200 scale-0 origin-left z-10',
+              'group-hover:scale-100',
+              isExpanded ? 'hidden' : 'block'
+            ]"
+          >
+            Configuración
+          </span>
+        </button>
 
-      <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider px-2 py-1 mt-2">Creación</h3>
-      <SidebarItem
-        v-for="item in navItems.filter(i => i.group === 'creation')"
-        :key="item.id"
-        :id="item.id"
-        :label="item.label"
-        :icon="item.icon"
-        :active-view="activeView"
-        @navigate="$emit('navigate', $event)"
-      />
-
-      <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider px-2 py-1 mt-4">Recursos</h3>
-      <SidebarItem
-        v-for="item in navItems.filter(i => i.group === 'tools')"
-        :key="item.id"
-        :id="item.id"
-        :label="item.label"
-        :icon="item.icon"
-        :active-view="activeView"
-        @navigate="$emit('navigate', $event)"
-      />
-      
-    </nav>
-
-    <button
-      @click="$emit('logout')"
-      class="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all duration-200 border border-gray-200 hover:border-red-300 shadow-md"
-      title="Cerrar sesión"
-    >
-      <i class="fas fa-sign-out-alt text-lg"></i>
-    </button>
+        <button
+          @click="$emit('logout')"
+          title="Cerrar sesión"
+          :class="[
+            'flex items-center gap-3 py-2.5 rounded-lg w-full transition-all duration-200 text-gray-400 hover:bg-red-800 hover:text-red-100 group relative', // Añadido 'group relative'
+            isExpanded ? 'px-4' : 'px-3 justify-center'
+          ]"
+        >
+          <i class="fas fa-sign-out-alt w-5 text-center text-lg flex-shrink-0"></i>
+          <Transition name="fade">
+            <span v-show="isExpanded" class="text-sm font-medium whitespace-nowrap">Cerrar sesión</span>
+          </Transition>
+          <span 
+            :class="[
+              'absolute left-16 p-2 px-3 text-sm font-medium bg-gray-700 text-white rounded-md shadow-lg',
+              'transition-all duration-200 scale-0 origin-left z-10',
+              'group-hover:scale-100',
+              isExpanded ? 'hidden' : 'block'
+            ]"
+          >
+            Cerrar sesión
+          </span>
+        </button>
+      </div>
+    </div>
   </aside>
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue'
-// Se asegura que la importación exista y la ruta sea correcta
-import SidebarItem from './SidebarItem.vue' 
+import { ref } from 'vue';
+import { defineProps, defineEmits } from 'vue';
+
+const isExpanded = ref(true);
+
+const toggleSidebar = () => {
+  isExpanded.value = !isExpanded.value;
+};
 
 defineProps({
-  activeView: String
-})
+  activeView: String,
+});
 
-defineEmits(['navigate', 'logout'])
+defineEmits(['navigate', 'logout']);
 
-const navItems = [
-  // Dashboard se maneja por separado
-  { id: 'generation', label: 'Generar', icon: 'fa-wand-magic-sparkles', group: 'creation' },
-  { id: 'production', label: 'Producción', icon: 'fa-pen-fancy', group: 'creation' },
-  { id: 'scheduling', label: 'Programación', icon: 'fa-calendar-alt', group: 'creation' },
-  
-  { id: 'reports', label: 'Reportes', icon: 'fa-bar-chart', group: 'tools' },
-  { id: 'interactions', label: 'Interacciones', icon: 'fa-comments', group: 'tools' },
-  { id: 'crm', label: 'CRM', icon: 'fa-address-card', group: 'tools' },
-  { id: 'settings', label: 'Configuración', icon: 'fa-cog', group: 'tools' }
-]
+// MEJORA: Se agrupan los items para mejorar la Arquitectura de la Información
+const navGroups = [
+  {
+    title: 'Análisis',
+    items: [
+      { id: 'dashboard', label: 'Dashboard', icon: 'fa-chart-line' },
+      { id: 'reports', label: 'Reportes', icon: 'fa-bar-chart' },
+    ]
+  },
+  {
+    title: 'Gestión',
+    items: [
+      { id: 'generation', label: 'Generar', icon: 'fa-wand-magic-sparkles' },
+      { id: 'production', label: 'Producción', icon: 'fa-pen-fancy' },
+      { id: 'scheduling', label: 'Programación', icon: 'fa-calendar-alt' },
+    ]
+  },
+  {
+    title: 'Clientes',
+    items: [
+      { id: 'interactions', label: 'Interacciones', icon: 'fa-comments' },
+      { id: 'crm', label: 'CRM', icon: 'fa-address-card' },
+    ]
+  }
+];
 </script>
 
 <style scoped>
-/* Las clases de foco se mantienen aquí para un manejo de accesibilidad */
 button {
   @apply outline-none;
 }
+
 button:focus-visible {
-  @apply ring-2 ring-kapital-dark ring-offset-2;
+  @apply ring-2 ring-blue-500 ring-offset-2 ring-offset-gray-900;
+}
+
+/* MEJORA: Animación de fundido para las etiquetas de texto */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateX(-10px); /* El texto aparece desde la izquierda */
 }
 </style>
