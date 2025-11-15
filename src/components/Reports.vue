@@ -5,35 +5,34 @@
       <p>Análisis de desempeño y métricas de tus redes sociales</p>
     </div>
 
-    <!-- Filters -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-2">
-          <i class="fas fa-calendar-alt mr-2 text-kapital-dark"></i>Desde
+          <i class="fas fa-calendar-alt mr-2 text-kapital-night"></i>Desde
         </label>
         <input 
           v-model="dateRange.start"
           type="date" 
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-blue-100"
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-night focus:ring-2 focus:ring-blue-100"
         />
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-2">
-          <i class="fas fa-calendar-alt mr-2 text-kapital-dark"></i>Hasta
+          <i class="fas fa-calendar-alt mr-2 text-kapital-night"></i>Hasta
         </label>
         <input 
           v-model="dateRange.end"
           type="date" 
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-blue-100"
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-night focus:ring-2 focus:ring-blue-100"
         />
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-2">
-          <i class="fas fa-layer-group mr-2 text-kapital-dark"></i>Canal
+          <i class="fas fa-layer-group mr-2 text-kapital-night"></i>Canal
         </label>
         <select 
           v-model="selectedChannel"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-blue-100"
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-night focus:ring-2 focus:ring-blue-100"
         >
           <option value="">Todos los canales</option>
           <option value="instagram">Instagram</option>
@@ -52,7 +51,6 @@
       </div>
     </div>
 
-    <!-- KPI Cards Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <div 
         v-for="kpi in kpis" 
@@ -81,12 +79,10 @@
       </div>
     </div>
 
-    <!-- KPI Comparison Chart -->
     <div class="card">
       <h2 class="text-lg font-bold text-gray-900 mb-6">Comparativa KPIs - Período Anterior vs Actual</h2>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Horizontal Bar Chart -->
         <div>
           <h3 class="font-semibold text-gray-900 mb-4">Rendimiento Comparativo</h3>
           <div class="space-y-6">
@@ -124,16 +120,12 @@
           </div>
         </div>
 
-        <!-- Radial/Circular Progress -->
         <div>
           <h3 class="font-semibold text-gray-900 mb-4">Progreso hacia Metas</h3>
           <div class="grid grid-cols-2 gap-6">
             <div v-for="kpi in kpis" :key="'goal-' + kpi.id" class="flex flex-col items-center">
-              <!-- SVG Circle Progress -->
               <svg class="w-20 h-20 mb-3" viewBox="0 0 100 100">
-                <!-- Background circle -->
                 <circle cx="50" cy="50" r="45" fill="none" stroke="#E5E7EB" stroke-width="6" />
-                <!-- Progress circle -->
                 <circle 
                   cx="50" 
                   cy="50" 
@@ -147,7 +139,6 @@
                   style="transform: rotate(-90deg); transform-origin: 50% 50%;"
                   class="transition-all duration-500"
                 />
-                <!-- Center text -->
                 <text 
                   x="50" 
                   y="55" 
@@ -165,22 +156,19 @@
         </div>
       </div>
 
-      <!-- Legend -->
       <div class="border-t border-gray-200 mt-6 pt-6 flex justify-center gap-8">
         <div class="flex items-center gap-2">
           <div class="w-4 h-4 bg-gray-300 rounded"></div>
           <span class="text-sm text-gray-600">Período Anterior</span>
         </div>
         <div class="flex items-center gap-2">
-          <div class="w-4 h-4 rounded" style="background-color: #2B66FF;"></div>
+          <div class="w-4 h-4 rounded bg-kapital-night"></div>
           <span class="text-sm text-gray-600">Período Actual</span>
         </div>
       </div>
     </div>
 
-    <!-- Charts Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- Bar Chart -->
       <div class="card">
         <div class="flex justify-between items-center mb-6">
           <div>
@@ -190,20 +178,19 @@
           <div class="flex gap-2">
             <button 
               @click="chartView = 'performance'"
-              :class="['px-3 py-1 text-xs font-medium rounded transition-colors', chartView === 'performance' ? 'bg-kapital-dark text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300']"
+              :class="['px-3 py-1 text-xs font-medium rounded transition-colors', chartView === 'performance' ? 'bg-kapital-night text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300']"
             >
               Comparativa
             </button>
             <button 
               @click="chartView = 'reach'"
-              :class="['px-3 py-1 text-xs font-medium rounded transition-colors', chartView === 'reach' ? 'bg-kapital-dark text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300']"
+              :class="['px-3 py-1 text-xs font-medium rounded transition-colors', chartView === 'reach' ? 'bg-kapital-night text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300']"
             >
               Alcance
             </button>
           </div>
         </div>
 
-        <!-- Comparative Bar Chart -->
         <div v-if="chartView === 'performance'" class="flex items-end justify-around gap-2 h-80 mb-4 px-2 bg-gray-50 rounded-lg p-4">
           <div 
             v-for="(bar, idx) in chartData" 
@@ -212,14 +199,12 @@
             :title="`${bar.day}: Alcance ${bar.reach} | Interacciones ${bar.interactions}`"
           >
             <div class="flex gap-2 h-full w-full items-end justify-center">
-              <!-- Alcance Bar -->
               <div 
-                class="bg-gradient-to-t from-kapital-dark to-kapital-light-1 rounded-t transition-all group-hover:shadow-lg cursor-pointer"
+                class="bg-gradient-to-t from-kapital-night to-gray-700 rounded-t transition-all group-hover:shadow-lg cursor-pointer"
                 :style="{ height: bar.height + '%', width: '40%', minHeight: bar.height +'px' }"
               ></div>
-              <!-- Interactions Bar -->
               <div 
-                class="bg-gradient-to-t from-cyan-500 to-cyan-300 rounded-t transition-all group-hover:shadow-lg cursor-pointer"
+                class="bg-gradient-to-t from-kapital-light-1 to-blue-400 rounded-t transition-all group-hover:shadow-lg cursor-pointer"
                 :style="{ height: bar.interactionHeight + '%', width: '40%', minHeight: bar.interactionHeight +'px' }"
               ></div>
             </div>
@@ -227,7 +212,6 @@
           </div>
         </div>
 
-        <!-- Single Bar Chart - Alcance -->
         <div v-else class="flex items-end justify-around gap-3 h-64 mb-4">
           <div 
             v-for="(bar, idx) in chartData" 
@@ -237,7 +221,7 @@
           >
             <div class="relative w-full h-full flex items-end justify-center">
               <div 
-                class="w-full bg-gradient-to-t from-kapital-dark to-kapital-light-1 rounded-t transition-all group-hover:opacity-80"
+                class="w-full bg-gradient-to-t from-kapital-night to-gray-700 rounded-t transition-all group-hover:opacity-80"
                 :style="{ height: bar.height + '%' , width: '40%', minHeight: bar.height +'px' }"
               ></div>
               <span class="absolute -top-6 text-xs font-bold text-gray-700">{{ bar.reach }}</span>
@@ -246,14 +230,13 @@
           </div>
         </div>
 
-        <!-- Legend -->
         <div class="border-t border-gray-200 pt-4 flex justify-center gap-6 text-sm text-gray-600">
           <div v-if="chartView === 'performance'" class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded bg-gradient-to-t from-kapital-dark to-kapital-light-1"></div>
+            <div class="w-4 h-4 rounded bg-gradient-to-t from-kapital-night to-gray-700"></div>
             <span>Alcance</span>
           </div>
           <div v-if="chartView === 'performance'" class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded bg-gradient-to-t from-kapital-light-1 to-kapital-light-2"></div>
+            <div class="w-4 h-4 rounded bg-gradient-to-t from-kapital-light-1 to-blue-400"></div>
             <span>Interacciones</span>
           </div>
           <div class="flex items-center gap-2">
@@ -263,7 +246,6 @@
         </div>
       </div>
 
-      <!-- Engagement Trend with Multiple Bars -->
       <div class="card">
         <div class="flex justify-between items-center mb-6">
           <div>
@@ -273,29 +255,26 @@
           <div class="flex gap-2">
             <button 
               @click="engagementView = 'comparative'"
-              :class="['px-3 py-1 text-xs font-medium rounded transition-colors', engagementView === 'comparative' ? 'bg-kapital-dark text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300']"
+              :class="['px-3 py-1 text-xs font-medium rounded transition-colors', engagementView === 'comparative' ? 'bg-kapital-night text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300']"
             >
               Comparativa
             </button>
             <button 
               @click="engagementView = 'engagement'"
-              :class="['px-3 py-1 text-xs font-medium rounded transition-colors', engagementView === 'engagement' ? 'bg-kapital-dark text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300']"
+              :class="['px-3 py-1 text-xs font-medium rounded transition-colors', engagementView === 'engagement' ? 'bg-kapital-night text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300']"
             >
               Engagement
             </button>
           </div>
         </div>
 
-        <!-- Comparative View -->
         <div v-if="engagementView === 'comparative'" class="h-64 flex items-end justify-around gap-1 mb-4 relative px-2">
-          <!-- Grid lines -->
           <div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
             <div class="border-t border-gray-200"></div>
             <div class="border-t border-gray-200"></div>
             <div class="border-t border-gray-200"></div>
           </div>
 
-          <!-- Bars -->
           <div 
             v-for="(point, idx) in engagementData" 
             :key="'comp-' + idx" 
@@ -303,14 +282,12 @@
             :title="`${point.day}: Engagement ${point.engagement}% | CTR ${point.ctr}%`"
           >
             <div class="relative w-full h-full flex items-end justify-center gap-0.5">
-              <!-- Engagement Bar -->
               <div 
-                class="flex-1 bg-gradient-to-t from-kapital-light-1 to-kapital-light-2 rounded-t transition-all group-hover:opacity-80"
+                class="flex-1 bg-gradient-to-t from-kapital-light-1 to-blue-400 rounded-t transition-all group-hover:opacity-80"
                 :style="{ height: point.height + '%', width: '40%', minHeight: point.height +'px' }"
               ></div>
-              <!-- CTR Bar -->
               <div 
-                class="flex-1 bg-gradient-to-t from-pink-500 to-pink-300 rounded-t transition-all group-hover:opacity-80"
+                class="flex-1 bg-gradient-to-t from-teal-500 to-teal-300 rounded-t transition-all group-hover:opacity-80"
                 :style="{ height: point.ctrHeight + '%' , width: '40%', minHeight: point.ctrHeight +'px'}"
               ></div>
             </div>
@@ -318,16 +295,13 @@
           </div>
         </div>
 
-        <!-- Single Engagement View -->
         <div v-else class="h-64 flex items-end justify-around gap-2 mb-4 relative">
-          <!-- Grid lines -->
           <div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
             <div class="border-t border-gray-200"></div>
             <div class="border-t border-gray-200"></div>
             <div class="border-t border-gray-200"></div>
           </div>
 
-          <!-- Engagement bars -->
           <div 
             v-for="(point, idx) in engagementData" 
             :key="'eng-' + idx" 
@@ -336,23 +310,22 @@
           >
             <div class="relative w-full h-full flex items-end justify-center">
               <div 
-                class="w-3/4 bg-gradient-to-t from-kapital-light-1 to-kapital-light-2 rounded-t transition-all group-hover:opacity-80"
+                class="w-3/4 bg-gradient-to-t from-kapital-light-1 to-blue-400 rounded-t transition-all group-hover:opacity-80"
                 :style="{ height: point.height + '%', width: '40%', minHeight: point.height +'px' }"
               ></div>
-              <span class="absolute -top-6 text-xs font-bold text-kapital-dark">{{ point.engagement }}%</span>
+              <span class="absolute -top-6 text-xs font-bold text-kapital-night">{{ point.engagement }}%</span>
             </div>
             <small class="text-gray-600 font-medium mt-2">{{ point.day }}</small>
           </div>
         </div>
 
-        <!-- Legend -->
         <div class="border-t border-gray-200 pt-4 flex justify-center gap-6 text-sm text-gray-600">
           <div v-if="engagementView === 'comparative'" class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded bg-gradient-to-t from-kapital-light-1 to-kapital-light-2"></div>
+            <div class="w-4 h-4 rounded bg-gradient-to-t from-kapital-light-1 to-blue-400"></div>
             <span>Engagement</span>
           </div>
           <div v-if="engagementView === 'comparative'" class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded bg-gradient-to-t from-pink-500 to-pink-300"></div>
+            <div class="w-4 h-4 rounded bg-gradient-to-t from-teal-500 to-teal-300"></div>
             <span>CTR</span>
           </div>
           <div class="flex items-center gap-2">
@@ -363,7 +336,6 @@
       </div>
     </div>
 
-    <!-- Network Performance -->
     <div class="card">
       <h2 class="text-lg font-bold text-gray-900 mb-6">Desempeño por Red Social</h2>
 
@@ -372,22 +344,22 @@
           <thead class="bg-gray-50 border-b-2 border-gray-200">
             <tr>
               <th class="px-6 py-3 text-left font-semibold text-gray-700">
-                <i class="fas fa-globe mr-2 text-kapital-dark"></i>Red Social
+                <i class="fas fa-globe mr-2 text-kapital-night"></i>Red Social
               </th>
               <th class="px-6 py-3 text-left font-semibold text-gray-700">
-                <i class="fas fa-eye mr-2 text-kapital-dark"></i>Alcance
+                <i class="fas fa-eye mr-2 text-kapital-night"></i>Alcance
               </th>
               <th class="px-6 py-3 text-left font-semibold text-gray-700">
-                <i class="fas fa-heart mr-2 text-kapital-dark"></i>Engagement
+                <i class="fas fa-heart mr-2 text-kapital-night"></i>Engagement
               </th>
               <th class="px-6 py-3 text-left font-semibold text-gray-700">
-                <i class="fas fa-mouse mr-2 text-kapital-dark"></i>CTR
+                <i class="fas fa-mouse mr-2 text-kapital-night"></i>CTR
               </th>
               <th class="px-6 py-3 text-left font-semibold text-gray-700">
-                <i class="fas fa-user-plus mr-2 text-kapital-dark"></i>Followers
+                <i class="fas fa-user-plus mr-2 text-kapital-night"></i>Followers
               </th>
               <th class="px-6 py-3 text-left font-semibold text-gray-700">
-                <i class="fas fa-chart-line mr-2 text-kapital-dark"></i>Crecimiento
+                <i class="fas fa-chart-line mr-2 text-kapital-night"></i>Crecimiento
               </th>
             </tr>
           </thead>
@@ -436,7 +408,6 @@
       </div>
     </div>
 
-    <!-- Export Section -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="card bg-gradient-to-br from-green-50 to-green-100 border border-green-200">
         <h3 class="font-semibold text-gray-900 mb-3 flex items-center gap-2">
@@ -483,8 +454,9 @@ const kpis = ref([
     label: 'Alcance Total', 
     value: '45.2K', 
     trend: 12,
-    bgColor: 'bg-blue-600',
-    accentColor: '#2B66FF',
+    // CAMBIO: Paleta de colores suavizada
+    bgColor: 'bg-kapital-night', // Era bg-blue-600
+    accentColor: '#111827', // Era #2B66FF (kapital-dark)
     progress: 75,
     detail: '+5.4K desde el período anterior'
   },
@@ -494,8 +466,9 @@ const kpis = ref([
     label: 'Engagement', 
     value: '3.8%', 
     trend: 5,
-    bgColor: 'bg-pink-600',
-    accentColor: '#FF1493',
+    // CAMBIO: Paleta de colores suavizada
+    bgColor: 'bg-kapital-light-1', // Era bg-pink-600
+    accentColor: '#61A3FF', // Era #FF1493 (rosa brillante)
     progress: 65,
     detail: '+0.5% desde el período anterior'
   },
@@ -505,8 +478,9 @@ const kpis = ref([
     label: 'CTR', 
     value: '2.1%', 
     trend: 3,
-    bgColor: 'bg-purple-600',
-    accentColor: '#9333EA',
+    // CAMBIO: Paleta de colores suavizada
+    bgColor: 'bg-teal-500', // Era bg-purple-600
+    accentColor: '#4BC0C0', // Era #9333EA (morado brillante)
     progress: 55,
     detail: '+0.3% desde el período anterior'
   },
@@ -516,8 +490,9 @@ const kpis = ref([
     label: 'Leads', 
     value: '87', 
     trend: 25,
-    bgColor: 'bg-green-600',
-    accentColor: '#16A34A',
+    // CAMBIO: Paleta de colores suavizada (verde estándar)
+    bgColor: 'bg-green-500', // Era bg-green-600
+    accentColor: '#22C55E', // Era #16A34A
     progress: 85,
     detail: '+25 desde el período anterior'
   }
@@ -543,6 +518,8 @@ const engagementData = ref([
   { day: 'Dom', height: 40, engagement: '2.1', ctr: '1.0', ctrHeight: 27 }
 ])
 
+// Los colores de las redes sociales (íconos y barras de progreso en la tabla)
+// se mantienen, ya que son colores de marca y no de la UI.
 const networkPerformance = ref([
   { 
     id: 1, 
@@ -676,7 +653,8 @@ function emailReport() {
 
 <style scoped>
 .btn-primary {
-  @apply px-6 py-3 bg-kapital-dark text-white font-medium rounded-md transition-all hover:bg-blue-700 active:scale-95 flex items-center gap-2 justify-center;
+  /* CAMBIO: bg-kapital-night y hover:bg-kapital-light-1 */
+  @apply px-6 py-3 bg-kapital-night text-white font-medium rounded-md transition-all hover:bg-kapital-light-1 active:scale-95 flex items-center gap-2 justify-center;
 }
 
 .btn-secondary {

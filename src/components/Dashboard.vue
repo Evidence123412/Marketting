@@ -6,7 +6,7 @@
         <h1 class="text-2xl font-bold text-gray-900">Bienvenido a tu Dashboard</h1>
         <p class="text-gray-600">Centro de comando de actividad y clientes.</p>
       </div>
-      <select class="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:border-kapital-dark">
+      <select class="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:border-kapital-night">
         <option>Últimos 7 días</option>
         <option>Últimos 30 días</option>
         <option>Último mes</option>
@@ -52,7 +52,7 @@
           </div>
           <div class="space-y-3 h-72 overflow-y-auto pr-2">
             <div v-for="msg in pendingInteractions" :key="msg.id" class="flex gap-3 p-3 rounded-lg hover:bg-gray-50">
-              <div class="w-10 h-10 rounded-full bg-yellow-500 text-white flex-shrink-0 flex items-center justify-center font-bold">
+              <div class="w-10 h-10 rounded-full bg-kapital-light-1 text-white flex-shrink-0 flex items-center justify-center font-bold">
                 {{ msg.initials }}
               </div>
               <div class="flex-1 min-w-0">
@@ -76,7 +76,7 @@
           </div>
           <div class="space-y-3 h-72 overflow-y-auto pr-2">
             <div v-for="lead in newLeads" :key="lead.id" class="flex gap-3 p-3 rounded-lg hover:bg-gray-50">
-              <div class="w-10 h-10 rounded-full bg-green-600 text-white flex-shrink-0 flex items-center justify-center font-bold">
+              <div class="w-10 h-10 rounded-full bg-kapital-night text-white flex-shrink-0 flex items-center justify-center font-bold">
                 {{ lead.initials }}
               </div>
               <div class="flex-1 min-w-0">
@@ -110,7 +110,7 @@
         <div class="card">
           <div class="flex justify-between items-center mb-6">
             <h2 class="text-lg font-bold text-gray-900">Actividad Reciente</h2>
-            <button @click="goTo('production')" class="text-sm text-kapital-dark font-medium hover:underline">
+            <button @click="goTo('production')" class="text-sm text-kapital-night font-medium hover:underline">
               Ver todo
             </button>
           </div>
@@ -137,7 +137,7 @@
         <div class="card">
           <div class="flex justify-between items-center mb-6">
             <h2 class="text-lg font-bold text-gray-900">Próximas Publicaciones</h2>
-            <button @click="goTo('scheduling')" class="text-sm text-kapital-dark font-medium hover:underline">
+            <button @click="goTo('scheduling')" class="text-sm text-kapital-night font-medium hover:underline">
               Ver calendario
             </button>
           </div>
@@ -148,13 +148,13 @@
               class="flex gap-4"
             >
               <div class="flex flex-col items-center">
-                <span class="text-xs font-bold text-kapital-dark">{{ item.date.split('-')[2] }}</span>
+                <span class="text-xs font-bold text-kapital-night">{{ item.date.split('-')[2] }}</span>
                 <span class="text-sm font-semibold text-gray-900">{{ getMonthAbbr(item.date) }}</span>
               </div>
               <div class="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-3">
                 <p class="text-sm font-medium text-gray-900">{{ item.title }}</p>
                 <div class="flex gap-2 mt-2">
-                  <i v-for="channel in item.channels.split(', ')" :key="channel" :class="['fa-brands', getChannelIcon(channel), 'text-gray-500']"></i>
+                  <i v-for="channel in item.channels.split(', ')" :key="channel" :class="['fa-brands', getChannelIcon(channel), 'text-kapital-light-1']"></i>
                 </div>
               </div>
             </div>
@@ -182,11 +182,11 @@
           </div>
           <div class="flex justify-center gap-6 mt-6 pt-6 border-t border-gray-200">
             <div class="flex items-center gap-2">
-              <div class="w-3 h-3 rounded bg-kapital-dark"></div>
+              <div class="w-3 h-3 rounded bg-kapital-night"></div>
               <span class="text-sm text-gray-700">Publicaciones</span>
             </div>
             <div class="flex items-center gap-2">
-              <div class="w-3 h-3 rounded bg-kapital-light-2"></div>
+              <div class="w-3 h-3 rounded bg-kapital-light-1"></div>
               <span class="text-sm text-gray-700">Engagement %</span>
             </div>
           </div>
@@ -195,7 +195,7 @@
         <div class="lg:col-span-1 card">
           <h2 class="text-lg font-bold text-gray-900 mb-6">Distribución de Contenido</h2>
           <div class="flex items-center justify-center h-48">
-            <Doughnut v-if="contentChartData" :data="contentChartData" :options="contentChartOptions" />
+             <Doughnut v-if="contentChartData" :data="contentChartData" :options="contentChartOptions" />
           </div>
           <div class="flex flex-col items-center gap-4 mt-6 pt-6 border-t border-gray-200">
             <div v-for="item in contentChartLegend" :key="item.label" class="flex items-center gap-2">
@@ -290,22 +290,26 @@ const executiveMetrics = computed(() => [
   { 
     id: 'publications', icon: 'fa-share-alt', label: 'Publicaciones Totales', 
     value: allPublications.value.length, 
-    bgColor: 'bg-gray-100', color: 'text-kapital-dark', trend: 8
+    // CAMBIO: color: 'text-kapital-night'
+    bgColor: 'bg-gray-100', color: 'text-kapital-night', trend: 8
   },
   { 
     id: 'engagement', icon: 'fa-fire', label: 'Engagement (Reportes)', 
     value: '3.8%', // Dato estático de ejemplo, similar a Reports.vue
-    bgColor: 'bg-gray-100', color: 'text-kapital-dark', trend: -5
+    // CAMBIO: color: 'text-kapital-night'
+    bgColor: 'bg-gray-100', color: 'text-kapital-night', trend: -5
   },
   { 
     id: 'leads', icon: 'fa-users', label: 'Nuevos Leads (CRM)', 
     value: allLeads.value.filter(l => l.status === 'new').length, 
-    bgColor: 'bg-gray-100', color: 'text-kapital-dark', trend: 15
+    // CAMBIO: color: 'text-kapital-night'
+    bgColor: 'bg-gray-100', color: 'text-kapital-night', trend: 15
   },
   { 
     id: 'interactions', icon: 'fa-comments', label: 'Interacciones Pendientes', 
     value: allInteractions.value.filter(m => m.status === 'pending').length, 
-    bgColor: 'bg-gray-100', color: 'text-kapital-dark', trend: 12
+    // CAMBIO: color: 'text-kapital-night'
+    bgColor: 'bg-gray-100', color: 'text-kapital-night', trend: 12
   }
 ])
 
@@ -338,15 +342,17 @@ const upcomingPublications = computed(() => {
 })
 
 
-// --- DATOS DE GRÁFICOS (Se mantienen como en el original) ---
+// --- DATOS DE GRÁFICOS (Ahora con paleta más suave) ---
 const weeklyChartData = ref({
   labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
   datasets: [
     {
-      label: 'Publicaciones', backgroundColor: '#2B66FF', borderRadius: 4,
+      // Color: kapital-night (negro)
+      label: 'Publicaciones', backgroundColor: '#111827', borderRadius: 4,
       data: [6, 8, 5, 9, 7, 4, 3], yAxisID: 'y'
     },
     {
+      // Color: kapital-light-1 (azul más suave)
       label: 'Engagement %', backgroundColor: '#61A3FF', borderRadius: 4,
       data: [3.2, 4.1, 2.8, 5.2, 4.5, 2.1, 1.8], yAxisID: 'y1'
     }
@@ -372,14 +378,18 @@ const weeklyChartOptions = ref({
 const contentChartData = ref({
   labels: ['Productos', 'Promociones', 'Educativo'],
   datasets: [
-    { backgroundColor: ['#2B66FF', '#61A3FF', '#00FFFF'], data: [65, 20, 15] }
+    { 
+      // Colores ajustados para menos fatiga visual
+      backgroundColor: ['#111827', '#61A3FF', '#4BC0C0'], // kapital-night, kapital-light-1, kapital-accent-medium (ejemplo)
+      data: [65, 20, 15] 
+    }
   ]
 })
 
 const contentChartLegend = [
-  { label: 'Productos (65%)', color: '#2B66FF' },
-  { label: 'Promociones (20%)', color: '#61A3FF' },
-  { label: 'Educativo (15%)', color: '#00FFFF' }
+  { label: 'Productos (65%)', color: '#111827' },       // kapital-night
+  { label: 'Promociones (20%)', color: '#61A3FF' },     // kapital-light-1
+  { label: 'Educativo (15%)', color: '#4BC0C0' }        // kapital-accent-medium
 ]
 
 const contentChartOptions = ref({
@@ -388,13 +398,15 @@ const contentChartOptions = ref({
 })
 
 // --- Funciones de Utilidad (para consistencia visual) ---
+
+// Se usan clases de la paleta de tailwind.config.js
 function getStatusClass(status) {
   const classes = {
-    'published': 'bg-green-100 text-green-700',
-    'scheduled': 'bg-yellow-100 text-yellow-700',
-    'draft': 'bg-gray-100 text-gray-700'
+    'published': 'bg-kapital-light-2 text-kapital-night', // Cyan bg, texto oscuro
+    'scheduled': 'bg-kapital-light-1 text-white',     // Azul claro bg, texto blanco
+    'draft': 'bg-kapital-gray text-kapital-night'      // Gris bg, texto oscuro
   }
-  return classes[status] || 'bg-gray-100 text-gray-700'
+  return classes[status] || 'bg-kapital-gray text-kapital-night'
 }
 
 function getStatusLabel(status) {
@@ -415,13 +427,14 @@ function getStatusIcon(status) {
   return icons[status] || 'fa-file-alt'
 }
 
+// Se usan los valores HEX de la paleta de tailwind.config.js
 function getStatusColor(status) {
   const colors = {
-    'published': '#10B981', // green
-    'scheduled': '#F59E0B', // yellow
-    'draft': '#6B7280' // gray
+    'published': '#00FFFF', // kapital-light-2
+    'scheduled': '#61A3FF', // kapital-light-1
+    'draft': '#C9C9C9'     // kapital-gray
   }
-  return colors[status] || '#6B7280'
+  return colors[status] || '#C9C9C9'
 }
 
 function getChannelIcon(channel) {
@@ -444,7 +457,7 @@ function getMonthAbbr(dateString) {
 
 <style scoped>
 .btn-primary {
-  @apply px-6 py-3 bg-kapital-dark text-white font-medium rounded-md transition-all hover:bg-blue-700 active:scale-95 flex items-center gap-2 justify-center;
+  @apply px-6 py-3 bg-kapital-night text-white font-medium rounded-md transition-all hover:bg-kapital-light-1 active:scale-95 flex items-center gap-2 justify-center;
 }
 
 .btn-secondary {
@@ -455,13 +468,6 @@ function getMonthAbbr(dateString) {
   @apply bg-white border border-gray-200 rounded-lg p-6 shadow-sm;
 }
 
-/* Definición de colores de marca */
-.text-kapital-dark { color: #2B66FF; }
-.bg-kapital-dark { background-color: #2B66FF; }
-.bg-kapital-light-2 { background-color: #61A3FF; }
-.border-kapital-dark { border-color: #2B66FF; }
-.ring-kapital-dark { --tw-ring-color: #2B66FF; }
-
 /* Estilo para el scroll de las tarjetas */
 .overflow-y-auto::-webkit-scrollbar {
   width: 6px;
@@ -471,7 +477,7 @@ function getMonthAbbr(dateString) {
   border-radius: 6px;
 }
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: #C9C9C9;
+  background: #C9C9C9; /* Usando kapital-gray */
   border-radius: 6px;
 }
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
