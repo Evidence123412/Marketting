@@ -1,179 +1,239 @@
 <template>
   <div class="space-y-8">
     <div class="section-header">
-      <h1>Generador de Imágenes con IA</h1>
-      <p>Crea imágenes para tus redes sociales automáticamente</p>
+      <h1>Asistente de Creación Estratégica</h1>
+      <p>Genera contenido estratégico basado en tu segmentación (Design Thinking + Neuromarketing)</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <!-- Form -->
+      
       <div class="card">
-        <h2 class="text-lg font-bold text-gray-900 mb-6">Configuración</h2>
         
+        <nav class="flex items-center justify-center mb-6">
+          <div v-for="(step, index) in wizardSteps" :key="step.title" class="flex items-center">
+            <div 
+              :class="[
+                'w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg',
+                currentStep >= (index + 1) ? 'bg-kapital-dark text-white' : 'bg-gray-200 text-gray-500'
+              ]"
+            >
+              {{ index + 1 }}
+            </div>
+            <div v-if="index < wizardSteps.length - 1" :class="['w-12 h-1 rounded', currentStep > (index + 1) ? 'bg-kapital-dark' : 'bg-gray-200']"></div>
+          </div>
+        </nav>
+        <div class="text-center mb-6">
+          <span class="text-lg font-bold text-gray-900">{{ wizardSteps[currentStep - 1].title }}</span>
+          <p class="text-sm text-gray-600">{{ wizardSteps[currentStep - 1].subtitle }}</p>
+        </div>
+
+
         <form @submit.prevent="generateImage" class="space-y-6">
-          <!-- General Info -->
-          <div>
-            <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4">Información General</h3>
+          
+          <div v-show="currentStep === 1" class="space-y-6">
             
-            <div class="space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Descripción del contenido</label>
-                <textarea 
-                  v-model="form.description"
-                  placeholder="Ej: Producto de verano, colores tropicales..."
-                  rows="3"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-blue-100"
-                ></textarea>
-              </div>
-
+            <fieldset class="fieldset-style">
+              <legend class="legend-style"><i class="fas fa-map-marker-alt"></i> Geográfica</legend>
               <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Red Social</label>
-                  <select v-model="form.network" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-dark">
-                    <option value="">Seleccionar...</option>
-                    <option value="instagram">Instagram</option>
-                    <option value="facebook">Facebook</option>
-                    <option value="linkedin">LinkedIn</option>
-                    <option value="twitter">Twitter</option>
-                    <option value="tiktok">TikTok</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de contenido</label>
-                  <select v-model="form.contentType" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-dark">
-                    <option value="">Seleccionar...</option>
-                    <option value="product">Producto</option>
-                    <option value="promotional">Promocional</option>
-                    <option value="educational">Educativo</option>
-                  </select>
-                </div>
+                <select v-model="form.segment.geo.zone" class="input-field" title="Zona (Urbana/Rural)">
+                  <option value="all">Todas las Zonas</option>
+                  <option value="urbana">Urbana</option>
+                  <option value="rural">Rural</option>
+                </select>
+                <input v-model="form.segment.geo.city" type="text" placeholder="Distrito/Ciudad" class="input-field" title="Distrito o Ciudad" />
               </div>
+            </fieldset>
+
+            <fieldset class="fieldset-style">
+              <legend class="legend-style"><i class="fas fa-users"></i> Demográfica</legend>
+              <div class="grid grid-cols-2 gap-4">
+                <select v-model="form.segment.demo.age" class="input-field" title="Rango de Edad">
+                  <option value="all">Todas las Edades</option>
+                  <option value="18-25">18-25 (Jóvenes)</option>
+                  <option value="26-40">26-40 (Profesionales)</option>
+                  <option value="40+">40+ (Adultos)</option>
+                </select>
+                <select v-model="form.segment.demo.sex" class="input-field" title="Sexo">
+                  <option value="all">Todos</option>
+                  <option value="male">Masculino</option>
+                  <option value="female">Femenino</option>
+                </select>
+              </div>
+            </fieldset>
+            
+            <fieldset class="fieldset-style">
+              <legend class="legend-style"><i class="fas fa-brain"></i> Psicográfica (Arellano)</legend>
+              <select v-model="form.segment.psycho.lifestyle" class="input-field" title="Estilo de Vida Arellano">
+                <option value="all">General / No aplicar</option>
+                <option value="sofisticados">Sofisticados (Lujo, tendencia, cosmopolita)</option>
+                <option value="progresistas">Progresistas (Hombres, prácticos, emprendedores)</option>
+                <option value="modernas">Modernas (Mujeres, trabajadoras, moda)</option>
+                <option value="formalistas">Formalistas (Hombres, tradicionales, estables)</option>
+                <option value="conservadoras">Conservadoras (Mujeres, hogar, familia, tradición)</option>
+                <option value="austeros">Austeros (Bajos recursos, reacios al cambio)</option>
+              </select>
+            </fieldset>
+          </div>
+
+          <div v-show="currentStep === 2" class="space-y-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Objetivo del Contenido</label>
+              <select v-model="form.contentType" class="input-field">
+                <option value="">Seleccionar...</option>
+                <option value="product">Vender Producto</option>
+                <option value="promotional">Anunciar Promoción</option>
+                <option value="educational">Contenido Educativo</option>
+                <option value="branding">Branding / Conexión</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Mensaje Clave (El "Qué")</label>
+              <textarea v-model="form.description" placeholder="Ej: Lanzamiento de nuevo café premium, 20% OFF..." rows="4" class="input-field"></textarea>
             </div>
           </div>
 
-          <!-- Audience -->
-          <div>
-            <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4">Parámetros de Audiencia</h3>
+          <div v-show="currentStep === 3" class="space-y-6">
             
-            <div class="space-y-4">
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Público Objetivo</label>
-                  <select v-model="form.audience" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-dark">
-                    <option value="">Seleccionar...</option>
-                    <option value="young">Jóvenes (18-25)</option>
-                    <option value="professionals">Profesionales (26-40)</option>
-                    <option value="mature">Adultos (40+)</option>
-                    <option value="all">General</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Estilo Visual</label>
-                  <select v-model="form.style" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-dark">
-                    <option value="">Seleccionar...</option>
-                    <option value="modern">Moderno</option>
-                    <option value="minimalist">Minimalista</option>
-                    <option value="luxury">Lujo</option>
-                    <option value="playful">Lúdico</option>
-                    <option value="corporate">Corporativo</option>
-                  </select>
-                </div>
-              </div>
+            <fieldset class="fieldset-style">
+              <legend class="legend-style"><i class="fas fa-bolt"></i> Neuromarketing Aplicado</legend>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Tono de Voz</label>
+              <select v-model="form.tone" class="input-field">
+                <option value="professional">Profesional</option>
+                <option value="emotional">Emocional</option>
+                <option value="playful">Divertido</option>
+                <option value="inspirational">Inspirador</option>
+                <option value="urgent">Urgente</option>
+              </select>
 
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Palabra clave secundaria</label>
-                <input 
-                  v-model="form.keyword"
-                  type="text"
-                  placeholder="Ej: descuento, promoción..."
-                  class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-dark"
-                />
+              <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">Disparadores Mentales</label>
+              <div class="space-y-3">
+                <label class="checkbox-label">
+                  <input type="checkbox" v-model="form.triggers.urgency" class="checkbox-input" />
+                  Urgencia (Ej: "Solo por hoy")
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" v-model="form.triggers.exclusivity" class="checkbox-input" />
+                  Exclusividad (Ej: "Solo para clientes")
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" v-model="form.triggers.personalization" class="checkbox-input" />
+                  Personalización (Ej: "Pensado para ti")
+                </label>
               </div>
-            </div>
+            </fieldset>
+
+            <fieldset class="fieldset-style">
+              <legend class="legend-style"><i class="fas fa-palette"></i> Paleta de Colores (Tu Marca)</legend>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Sugerencia (Psicología del Color)</label>
+              <select v-model="form.colorPrimary" class="input-field">
+                <option value="#2B66FF">Confianza / Lealtad (kapital-dark)</option>
+                <option value="#61A3FF">Tranquilidad / Calma (kapital-light-1)</option>
+                <option value="#00FFFF">Innovación / Energía (kapital-light-2)</option>
+                <option value="#111827">Elegancia / Lujo (kapital-night)</option>
+                <option value="#FFFFFF">Minimalismo / Pureza (kapital-white)</option>
+                <option value="#C9C9C9">Neutralidad / Balance (kapital-gray)</option>
+              </select>
+
+              <div class="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Color Primario (Manual)</label>
+                  <input v-model="form.colorPrimary" type="color" class="w-full h-10 border border-gray-300 rounded cursor-pointer" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Color Secundario (Manual)</label>
+                  <input v-model="form.colorSecondary" type="color" class="w-full h-10 border border-gray-300 rounded cursor-pointer" />
+                </div>
+              </div>
+            </fieldset>
+
           </div>
 
-          <!-- Colors & Date -->
-          <div>
-            <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4">Configuración Temporal</h3>
+          <div v-show="currentStep === 4" class="space-y-6">
             
-            <div class="space-y-4">
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Fecha especial</label>
-                  <select v-model="form.specialDate" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-dark">
-                    <option value="">Sin fecha especial</option>
-                    <option value="blackfriday">Black Friday</option>
-                    <option value="summer">Verano</option>
-                    <option value="christmas">Navidad</option>
-                    <option value="newyear">Año Nuevo</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Colores</label>
-                  <div class="flex gap-2">
-                    <input 
-                      v-model="form.colorPrimary"
-                      type="color"
-                      class="w-12 h-10 border border-gray-300 rounded cursor-pointer"
-                    />
-                    <input 
-                      v-model="form.colorSecondary"
-                      type="color"
-                      class="w-12 h-10 border border-gray-300 rounded cursor-pointer"
-                    />
-                  </div>
-                </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Red Social (Canal de Entrega)</label>
+              <select v-model="form.network" @change="updateFormatOptions" class="input-field">
+                <option value="">Seleccionar...</option>
+                <option value="instagram">Instagram</option>
+                <option value="facebook">Facebook</option>
+                <option value="linkedin">LinkedIn</option>
+                <option value="tiktok">TikTok</option>
+              </select>
+            </div>
+
+            <div v-if="form.network">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Formato / Tamaño (Usabilidad)</label>
+              <div class="grid grid-cols-3 gap-3">
+                <button 
+                  type="button" 
+                  v-for="format in availableFormats" 
+                  :key="format.name"
+                  @click="form.format = format.value"
+                  :class="['visual-selector', form.format === format.value ? 'selected' : '']"
+                >
+                  <i :class="['fas', format.icon, 'text-xl mb-1 block']"></i>
+                  <span class="text-sm font-medium">{{ format.name }}</span>
+                </button>
               </div>
             </div>
+            
+            <button type="submit" class="btn-primary w-full text-base" :disabled="generating || !form.format">
+              <i :class="['fas', generating ? 'fa-spinner fa-spin' : 'fa-magic']"></i>
+              {{ generating ? 'Generando...' : 'Generar Contenido' }}
+            </button>
           </div>
-
-          <button type="submit" class="btn-primary w-full text-base">
-            <i class="fas fa-magic"></i> Generar Imagen
-          </button>
         </form>
+
+        <div class="flex justify-between mt-6 pt-6 border-t border-gray-200">
+          <button type="button" @click="prevStep" :disabled="currentStep === 1" class="btn-secondary">
+            <i class="fas fa-arrow-left"></i> Anterior
+          </button>
+          <button type-="button" @click="nextStep" :disabled="currentStep === 4" class="btn-primary">
+            Siguiente <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
       </div>
 
-      <!-- Preview -->
       <div class="card flex flex-col">
-        <h2 class="text-lg font-bold text-gray-900 mb-4">Vista Previa</h2>
+        <h2 class="text-lg font-bold text-gray-900 mb-4">Prototipo y Resultados</h2>
         
-        <div 
-          class="flex-1 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-dashed border-kapital-light-1 rounded-lg flex items-center justify-center min-h-96 mb-4"
-          :style="{ backgroundImage: generating ? 'none' : '' }"
-        >
-          <div v-if="!generated" class="text-center text-gray-500">
-            <i class="fas fa-image text-4xl text-kapital-light-1 mb-3 block"></i>
-            <p class="text-sm">La imagen generada aparecerá aquí</p>
+        <div class="flex-1 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center min-h-96 mb-4 p-4">
+          
+          <div v-if="generating" class="text-center text-kapital-night p-8">
+            <i class="fas fa-spinner fa-spin text-4xl mb-4"></i>
+            <p class="text-lg font-semibold mb-2">Creando magia...</p>
+            <p class="text-sm text-gray-600">{{ generationStatus }}</p>
           </div>
+
+          <div v-else-if="!generated" class="text-center text-gray-500">
+            <i class="fas fa-image text-4xl text-kapital-gray mb-3 block"></i>
+            <p class="text-sm">El prototipo de imagen aparecerá aquí</p>
+          </div>
+          
           <div 
             v-else
-            class="w-full h-full rounded-lg flex items-center justify-center text-white font-semibold"
+            class="w-full h-full rounded-lg flex items-center justify-center text-white font-semibold p-8 text-center"
             :style="{ background: `linear-gradient(135deg, ${form.colorPrimary} 0%, ${form.colorSecondary} 100%)` }"
           >
-            Imagen {{ form.network }}
+            <span :style="{ color: getContrastingTextColor(form.colorPrimary) }">
+              Imagen para {{ form.network }} ({{ form.format }})
+              <br> Estilo: {{ form.segment.psycho.lifestyle }}
+            </span>
           </div>
         </div>
 
         <Transition name="fade">
           <div v-if="generated" class="space-y-4">
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 class="text-sm font-semibold text-gray-900 mb-2 uppercase">Descripción</h3>
-              <p class="text-sm text-gray-700">{{ generatedData.description }}</p>
-            </div>
-
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 class="text-sm font-semibold text-gray-900 mb-2 uppercase">Copy Sugerido</h3>
+            <div class="result-box">
+              <h3 class="result-title">Copy Persuasivo (Neuromarketing)</h3>
               <p class="text-sm text-gray-700">{{ generatedData.copy }}</p>
             </div>
 
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 class="text-sm font-semibold text-gray-900 mb-2 uppercase">Hashtags</h3>
+            <div class="result-box">
+              <h3 class="result-title">Hashtags Estratégicos</h3>
               <div class="flex flex-wrap gap-2">
-                <span 
-                  v-for="tag in generatedData.hashtags"
-                  :key="tag"
-                  class="px-3 py-1 bg-kapital-light-1 text-white text-xs font-medium rounded-full"
-                >
+                <span v-for="tag in generatedData.hashtags" :key="tag" class="px-3 py-1 bg-kapital-light-1 text-white text-xs font-medium rounded-full">
                   {{ tag }}
                 </span>
               </div>
@@ -184,7 +244,7 @@
                 <i class="fas fa-download"></i> Descargar
               </button>
               <button @click="useForProduction" class="btn-primary flex-1 text-sm">
-                <i class="fas fa-arrow-right"></i> Usar
+                <i class="fas fa-arrow-right"></i> Usar en Producción
               </button>
             </div>
           </div>
@@ -195,75 +255,175 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
-const emit = defineEmits(['showToast'])
+const emit = defineEmits(['showToast', 'navigate'])
 
+const currentStep = ref(1)
+
+// ESTRUCTURA DE PASOS DEL WIZARD (Fases de Design Thinking)
+const wizardSteps = [
+  { title: 'Paso 1: Empatizar', subtitle: '¿Quién es tu audiencia objetivo?' },
+  { title: 'Paso 2: Definir', subtitle: '¿Qué quieres comunicar?' },
+  { title: 'Paso 3: Idear', subtitle: '¿Cómo lo quieres comunicar? (Tono y Emoción)' },
+  { title: 'Paso 4: Prototipar', subtitle: '¿Dónde se va a publicar?' }
+]
+
+// ESTRUCTURA DE DATOS DEL FORMULARIO
 const form = ref({
+  // Paso 1: Segmentación
+  segment: {
+    geo: { zone: 'all', city: '' },
+    demo: { age: 'all', sex: 'all' },
+    psycho: { lifestyle: 'all' }
+  },
+  // Paso 2: Mensaje
   description: '',
-  network: '',
   contentType: '',
-  audience: '',
-  style: '',
-  keyword: '',
-  specialDate: '',
-  colorPrimary: '#2B66FF',
-  colorSecondary: '#FFFFFF'
+  // Paso 3: Ideación
+  tone: 'professional',
+  triggers: {
+    urgency: false,
+    exclusivity: false,
+    personalization: false
+  },
+  colorPrimary: '#2B66FF', // Default a kapital-dark
+  colorSecondary: '#00FFFF', // Default a kapital-light-2
+  // Paso 4: Prototipo
+  network: '',
+  format: '',
+  style: 'modern' // Estilo visual (Moderno, Lujo, etc. - movido aquí)
 })
 
+// --- LÓGICA DE FORMATOS DINÁMICOS ---
+const allFormats = {
+  post: { name: 'Post (1:1)', value: '1:1', icon: 'fa-square' },
+  story: { name: 'Story (9:16)', value: '9:16', icon: 'fa-mobile-alt' },
+  landscape: { name: 'Video (16:9)', value: '16:9', icon: 'fa-video' },
+  portrait: { name: 'Post (4:5)', value: '4:5', icon: 'fa-tablet-alt' }
+}
+
+const networkFormats = {
+  instagram: [allFormats.post, allFormats.story, allFormats.portrait],
+  facebook: [allFormats.post, allFormats.landscape, allFormats.story],
+  linkedin: [allFormats.post, allFormats.landscape],
+  tiktok: [allFormats.story]
+}
+
+const availableFormats = computed(() => {
+  return networkFormats[form.value.network] || []
+})
+
+function updateFormatOptions() {
+  form.value.format = ''
+  if (availableFormats.value.length > 0) {
+    form.value.format = availableFormats.value[0].value
+  }
+}
+
+// --- ESTADO DE GENERACIÓN ---
 const generated = ref(false)
 const generating = ref(false)
+const generationStatus = ref('')
 
 const generatedData = ref({
-  description: '',
   copy: '',
   hashtags: []
 })
 
+// --- MÉTODOS ---
+function nextStep() {
+  if (currentStep.value < 4) currentStep.value++
+}
+
+function prevStep() {
+  if (currentStep.value > 1) currentStep.value--
+}
+
 function generateImage() {
-  if (!form.value.description || !form.value.network || !form.value.contentType || !form.value.audience || !form.value.style) {
-    emit('showToast', 'Por favor completa todos los campos requeridos', 'error')
+  // Validación
+  if (currentStep.value !== 4 || !form.value.network || !form.value.format) {
+    emit('showToast', 'Por favor completa todos los pasos del asistente', 'error')
     return
   }
-
+  
   generating.value = true
+  generated.value = false
+  
+  // Neuromarketing: Storytelling en la carga [cite: 412, 413, 417]
+  setTimeout(() => { generationStatus.value = `Analizando Buyer Persona (Psicográfica: ${form.value.segment.psycho.lifestyle})...` }, 500)
+  setTimeout(() => { generationStatus.value = `Aplicando tono '${form.value.tone}' y disparadores mentales...` }, 1500)
+  setTimeout(() => { generationStatus.value = `Adaptando a formato ${form.value.format} para ${form.value.network}...` }, 2500)
   
   setTimeout(() => {
     generatedData.value = {
-      description: `Imagen ${form.value.style} para ${form.value.network} dirigida a ${form.value.audience}. ${form.value.description}`,
       copy: generateCopy(),
       hashtags: generateHashtags()
     }
-    
     generated.value = true
     generating.value = false
-    emit('showToast', 'Imagen generada exitosamente')
-  }, 1500)
+    generationStatus.value = ''
+    emit('showToast', 'Contenido estratégico generado')
+  }, 3500)
 }
 
 function generateCopy() {
-  const templates = {
-    instagram: `Descubre nuestro nuevo ${form.value.contentType}. ${form.value.keyword || 'No te lo pierdas'}. ¡Haz clic!`,
-    facebook: `Te presentamos nuestro último ${form.value.contentType}. ¡Comparte con tus amigos!`,
-    linkedin: `Nos complace anunciar nuestro nuevo ${form.value.contentType}. Conoce más en nuestro sitio.`,
-    twitter: `Nuevo ${form.value.contentType} disponible. ${form.value.keyword || 'Consulta ahora'}`,
-    tiktok: `No te pierdas nuestro nuevo ${form.value.contentType}. #${form.value.contentType}`
+  let baseCopy = ''
+  // 1. Tono de Voz (Storytelling)
+  switch (form.value.tone) {
+    case 'emotional': baseCopy = `Conecta con lo que más importa. ${form.value.description}.`; break;
+    case 'professional': baseCopy = `Presentamos una solución profesional: ${form.value.description}.`; break;
+    case 'playful': baseCopy = `¡La diversión llegó! ${form.value.description}.`; break;
+    case 'inspirational': baseCopy = `Atrévete a soñar. ${form.value.description}.`; break;
+    case 'urgent': baseCopy = `¡No te lo pierdas! ${form.value.description}.`; break;
+    default: baseCopy = `Descubre más sobre: ${form.value.description}.`;
   }
-  return templates[form.value.network] || templates.instagram
+
+  // 2. Estilo de Vida (Arellano)
+  let lifestyleAdj = ''
+  switch(form.value.segment.psycho.lifestyle) {
+    case 'sofisticados': lifestyleAdj = 'Una experiencia exclusiva.'; break;
+    case 'progresistas': lifestyleAdj = 'La herramienta práctica para tu éxito.'; break;
+    case 'modernas': lifestyleAdj = 'Lo último en tendencia para ti.'; break;
+    case 'conservadoras': lifestyleAdj = 'La confianza y calidad que tu familia merece.'; break;
+    case 'austeros': lifestyleAdj = 'El mejor precio y rendimiento.'; break;
+  }
+
+  // 3. Disparadores Mentales (Neuromarketing) [cite: 1842, 1855, 1872]
+  let triggers = ''
+  if (form.value.triggers.urgency) triggers += ' ¡Solo por tiempo limitado!'
+  if (form.value.triggers.exclusivity) triggers += ' Una oferta exclusiva para nuestra comunidad.'
+  if (form.value.triggers.personalization) triggers += ' Porque te lo mereces.'
+
+  return `${baseCopy} ${lifestyleAdj} ${triggers}`
 }
 
 function generateHashtags() {
-  const base = ['kapital', 'marketing', 'contenido', 'socialmedia']
+  const base = ['kapital', 'marketing', form.value.network]
+  if (form.value.segment.geo.city) base.push(form.value.segment.geo.city.toLowerCase().replace(' ', ''))
+  
   const types = {
-    product: ['producto', 'oferta', 'nuevo'],
+    product: ['producto', 'nuevo'],
     promotional: ['promocion', 'descuento', 'oferta'],
-    educational: ['educativo', 'aprende', 'tips']
+    educational: ['educativo', 'aprende', 'tips'],
+    branding: ['marca', 'estilodevida']
+  }
+  const lifestyleTags = {
+    sofisticados: ['lujo', 'exclusivo', 'tendencia'],
+    progresistas: ['progreso', 'emprendedor', 'exito'],
+    modernas: ['mujerempoderada', 'tendencia', 'fashion'],
+    conservadoras: ['familia', 'hogar', 'tradicion'],
+    austeros: ['ahorro', 'oferta', 'economico']
   }
   
-  const tags = [...base, ...(types[form.value.contentType] || [])]
-  if (form.value.keyword) tags.push(form.value.keyword.toLowerCase())
+  const tags = [
+    ...base, 
+    ...(types[form.value.contentType] || []), 
+    ...(lifestyleTags[form.value.segment.psycho.lifestyle] || [])
+  ]
   
-  return [...new Set(tags)].slice(0, 8).map(t => '#' + t)
+  // Filtra vacíos y duplicados
+  return [...new Set(tags.filter(t => t))].slice(0, 8).map(t => '#' + t)
 }
 
 function downloadImage() {
@@ -271,11 +431,63 @@ function downloadImage() {
 }
 
 function useForProduction() {
-  emit('showToast', 'Imagen agregada a producción')
+  emit('showToast', 'Contenido enviado a Producción')
+  emit('navigate', 'production')
+}
+
+// Función de utilidad para contraste de color
+function getContrastingTextColor(hexcolor) {
+  hexcolor = hexcolor.replace("#", "");
+  const r = parseInt(hexcolor.substr(0, 2), 16);
+  const g = parseInt(hexcolor.substr(2, 2), 16);
+  const b = parseInt(hexcolor.substr(4, 2), 16);
+  const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+  return (yiq >= 128) ? '#111827' : '#FFFFFF'; // kapital-night o white
 }
 </script>
 
 <style scoped>
+/* Estilos de Botones consistentes con tu style.css global
+  (Basado en tu tailwind.config.js)
+*/
+.btn-primary {
+  @apply px-6 py-3 bg-kapital-night text-white font-medium rounded-md transition-all hover:bg-kapital-night-hover active:scale-95 flex items-center gap-2 justify-center;
+}
+
+.btn-secondary {
+  @apply px-6 py-3 bg-gray-100 text-gray-800 font-medium rounded-md border border-gray-300 transition-all hover:bg-gray-200 flex items-center gap-2 justify-center;
+}
+
+/* Clases de utilidad para los nuevos elementos */
+.input-field {
+  @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20;
+}
+
+.fieldset-style {
+  @apply space-y-4 rounded-lg border border-gray-200 p-4;
+}
+
+.legend-style {
+  @apply text-sm font-medium text-kapital-dark px-2;
+}
+
+.visual-selector {
+  @apply p-3 border-2 rounded-lg text-center cursor-pointer transition-all text-sm font-medium text-gray-800;
+  @apply border-gray-300 hover:border-gray-400;
+}
+
+.visual-selector.selected {
+  @apply border-kapital-dark bg-kapital-dark/10 ring-2 ring-kapital-light-1;
+}
+
+.checkbox-label {
+  @apply flex items-center gap-2 text-sm text-gray-700 cursor-pointer;
+}
+
+.checkbox-input {
+  @apply w-4 h-4 accent-kapital-dark;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: all 0.3s ease;
@@ -285,5 +497,17 @@ function useForProduction() {
 .fade-leave-to {
   opacity: 0;
   transform: translateY(10px);
+}
+
+.badge {
+  @apply px-3 py-1 bg-gray-200 text-gray-700 text-xs font-medium rounded-full cursor-pointer hover:bg-gray-300;
+}
+
+.result-box {
+  @apply bg-kapital-dark/5 border border-kapital-dark/20 rounded-lg p-4;
+}
+
+.result-title {
+  @apply text-xs font-semibold text-kapital-dark uppercase tracking-wider mb-2;
 }
 </style>

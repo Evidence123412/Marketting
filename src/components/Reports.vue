@@ -407,7 +407,6 @@
                   :class="[network.icon, 'text-lg']" 
                   :style="{ color: network.color }">
                   </i>
-
                     <span class="font-medium text-gray-900">{{ network.name }}</span>
                   </div>
                 </td>
@@ -482,7 +481,7 @@ const activeTab = ref('resumen') // 'resumen', 'analisis', 'canales'
 
 // --- DATOS ---
 
-// MODIFICADO: kpis ahora usa los colores de tu tailwind.config.js
+// kpis ahora usa los colores de tu tailwind.config.js
 const kpis = ref([
   { 
     id: 1, 
@@ -561,8 +560,7 @@ const engagementData = ref([
   { day: 'Dom', height: 40, engagement: '2.1', ctr: '1.0', ctrHeight: 27 }
 ])
 
-// Los colores de las redes sociales (íconos y barras de progreso en la tabla)
-// se mantienen, ya que son colores de marca (FB, IG) y no de la UI.
+// (Los colores de las redes sociales son de marca, se mantienen)
 const networkPerformance = ref([
   { id: 1, name: 'Instagram', icon: 'bi bi-instagram', color: '#E4405F', reach: '18.5K', reachChange: 15, engagement: 5.2, ctr: 2.8, followers: '5.2K', growth: 8 },
   { id: 2, name: 'Facebook', icon: 'bi bi-facebook', color: '#1877F2', reach: '14.2K', reachChange: 9, engagement: 3.1, ctr: 1.9, followers: '3.8K', growth: 5 },
