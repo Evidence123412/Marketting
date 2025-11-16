@@ -2,7 +2,7 @@
   <div class="space-y-8">
     <div class="section-header">
       <h1>Producción de Contenido</h1>
-      <p>Crea, gestiona y programa tus publicaciones en un solo lugar</p>
+      <p>Gestiona el flujo de trabajo de tus publicaciones, desde el borrador hasta la publicación.</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -37,20 +37,7 @@
     </div>
 
     <div class="flex justify-between items-center">
-      <div class="flex gap-1 border border-gray-200 rounded-lg p-1">
-        <button 
-          @click="activeView = 'kanban'" 
-          :class="['px-4 py-2 text-sm font-medium rounded-md transition-colors', activeView === 'kanban' ? 'bg-kapital-night text-white' : 'text-gray-600 hover:bg-gray-100']"
-        >
-          <i class="fas fa-columns mr-2"></i>Kanban
-        </button>
-        <button 
-          @click="activeView = 'calendar'"
-          :class="['px-4 py-2 text-sm font-medium rounded-md transition-colors', activeView === 'calendar' ? 'bg-kapital-night text-white' : 'text-gray-600 hover:bg-gray-100']"
-        >
-          <i class="fas fa-calendar-alt mr-2"></i>Calendario
-        </button>
-      </div>
+      <h2 class="text-xl font-bold text-gray-900">Flujo de Producción</h2>
       <button 
         @click="openNewPostModal"
         class="btn-primary"
@@ -59,7 +46,7 @@
       </button>
     </div>
 
-    <div v-if="activeView === 'kanban'" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
       <div class="kanban-column">
         <h3 class="kanban-header bg-gray-200 text-gray-800">
           <i class="fas fa-file-pen"></i> Borradores ({{ drafts.length }})
@@ -124,138 +111,6 @@
         </div>
       </div>
     </div>
-    
-    <div v-if="activeView === 'calendar'" class="space-y-8">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 card">
-          <div class="flex justify-between items-center mb-6">
-            <button @click="previousMonth" class="text-kapital-dark hover:bg-blue-50 p-2 rounded transition-colors" title="Mes anterior">
-              <i class="fas fa-chevron-left text-lg"></i>
-            </button>
-            <div class="text-center">
-              <h3 class="text-lg font-semibold text-gray-900">{{ monthYear }}</h3>
-              <small class="text-gray-600">{{ dayCountInfo }}</small>
-            </div>
-            <button @click="nextMonth" class="text-kapital-dark hover:bg-blue-50 p-2 rounded transition-colors" title="Próximo mes">
-              <i class="fas fa-chevron-right text-lg"></i>
-            </button>
-          </div>
-
-          <div class="grid grid-cols-7 gap-2 mb-4">
-            <div v-for="day in ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']" :key="day" class="text-center font-semibold text-gray-700 text-sm py-2">
-              {{ day }}
-            </div>
-          </div>
-
-          <div class="grid grid-cols-7 gap-2">
-            <div 
-              v-for="item in calendarDays" 
-              :key="item.key"
-              @click="item.day && selectDate(item.day)"
-              :class="[
-                'aspect-square border-2 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all relative',
-                item.isCurrentMonth ? 'border-gray-300 hover:border-kapital-dark bg-white' : 'border-gray-100 bg-gray-50 text-gray-400',
-                item.isToday ? 'border-kapital-dark bg-blue-50' : '',
-                item.hasPublications ? 'border-kapital-dark' : ''
-              ]"
-            >
-              <span v-if="item.day" class="text-sm font-medium">{{ item.day }}</span>
-              <i v-if="item.hasPublications" class="fas fa-circle text-kapital-dark text-xs mt-1"></i>
-            </div>
-          </div>
-        </div>
-
-        <div class="space-y-4">
-          <div class="card bg-kapital-dark/5 border-kapital-dark/20">
-            <h3 class="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <i class="fas fa-info-circle text-kapital-dark"></i> Próxima Publicación
-            </h3>
-            <div v-if="nextPublication" class="space-y-2">
-              <p class="font-medium text-gray-900">{{ nextPublication.title }}</p>
-              <p class="text-sm text-gray-700 flex items-center gap-2">
-                <i class="fas fa-calendar"></i> {{ nextPublication.date }}
-              </p>
-            </div>
-            <p v-else class="text-gray-600 text-sm">No hay publicaciones próximas</p>
-          </div>
-          <div class="card bg-gray-50">
-            <h3 class="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <i class="fas fa-filter text-gray-600"></i> Filtros de Calendario
-            </h3>
-            <div class="space-y-3">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Red Social</label>
-                <select v-model="filterNetwork" class="form-input text-sm">
-                  <option value="">Todas las redes</option>
-                  <option value="Instagram">Instagram</option>
-                  <option value="Facebook">Facebook</option>
-                  <option value="LinkedIn">LinkedIn</option>
-                  <option value="Twitter">Twitter</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
-                <select v-model="filterStatus" class="form-input text-sm">
-                  <option value="">Todos los estados</option>
-                  <option value="scheduled">Programado</option>
-                  <option value="published">Publicado</option>
-                  <option value="failed">Fallido</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2 class="text-lg font-bold text-gray-900 mb-6">Publicaciones del Mes</h2>
-        <div class="space-y-3 max-h-96 overflow-y-auto pr-2">
-          <div 
-            v-for="item in filteredScheduled" 
-            :key="item.id"
-            class="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all flex items-center gap-4"
-          >
-            <div class="flex-1">
-              <div class="flex justify-between items-start gap-4 mb-2">
-                <h4 class="font-semibold text-gray-900 text-base">{{ item.title }}</h4>
-                <span :class="['status-badge', getStatusClass(item.status)]">{{ getStatusLabel(item.status) }}</span>
-              </div>
-              <p class="text-sm text-gray-600 mb-3">{{ item.description }}</p>
-              <div class="flex items-center justify-between">
-                <div class="flex gap-2">
-                  <span class="text-sm font-medium text-kapital-dark"><i class="fas fa-calendar-alt mr-2"></i>{{ item.date }}</span>
-                  <span class="text-sm font-medium text-kapital-dark"><i class="fas fa-clock mr-2"></i>{{ item.time }}</span>
-                </div>
-                <div class="flex gap-1 flex-wrap">
-                  <span 
-                    v-for="net in item.channels.split(', ')" 
-                    :key="net"
-                    :class="['text-xs px-2 py-1 rounded font-medium', getChannelColor(net)]"
-                  >
-                    <i :class="['bi', getChannelIcon(net), 'mr-1']"></i>{{ net }}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div class="flex gap-2">
-              <button @click="editPublication(item)" class="btn-secondary px-3 py-2" title="Editar">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button @click="changeStatus(item)" class="btn-secondary px-3 py-2" title="Cambiar Estado">
-                <i class="fas fa-sync"></i>
-              </button>
-              <button @click="deletePublication(item.id)" class="px-3 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors" title="Eliminar">
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
-          </div>
-          <div v-if="filteredScheduled.length === 0" class="text-center py-12">
-            <i class="fas fa-calendar-check text-4xl text-gray-300 mb-3 block"></i>
-            <p class="text-gray-500 font-medium">No hay publicaciones con estos filtros</p>
-          </div>
-        </div>
-      </div>
-    </div>
 
 
     <div v-if="showNewPostModal" class="modal-overlay">
@@ -269,7 +124,7 @@
           </button>
         </div>
 
-        <form @submit.prevent="handleSave" class="space-y-5 max-h-[70vh] overflow-y-auto pr-2">
+        <form @submit.prevent="handleSave('draft')" class="space-y-5 max-h-[70vh] overflow-y-auto pr-2">
           <div>
             <label class="form-label">
               <i class="fas fa-heading mr-2 text-kapital-dark"></i>Título
@@ -358,8 +213,7 @@
 
           <div class="flex flex-col md:flex-row gap-3 pt-4 border-t border-gray-200">
             <button 
-              type="button" 
-              @click="handleSave('draft')"
+              type="submit" 
               class="btn-secondary flex-1"
             >
               <i class="fas fa-save"></i> Guardar Borrador
@@ -376,7 +230,7 @@
               @click="goToScheduling(true)"
               class="btn-primary flex-1"
             >
-              <i class="fas fa-calendar-alt"></i> Programar
+              <i class="fas fa-calendar-alt"></i> Programar...
             </button>
           </div>
         </form>
@@ -434,34 +288,6 @@
         </div>
       </div>
     </div>
-
-    <div v-if="showStatusModal && statusEditPub" class="modal-overlay">
-      <div class="modal-content max-w-md w-full">
-        <h3 class="text-lg font-bold text-gray-900 mb-4">Cambiar Estado</h3>
-        
-        <div class="space-y-2 mb-6">
-          <button 
-            v-for="status in statusOptions"
-            :key="status.value"
-            @click="updateStatus(status.value)"
-            :class="['w-full p-3 rounded-lg border-2 transition-all text-left', 
-              statusEditPub.status === status.value ? 'border-kapital-dark bg-blue-50' : 'border-gray-200 hover:border-kapital-dark']"
-          >
-            <div class="flex items-center gap-2">
-              <i :class="['fas', status.icon]"></i>
-              <div>
-                <p class="font-medium text-gray-900">{{ status.label }}</p>
-                <small class="text-gray-600">{{ status.description }}</small>
-              </div>
-            </div>
-          </button>
-        </div>
-
-        <button @click="showStatusModal = false" class="btn-secondary w-full">
-          Cerrar
-        </button>
-      </div>
-    </div>
     
   </div>
 </template>
@@ -514,12 +340,10 @@ const reviews = computed(() => publications.value.filter(p => p.status === 'revi
 const scheduled = computed(() => publications.value.filter(p => p.status === 'scheduled'))
 const published = computed(() => publications.value.filter(p => p.status === 'published'))
 
-// --- LÓGICA DE CALENDARIO (Importada de Scheduling.vue) ---
+// --- LÓGICA DE CALENDARIO (Solo para `publications`) ---
 const currentDate = ref(new Date(2025, 10, 1)) // Nov 2025
 const filterNetwork = ref('')
 const filterStatus = ref('')
-const showStatusModal = ref(false)
-const statusEditPub = ref(null)
 
 const statusOptions = [
   { value: 'draft', label: 'Borrador', description: 'Guardado para editar más tarde', icon: 'fa-file-pen' },
@@ -656,10 +480,6 @@ function getStatusLabel(status) {
   return labels[status] || 'Desconocido'
 }
 
-function getStatusBadge(status) {
-  return getStatusClass(status)
-}
-
 // --- Lógica de Modales ---
 function openNewPostModal() {
   formData.value = getEmptyForm()
@@ -689,12 +509,6 @@ function handleSave(status = 'draft') {
     return
   }
   
-  // Asigna fecha si se está programando sin una
-  if (status === 'scheduled' && formData.value.date === 'Sin fecha') {
-    formData.value.date = new Date().toISOString().split('T')[0] // Pone fecha de hoy
-    formData.value.time = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
-  }
-
   const newPub = {
     ...formData.value,
     id: formData.value.id || Math.max(...publications.value.map(p => p.id)) + 1,
@@ -734,6 +548,9 @@ function deletePublication(id) {
 }
 
 // --- Lógica de Cambio de Estado ---
+const showStatusModal = ref(false)
+const statusEditPub = ref(null)
+
 function changeStatus(item) {
   statusEditPub.value = item
   showStatusModal.value = true
@@ -745,11 +562,12 @@ function updateStatus(newStatus) {
   const index = publications.value.findIndex(p => p.id === statusEditPub.value.id)
   if (index !== -1) {
     publications.value[index].status = newStatus
-    publications.value[index].statusLabel = getStatusLabel(newStatus)
-    showStatusModal.value = false
-    emit('showToast', `Estado cambiado a: ${getStatusLabel(newStatus)}`)
-    statusEditPub.value = null
+    // No necesitamos statusLabel, podemos usar getStatusLabel()
   }
+  
+  showStatusModal.value = false
+  emit('showToast', `Estado cambiado a: ${getStatusLabel(newStatus)}`)
+  statusEditPub.value = null
 }
 
 // --- Navegación ---
