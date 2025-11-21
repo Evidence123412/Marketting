@@ -97,7 +97,9 @@
             
             <fieldset class="fieldset-style">
               <legend class="legend-style"><i class="fas fa-bolt"></i> Neuromarketing Aplicado</legend>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Tono de Voz</label>
+              
+              <label class="block text-sm font-medium text-gray-700 mb-2">Estilo de Comunicación</label>
+              
               <select v-model="form.tone" class="input-field">
                 <option value="professional">Profesional</option>
                 <option value="emotional">Emocional</option>
@@ -203,7 +205,7 @@
           <button type="button" @click="prevStep" :disabled="currentStep === 1" class="btn-secondary">
             <i class="fas fa-arrow-left"></i> Anterior
           </button>
-          <button type-="button" @click="nextStep" :disabled="currentStep === 4" class="btn-primary">
+          <button type="button" @click="nextStep" :disabled="currentStep === 4" class="btn-primary">
             Siguiente <i class="fas fa-arrow-right"></i>
           </button>
         </div>
@@ -222,7 +224,7 @@
 
           <div v-else-if="!generated && !form.format" class="text-center text-gray-500">
             <i class="fas fa-image text-4xl text-kapital-gray mb-3 block"></i>
-            <p class="text-sm">El prototipo de imagen aparecerá aquí</p>
+            <p class="text-sm">El prototipo de imagen aparecerá aquí<br>cuando selecciones el formato (Paso 4)</p>
           </div>
           
           <div 
@@ -234,8 +236,7 @@
                 'aspect-square': form.format === '1:1',
                 'aspect-[9/16]': form.format === '9:16',
                 'aspect-video': form.format === '16:9',
-                'aspect-[4/5]': form.format === '4:5',
-                'aspect-square': !form.format,
+                'aspect-[4/5]': form.format === '4:5'
               }
             ]"
             :style="{ background: `linear-gradient(135deg, ${form.colorPrimary} 0%, ${form.colorSecondary} 100%)` }"
@@ -286,11 +287,11 @@ const emit = defineEmits(['showToast', 'navigate'])
 
 const currentStep = ref(1)
 
-// ESTRUCTURA DE PASOS DEL WIZARD (Fases de Design Thinking)
+// ESTRUCTURA DE PASOS DEL WIZARD
 const wizardSteps = [
   { title: 'Paso 1: Empatizar', subtitle: '¿Quién es tu audiencia objetivo?' },
   { title: 'Paso 2: Definir', subtitle: '¿Qué quieres comunicar?' },
-  { title: 'Paso 3: Idear', subtitle: '¿Cómo lo quieres comunicar? (Tono y Emoción)' },
+  { title: 'Paso 3: Idear', subtitle: '¿Cómo lo quieres comunicar? (Estilo y Emoción)' },
   { title: 'Paso 4: Prototipar', subtitle: '¿Dónde se va a publicar?' }
 ]
 
@@ -312,17 +313,17 @@ const form = ref({
     exclusivity: false,
     personalization: false
   },
-  colorPrimary: '#2B66FF', // Default a kapital-dark
-  colorSecondary: '#00FFFF', // Default a kapital-light-2
+  colorPrimary: '#2B66FF',
+  colorSecondary: '#00FFFF',
+  
   // Paso 4
-  networks: [], // Array para selección múltiple
-  format: '1:1', // Default a 1:1 para que la vista previa no esté vacía
+  networks: [], 
+  format: '', // Inicializado vacío
   style: 'modern'
 })
 
 // --- LÓGICA DE FORMATOS DINÁMICOS (Paso 4) ---
 
-// 1. Definir todos los formatos posibles
 const allFormats = {
   post: { name: 'Post (1:1)', value: '1:1', icon: 'fa-square' },
   story: { name: 'Story (9:16)', value: '9:16', icon: 'fa-mobile-alt' },
@@ -330,18 +331,41 @@ const allFormats = {
   portrait: { name: 'Post (4:5)', value: '4:5', icon: 'fa-tablet-alt' }
 }
 
-// 2. Definir todas las redes y qué formatos soportan (LÓGICA CORREGIDA)
+// CONFIGURACIÓN DE REDES (Actualizada: Todas soportan todos los formatos)
 const availableNetworks = ref([
-  { id: 'instagram', name: 'Instagram', icon: 'bi-instagram', color: '#E4405F', formats: ['1:1', '9:16', '4:5', '16:9'] },
-  { id: 'facebook', name: 'Facebook', icon: 'bi-facebook', color: '#1877F2', formats: ['1:1', '16:9', '9:16', '4:5'] },
-  { id: 'linkedin', name: 'LinkedIn', icon: 'bi-linkedin', color: '#0A66C2', formats: ['1:1', '16:9', '4:5'] },
-  { id: 'tiktok', name: 'TikTok', icon: 'bi-tiktok', color: '#010101', formats: ['9:16', '1:1', '16:9', '4:5'] }
+  { 
+    id: 'instagram', 
+    name: 'Instagram', 
+    icon: 'bi-instagram', 
+    color: '#E4405F', 
+    formats: ['1:1', '9:16', '4:5', '16:9'] 
+  },
+  { 
+    id: 'facebook', 
+    name: 'Facebook', 
+    icon: 'bi-facebook', 
+    color: '#1877F2', 
+    formats: ['1:1', '16:9', '9:16', '4:5'] 
+  },
+  { 
+    id: 'linkedin', 
+    name: 'LinkedIn', 
+    icon: 'bi-linkedin', 
+    color: '#0A66C2', 
+    formats: ['1:1', '16:9', '4:5', '9:16'] 
+  },
+  { 
+    id: 'tiktok', 
+    name: 'TikTok', 
+    icon: 'bi-tiktok', 
+    color: '#010101', 
+    formats: ['9:16', '1:1', '16:9', '4:5'] 
+  }
 ])
 
-// 3. Lógica de UI para el Paso 4
 function selectFormat(formatValue) {
   form.value.format = formatValue
-  form.value.networks = [] // Limpia las redes al cambiar el formato
+  form.value.networks = []
 }
 
 function isNetworkCompatible(networkId) {
@@ -349,19 +373,19 @@ function isNetworkCompatible(networkId) {
   return network && network.formats.includes(form.value.format)
 }
 
-// COMPUTED PROPERTY CORREGIDA (solo devuelve clases de tamaño)
+// Devuelve clases de tamaño para el contenedor
 const previewSizingClass = computed(() => {
   switch (form.value.format) {
     case '1:1':
-      return 'w-full max-w-sm mx-auto'; // Cuadrado
+      return 'w-full max-w-xs mx-auto'; // Cuadrado
     case '9:16':
-      return 'w-full max-w-[270px] mx-auto'; // Vertical (Story/TikTok)
+      return 'w-full max-w-[200px] mx-auto'; // Vertical
     case '16:9':
-      return 'w-full max-w-md mx-auto'; // Horizontal (Video)
+      return 'w-full max-w-sm mx-auto'; // Horizontal
     case '4:5':
-      return 'w-full max-w-sm mx-auto'; // Vertical (Post IG)
+      return 'w-full max-w-xs mx-auto'; // Vertical Post
     default:
-      return 'w-full max-w-sm mx-auto'; // Default
+      return 'hidden';
   }
 });
 
@@ -386,7 +410,7 @@ function prevStep() {
 
 function generateImage() {
   if (currentStep.value !== 4 || form.value.networks.length === 0 || !form.value.format) {
-    emit('showToast', 'Por favor completa todos los pasos del asistente', 'error')
+    emit('showToast', 'Por favor selecciona un formato y al menos una red social', 'error')
     return
   }
   
@@ -394,7 +418,7 @@ function generateImage() {
   generated.value = false
   
   setTimeout(() => { generationStatus.value = `Analizando Buyer Persona (Psicográfica: ${form.value.segment.psycho.lifestyle})...` }, 500)
-  setTimeout(() => { generationStatus.value = `Aplicando tono '${form.value.tone}' y disparadores mentales...` }, 1500)
+  setTimeout(() => { generationStatus.value = `Aplicando estilo '${form.value.tone}' y disparadores mentales...` }, 1500)
   setTimeout(() => { generationStatus.value = `Adaptando a formato ${form.value.format} para ${form.value.networks.join(', ')}...` }, 2500)
   
   setTimeout(() => {
@@ -473,19 +497,18 @@ function useForProduction() {
   emit('navigate', 'production')
 }
 
-// Función de utilidad para contraste de color
 function getContrastingTextColor(hexcolor) {
   hexcolor = hexcolor.replace("#", "");
   const r = parseInt(hexcolor.substr(0, 2), 16);
   const g = parseInt(hexcolor.substr(2, 2), 16);
   const b = parseInt(hexcolor.substr(4, 2), 16);
   const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-  return (yiq >= 128) ? '#111827' : '#FFFFFF'; // kapital-night o white
+  return (yiq >= 128) ? '#111827' : '#FFFFFF'; 
 }
 </script>
 
 <style scoped>
-/* Estilos de Botones consistentes con tu style.css global */
+/* Estilos de Botones */
 .btn-primary {
   @apply px-6 py-3 bg-kapital-night text-white font-medium rounded-md transition-all hover:bg-kapital-night-hover active:scale-95 flex items-center gap-2 justify-center;
 }
@@ -494,7 +517,7 @@ function getContrastingTextColor(hexcolor) {
   @apply bg-gray-100 text-gray-800 font-medium rounded-md border border-gray-300 transition-all hover:bg-gray-200 flex items-center gap-2 justify-center;
 }
 
-/* Clases de utilidad para los nuevos elementos */
+/* Clases de utilidad */
 .input-field {
   @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20;
 }
@@ -546,10 +569,4 @@ function getContrastingTextColor(hexcolor) {
 .result-title {
   @apply text-xs font-semibold text-kapital-dark uppercase tracking-wider mb-2;
 }
-
-/* *** CORRECCIÓN FINAL ***
-  Estas clases vacías se eliminaron porque causaban el error de PostCSS.
-  Las clases correctas (aspect-square, aspect-[9/16], etc.) están en el bloque
-  :class del <template> y serán detectadas por el compilador JIT de Tailwind.
-*/
 </style>
