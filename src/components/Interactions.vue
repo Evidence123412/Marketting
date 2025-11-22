@@ -1,6 +1,5 @@
 <template>
   <div class="space-y-6 h-full flex flex-col">
-    <!-- Header -->
     <div 
       v-motion
       :initial="{ opacity: 0, y: -20 }"
@@ -13,7 +12,6 @@
       </div>
     </div>
 
-    <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       <div 
         v-motion
@@ -76,9 +74,7 @@
       </div>
     </div>
 
-    <!-- Main Chat Area -->
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-1 min-h-0">
-      <!-- Messages List -->
       <div class="lg:col-span-1 bg-white/80 backdrop-blur-sm border border-white/20 shadow-soft rounded-2xl overflow-hidden flex flex-col">
         <div class="p-4 border-b border-slate-100">
           <div class="relative">
@@ -132,9 +128,7 @@
         </div>
       </div>
 
-      <!-- Chat Panel -->
       <div class="lg:col-span-3 bg-white/80 backdrop-blur-sm border border-white/20 shadow-soft rounded-2xl overflow-hidden flex flex-col">
-        <!-- Chat Header -->
         <div v-if="selectedMessage" class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white/50">
           <div class="flex items-center gap-4">
             <div :class="['w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-sm', getStatusColor(selectedMessage.status)]">
@@ -168,7 +162,6 @@
           </div>
         </div>
 
-        <!-- Empty State -->
         <div v-else class="flex-1 flex flex-col items-center justify-center text-slate-400 p-8">
           <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
             <MessageSquare :size="40" class="text-slate-300" />
@@ -177,13 +170,12 @@
           <p class="text-sm text-slate-400 mt-1">Elige un mensaje de la lista para ver los detalles</p>
         </div>
 
-        <!-- Chat Messages -->
         <div v-if="selectedMessage" class="flex-1 overflow-y-auto bg-slate-50/50 p-6 space-y-6">
           <div v-for="(chat, idx) in selectedMessage.conversation" :key="idx" :class="['flex', chat.sender === 'me' ? 'justify-end' : 'justify-start']">
             <div :class="[
               'max-w-md px-5 py-3 rounded-2xl shadow-sm text-sm leading-relaxed',
               chat.sender === 'me' 
-                ? 'bg-kapital-dark text-white rounded-br-none' 
+                ? 'bg-kapital-night text-white rounded-br-none' 
                 : 'bg-white text-slate-700 border border-slate-100 rounded-bl-none'
             ]">
               <p>{{ chat.text }}</p>
@@ -194,7 +186,6 @@
           </div>
         </div>
 
-        <!-- Chat Input -->
         <div v-if="selectedMessage" class="p-4 bg-white border-t border-slate-100">
           <div class="space-y-3">
             <div class="relative">
@@ -217,7 +208,7 @@
               ></textarea>
               <button 
                 @click="sendMessage"
-                class="btn-primary px-4 h-auto rounded-xl shadow-lg shadow-kapital-dark/20"
+                class="btn-primary px-4 h-auto rounded-xl shadow-lg shadow-kapital-night/20" 
               >
                 <Send :size="18" />
               </button>
@@ -227,7 +218,6 @@
       </div>
     </div>
 
-    <!-- Assign Modal -->
     <div v-if="showAssignModal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div 
         v-motion
@@ -391,7 +381,7 @@ function getStatusColor(status) {
     'replied': 'bg-emerald-500',
     'assigned': 'bg-purple-500'
   }
-  return colors[status] || 'bg-kapital-dark'
+  return colors[status] || 'bg-kapital-night'
 }
 
 function getNetworkIcon(network) {
@@ -456,8 +446,9 @@ function markAsResolved() {
 </script>
 
 <style scoped lang="postcss">
+/* Botón Primario actualizado con kapital-night */
 .btn-primary {
-  @apply px-5 py-2.5 bg-kapital-dark text-white font-medium rounded-xl transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 active:scale-95 flex items-center gap-2 justify-center;
+  @apply px-5 py-2.5 bg-kapital-night text-white font-medium rounded-xl transition-all hover:bg-kapital-night-hover hover:shadow-lg hover:shadow-kapital-night/30 active:scale-95 flex items-center gap-2 justify-center;
 }
 
 .btn-secondary {
