@@ -1,146 +1,147 @@
 <template>
   <aside
+    v-motion
+    :initial="{ opacity: 0, x: -50 }"
+    :enter="{ opacity: 1, x: 0, transition: { duration: 500 } }"
     :class="[
-      isExpanded ? 'w-56' : 'w-20',
-      'bg-kapital-night text-gray-300 flex flex-col h-screen justify-between shadow-lg transition-all duration-300 ease-in-out'
+      isExpanded ? 'w-64' : 'w-20',
+      'bg-kapital-night/95 backdrop-blur-xl border-r border-white/10 text-slate-300 flex flex-col h-screen justify-between transition-all duration-300 ease-spring z-50 relative overflow-hidden'
     ]"
   >
-    
-    <div class="flex flex-col overflow-y-auto">
+    <div class="flex flex-col">
       <div 
         :class="[
-          'flex items-center py-5 mb-2',
-          isExpanded ? 'justify-between px-4' : 'justify-center px-3'
+          'flex items-center h-24 mb-2 transition-all duration-300',
+          isExpanded ? 'px-6 justify-between flex-row' : 'justify-center flex-col gap-2'
         ]"
       >
-        <div class="w-8 h-8 bg-kapital-dark rounded-lg flex items-center justify-center flex-shrink-0">
-          <span class="text-white font-bold text-lg">K</span>
+        <div class="flex items-center gap-3 overflow-hidden">
+          <div class="w-10 h-10 bg-gradient-to-br from-kapital-dark to-kapital-light-1 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-kapital-dark/20">
+            <span class="text-white font-bold text-xl">K</span>
+          </div>
+          
+          <Transition name="fade">
+            <div v-show="isExpanded" class="flex flex-col">
+              <span class="text-white font-bold text-xl tracking-tight">Kapital</span>
+              <span class="text-[10px] text-kapital-light-1 font-medium tracking-widest uppercase">CMS v2.0</span>
+            </div>
+          </Transition>
         </div>
-        
-        <Transition name="fade">
-          <span v-show="isExpanded" class="text-white font-bold text-2xl tracking-wider ml-2 whitespace-nowrap">Kapital</span>
-        </Transition>
 
         <button
+          v-if="isExpanded"
           @click="toggleSidebar"
-          :title="isExpanded ? 'Colapsar' : 'Expandir'"
-          :class="[
-            'text-gray-500 hover:text-white transition-colors',
-            isExpanded ? 'ml-auto' : 'ml-auto'
-          ]"
+          class="text-slate-500 hover:text-white transition-colors p-1 rounded-md hover:bg-white/5"
         >
-          <i :class="['fas', isExpanded ? 'fa-chevron-left' : 'fa-chevron-right', 'w-5 text-center text-lg']"></i>
+          <ChevronLeft :size="20" />
+        </button>
+
+        <button
+          v-if="!isExpanded"
+          @click="toggleSidebar"
+          class="text-slate-500 hover:text-white transition-colors p-1 rounded-md hover:bg-white/5"
+        >
+          <ChevronRight :size="20" />
         </button>
       </div>
 
-      <nav class="flex-1 flex flex-col gap-y-6 px-3">
+      <nav class="flex-1 flex flex-col gap-y-8 px-4 overflow-y-auto overflow-x-hidden scrollbar-hide pb-4">
         <div v-for="group in navGroups" :key="group.title">
           
           <Transition name="fade">
             <span 
               v-show="isExpanded" 
-              class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-2 block"
+              class="text-[11px] font-bold text-slate-500 uppercase tracking-wider px-2 mb-3 block"
             >
               {{ group.title }}
             </span>
           </Transition>
+          
+          <div v-show="!isExpanded" class="h-px w-8 bg-white/10 mx-auto mb-3"></div>
 
-          <div class="flex flex-col gap-2">
+          <div class="flex flex-col gap-1">
             <button
               v-for="item in group.items"
               :key="item.id"
               @click="$emit('navigate', item.id)"
-              :title="item.label"
               :class="[
-                'flex items-center gap-3 py-2.5 rounded-lg w-full transition-all duration-200 group relative',
-                isExpanded ? 'px-4' : 'px-3 justify-center',
+                'flex items-center gap-3 py-3 rounded-xl w-full transition-all duration-200 group relative',
+                isExpanded ? 'px-4' : 'px-0 justify-center',
                 activeView === item.id
-                  ? 'bg-kapital-dark text-white font-semibold shadow-md' // <-- Color de marca
-                  : 'text-gray-400 hover:bg-kapital-night-hover hover:text-white' // <-- Color de marca
+                  ? 'bg-kapital-dark text-white shadow-lg shadow-kapital-dark/25' 
+                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
               ]"
             >
-              <i :class="['fas', item.icon, 'w-5 text-center text-lg flex-shrink-0']"></i>
+              <component :is="item.icon" :size="20" :stroke-width="activeView === item.id ? 2.5 : 2" />
               
               <Transition name="fade">
-                <span v-show="isExpanded" class="text-sm font-medium whitespace-nowrap">{{ item.label }}</span>
+                <span v-show="isExpanded" class="text-sm font-medium">{{ item.label }}</span>
               </Transition>
 
-              <span 
-                :class="[
-                  'absolute left-16 p-2 px-3 text-sm font-medium bg-kapital-night-hover text-white rounded-md shadow-lg', // <-- Color de marca
-                  'transition-all duration-200 scale-0 origin-left z-10',
-                  'group-hover:scale-100',
-                  isExpanded ? 'hidden' : 'block'
-                ]"
+              <div 
+                v-if="!isExpanded"
+                class="absolute left-14 px-3 py-2 bg-kapital-night border border-white/10 text-white text-xs font-medium rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50"
               >
                 {{ item.label }}
-              </span>
+              </div>
             </button>
           </div>
         </div>
       </nav>
     </div>
 
-    <div class="p-3 border-t border-gray-700"> <div class="flex flex-col gap-2">
+    <div class="p-4 border-t border-white/10 bg-black/20 backdrop-blur-sm"> 
+      <div class="flex flex-col gap-2">
         
         <button
           @click="$emit('navigate', 'settings')"
-          title="Configuración"
           :class="[
-            'flex items-center gap-3 py-2.5 rounded-lg w-full transition-all duration-200 group relative',
-            isExpanded ? 'px-4' : 'px-3 justify-center',
+            'flex items-center gap-3 py-3 rounded-xl w-full transition-all duration-200 group relative',
+            isExpanded ? 'px-4' : 'px-0 justify-center',
             activeView === 'settings'
-              ? 'bg-kapital-dark text-white font-semibold shadow-md' // <-- Color de marca
-              : 'text-gray-400 hover:bg-kapital-night-hover hover:text-white' // <-- Color de marca
+              ? 'bg-kapital-dark text-white shadow-lg' 
+              : 'text-slate-400 hover:bg-white/5 hover:text-white'
           ]"
         >
-          <i class="fas fa-cog w-5 text-center text-lg flex-shrink-0"></i>
+          <Settings :size="20" />
           <Transition name="fade">
-            <span v-show="isExpanded" class="text-sm font-medium whitespace-nowrap">Configuración</span>
+            <span v-show="isExpanded" class="text-sm font-medium">Configuración</span>
           </Transition>
-          <span 
-            :class="[
-              'absolute left-16 p-2 px-3 text-sm font-medium bg-kapital-night-hover text-white rounded-md shadow-lg', // <-- Color de marca
-              'transition-all duration-200 scale-0 origin-left z-10',
-              'group-hover:scale-100',
-              isExpanded ? 'hidden' : 'block'
-            ]"
-          >
-            Configuración
-          </span>
         </button>
 
         <button
           @click="$emit('logout')"
-          title="Cerrar sesión"
           :class="[
-            'flex items-center gap-3 py-2.5 rounded-lg w-full transition-all duration-200 text-gray-400 hover:bg-red-800 hover:text-red-100 group relative',
-            isExpanded ? 'px-4' : 'px-3 justify-center'
+            'flex items-center gap-3 py-3 rounded-xl w-full transition-all duration-200 text-slate-400 hover:bg-red-500/10 hover:text-red-400 group relative',
+            isExpanded ? 'px-4' : 'px-0 justify-center'
           ]"
         >
-          <i class="fas fa-sign-out-alt w-5 text-center text-lg flex-shrink-0"></i>
+          <LogOut :size="20" />
           <Transition name="fade">
-            <span v-show="isExpanded" class="text-sm font-medium whitespace-nowrap">Cerrar sesión</span>
+            <span v-show="isExpanded" class="text-sm font-medium">Cerrar sesión</span>
           </Transition>
-          <span 
-            :class="[
-              'absolute left-16 p-2 px-3 text-sm font-medium bg-kapital-night-hover text-white rounded-md shadow-lg', // <-- Color de marca
-              'transition-all duration-200 scale-0 origin-left z-10',
-              'group-hover:scale-100',
-              isExpanded ? 'hidden' : 'block'
-            ]"
-          >
-            Cerrar sesión
-          </span>
         </button>
-      </div>
+
+        </div>
     </div>
   </aside>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import { defineProps, defineEmits } from 'vue';
+import { 
+  LayoutDashboard, 
+  BarChart3, 
+  Wand2, 
+  PenTool, 
+  Calendar, 
+  MessageSquare, 
+  Users, 
+  Settings, 
+  LogOut, 
+  ChevronLeft, 
+  ChevronRight 
+} from 'lucide-vue-next';
 
 const isExpanded = ref(true);
 
@@ -158,23 +159,23 @@ const navGroups = [
   {
     title: 'Análisis',
     items: [
-      { id: 'dashboard', label: 'Dashboard', icon: 'fa-chart-line' },
-      { id: 'reports', label: 'Reportes', icon: 'fa-bar-chart' },
+      { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { id: 'reports', label: 'Reportes', icon: BarChart3 },
     ]
   },
   {
     title: 'Gestión',
     items: [
-      { id: 'generation', label: 'Generar', icon: 'fa-wand-magic-sparkles' },
-      { id: 'production', label: 'Producción', icon: 'fa-pen-fancy' },
-      { id: 'scheduling', label: 'Programación', icon: 'fa-calendar-alt' },
+      { id: 'generation', label: 'Generar IA', icon: Wand2 },
+      { id: 'production', label: 'Producción', icon: PenTool },
+      { id: 'scheduling', label: 'Calendario', icon: Calendar },
     ]
   },
   {
     title: 'Clientes',
     items: [
-      { id: 'interactions', label: 'Interacciones', icon: 'fa-comments' },
-      { id: 'crm', label: 'CRM', icon: 'fa-address-card' },
+      { id: 'interactions', label: 'Mensajes', icon: MessageSquare },
+      { id: 'crm', label: 'CRM Leads', icon: Users },
     ]
   }
 ];
@@ -186,7 +187,6 @@ button {
 }
 
 button:focus-visible {
-  /* ¡CORREGIDO! Se usa ring-offset-gray-900 que es el color #111827 */
   @apply ring-2 ring-kapital-dark ring-offset-2 ring-offset-gray-900;
 }
 

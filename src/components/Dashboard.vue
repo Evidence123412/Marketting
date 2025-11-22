@@ -1,116 +1,155 @@
 <template>
-  <div class="space-y-10">
+  <div class="space-y-8 p-2">
     
-    <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
+    <!-- Header -->
+    <div 
+      v-motion
+      :initial="{ opacity: 0, y: -20 }"
+      :enter="{ opacity: 1, y: 0, transition: { duration: 500 } }"
+      class="flex flex-col md:flex-row justify-between md:items-center gap-4"
+    >
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Bienvenido a tu Dashboard</h1>
-        <p class="text-gray-600">Centro de comando de actividad y clientes.</p>
+        <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
+        <p class="text-slate-500 mt-1">Bienvenido al centro de comando de Kapital.</p>
       </div>
-      <select class="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:border-kapital-night">
-        <option>Últimos 7 días</option>
-        <option>Últimos 30 días</option>
-        <option>Último mes</option>
-      </select>
+      <div class="relative">
+        <select class="appearance-none pl-4 pr-10 py-2.5 text-sm font-medium bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-kapital-dark/20 focus:border-kapital-dark shadow-sm text-slate-700 cursor-pointer">
+          <option>Últimos 7 días</option>
+          <option>Últimos 30 días</option>
+          <option>Último mes</option>
+        </select>
+        <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" :size="16" />
+      </div>
     </div>
 
+    <!-- Executive Summary -->
     <div>
-      <h2 class="text-xl font-bold text-gray-900 mb-4">Resumen Ejecutivo</h2>
+      <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+        <Activity :size="20" class="text-kapital-dark" /> Resumen Ejecutivo
+      </h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div 
-          v-for="metric in executiveMetrics" 
+          v-for="(metric, index) in executiveMetrics" 
           :key="metric.id"
-          class="card"
+          v-motion
+          :initial="{ opacity: 0, y: 20 }"
+          :enter="{ opacity: 1, y: 0, transition: { delay: index * 100 } }"
+          class="card group hover:border-kapital-dark/30 transition-colors"
         >
           <div class="flex items-start gap-4">
-            <div :class="['w-12 h-12 rounded-lg flex items-center justify-center text-lg', metric.bgColor]">
-              <i :class="['fas', metric.icon, metric.color]"></i>
+            <div :class="['w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110', metric.bgColor]">
+              <component :is="metric.icon" :class="[metric.color]" :size="24" />
             </div>
             <div class="flex-1">
-              <p class="text-xs text-gray-600 font-medium mb-1">{{ metric.label }}</p>
-              <p class="text-2xl font-bold text-gray-900 mb-1">{{ metric.value }}</p>
-              <small :class="['flex items-center gap-1', metric.trend > 0 ? 'text-green-600' : 'text-red-600']">
-                <i :class="['fas', metric.trend > 0 ? 'fa-arrow-up' : 'fa-arrow-down']"></i>
+              <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-1">{{ metric.label }}</p>
+              <p class="text-2xl font-bold text-slate-900 mb-1">{{ metric.value }}</p>
+              <div :class="['flex items-center gap-1 text-xs font-medium', metric.trend > 0 ? 'text-emerald-600' : 'text-rose-600']">
+                <component :is="metric.trend > 0 ? ArrowUp : ArrowDown" :size="12" />
                 {{ Math.abs(metric.trend) }}% vs mes anterior
-              </small>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Main Focus: Clients -->
     <div>
-      <h2 class="text-xl font-bold text-gray-900 mb-4">Foco Principal: Clientes</h2>
+      <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+        <Users :size="20" class="text-kapital-dark" /> Foco Principal: Clientes
+      </h2>
       
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
-        <div class="card flex flex-col">
+        <!-- Pending Interactions -->
+        <div 
+          v-motion-slide-visible-once-bottom
+          class="card flex flex-col"
+        >
           <div class="flex justify-between items-center mb-6">
-            <h2 class="text-lg font-bold text-gray-900">Interacciones Pendientes</h2>
-            <span class="text-sm font-bold bg-red-100 text-red-700 px-3 py-1 rounded-full">
+            <h3 class="font-bold text-slate-800">Interacciones Pendientes</h3>
+            <span class="text-xs font-bold bg-rose-100 text-rose-600 px-2.5 py-1 rounded-full border border-rose-200">
               {{ pendingInteractions.length }} Pendientes
             </span>
           </div>
-          <div class="space-y-3 h-72 overflow-y-auto pr-2">
-            <div v-for="msg in pendingInteractions" :key="msg.id" class="flex gap-3 p-3 rounded-lg hover:bg-gray-50">
-              <div class="w-10 h-10 rounded-full bg-kapital-light-1 text-white flex-shrink-0 flex items-center justify-center font-bold">
+          <div class="space-y-3 h-72 overflow-y-auto pr-2 scrollbar-thin">
+            <div v-for="msg in pendingInteractions" :key="msg.id" class="flex gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100 cursor-pointer group">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-kapital-light-1 to-kapital-dark text-white flex-shrink-0 flex items-center justify-center font-bold text-sm shadow-md group-hover:shadow-lg transition-all">
                 {{ msg.initials }}
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-900">{{ msg.name }}</p>
-                <p class="text-xs text-gray-600 truncate">{{ msg.preview }}</p>
+                <div class="flex justify-between items-start">
+                  <p class="text-sm font-semibold text-slate-900">{{ msg.name }}</p>
+                  <small class="text-slate-400 text-xs whitespace-nowrap">{{ msg.time }}</small>
+                </div>
+                <p class="text-xs text-slate-600 truncate mt-0.5">{{ msg.preview }}</p>
               </div>
-              <small class="text-gray-500 text-xs whitespace-nowrap">{{ msg.time }}</small>
             </div>
           </div>
           <button @click="goTo('interactions')" class="btn-primary w-full mt-6 text-sm">
-            <i class="fas fa-comments"></i> Gestionar Todos los Mensajes
+            <MessageSquare :size="18" /> Gestionar Todos los Mensajes
           </button>
         </div>
 
-        <div class="card flex flex-col">
+        <!-- New Leads -->
+        <div 
+          v-motion-slide-visible-once-bottom
+          class="card flex flex-col"
+        >
           <div class="flex justify-between items-center mb-6">
-            <h2 class="text-lg font-bold text-gray-900">Nuevos Leads</h2>
-            <span class="text-sm font-bold bg-green-100 text-green-700 px-3 py-1 rounded-full">
+            <h3 class="font-bold text-slate-800">Nuevos Leads</h3>
+            <span class="text-xs font-bold bg-emerald-100 text-emerald-600 px-2.5 py-1 rounded-full border border-emerald-200">
               {{ newLeads.length }} Nuevos
             </span>
           </div>
-          <div class="space-y-3 h-72 overflow-y-auto pr-2">
-            <div v-for="lead in newLeads" :key="lead.id" class="flex gap-3 p-3 rounded-lg hover:bg-gray-50">
-              <div class="w-10 h-10 rounded-full bg-kapital-night text-white flex-shrink-0 flex items-center justify-center font-bold">
+          <div class="space-y-3 h-72 overflow-y-auto pr-2 scrollbar-thin">
+            <div v-for="lead in newLeads" :key="lead.id" class="flex gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100 cursor-pointer group">
+              <div class="w-10 h-10 rounded-full bg-slate-900 text-white flex-shrink-0 flex items-center justify-center font-bold text-sm shadow-md group-hover:shadow-lg transition-all">
                 {{ lead.initials }}
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-900">{{ lead.name }}</p>
-                <p class="text-xs text-gray-600">{{ lead.origin }}</p>
+                <div class="flex justify-between items-start">
+                  <p class="text-sm font-semibold text-slate-900">{{ lead.name }}</p>
+                  <small class="text-slate-400 text-xs whitespace-nowrap">{{ lead.date }}</small>
+                </div>
+                <div class="flex items-center gap-1 mt-0.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-kapital-dark"></span>
+                  <p class="text-xs text-slate-600">{{ lead.origin }}</p>
+                </div>
               </div>
-              <small class="text-gray-500 text-xs whitespace-nowrap">{{ lead.date }}</small>
             </div>
           </div>
           <button @click="goTo('crm')" class="btn-primary w-full mt-6 text-sm">
-            <i class="fas fa-address-card"></i> Ver CRM
+            <Users :size="18" /> Ver CRM
           </button>
         </div>
       </div>
     </div>
 
+    <!-- Content Management -->
     <div>
       <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-4">
-        <h2 class="text-xl font-bold text-gray-900">Gestión de Contenido</h2>
+        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <Layers :size="20" class="text-kapital-dark" /> Gestión de Contenido
+        </h2>
         <div class="flex gap-3">
           <button @click="goTo('generation')" class="btn-secondary text-sm">
-            <i class="fas fa-wand-magic-sparkles"></i> Generar con IA
+            <Wand2 :size="16" /> Generar con IA
           </button>
           <button @click="goTo('production')" class="btn-primary text-sm">
-            <i class="fas fa-plus"></i> Crear Publicación
+            <Plus :size="16" /> Crear Publicación
           </button>
         </div>
       </div>
       
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="card">
+        <div 
+          v-motion-slide-visible-once-bottom
+          class="card"
+        >
           <div class="flex justify-between items-center mb-6">
-            <h2 class="text-lg font-bold text-gray-900">Actividad Reciente</h2>
-            <button @click="goTo('production')" class="text-sm text-kapital-night font-medium hover:underline">
+            <h3 class="font-bold text-slate-800">Actividad Reciente</h3>
+            <button @click="goTo('production')" class="text-xs text-kapital-dark font-bold hover:underline uppercase tracking-wide">
               Ver todo
             </button>
           </div>
@@ -118,26 +157,29 @@
             <div 
               v-for="activity in recentActivity"
               :key="activity.id"
-              class="flex gap-4 pb-4 border-b border-gray-200 last:border-b-0 last:pb-0"
+              class="flex gap-4 pb-4 border-b border-slate-100 last:border-b-0 last:pb-0"
             >
-              <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" :style="{ backgroundColor: getStatusColor(activity.status) }">
-                <i :class="['fas', getStatusIcon(activity.status), 'text-white']"></i>
+              <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm" :style="{ backgroundColor: getStatusColor(activity.status) }">
+                <component :is="getStatusIcon(activity.status)" class="text-white" :size="16" />
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-900">{{ activity.title }}</p>
-                <p class="text-sm text-gray-600 mt-1 line-clamp-1">{{ activity.description }}</p>
+                <p class="text-sm font-semibold text-slate-900">{{ activity.title }}</p>
+                <p class="text-xs text-slate-500 mt-0.5 line-clamp-1">{{ activity.description }}</p>
               </div>
-              <span :class="['text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap text-center inline-flex items-center justify-center', getStatusClass(activity.status)]">
+              <span :class="['text-[10px] font-bold px-2 py-1 rounded-full h-fit whitespace-nowrap', getStatusClass(activity.status)]">
                 {{ getStatusLabel(activity.status) }}
               </span>
             </div>
           </div>
         </div>
 
-        <div class="card">
+        <div 
+          v-motion-slide-visible-once-bottom
+          class="card"
+        >
           <div class="flex justify-between items-center mb-6">
-            <h2 class="text-lg font-bold text-gray-900">Próximas Publicaciones</h2>
-            <button @click="goTo('scheduling')" class="text-sm text-kapital-night font-medium hover:underline">
+            <h3 class="font-bold text-slate-800">Próximas Publicaciones</h3>
+            <button @click="goTo('scheduling')" class="text-xs text-kapital-dark font-bold hover:underline uppercase tracking-wide">
               Ver calendario
             </button>
           </div>
@@ -145,16 +187,22 @@
             <div 
               v-for="item in upcomingPublications"
               :key="item.id"
-              class="flex gap-4"
+              class="flex gap-4 group"
             >
-              <div class="flex flex-col items-center">
-                <span class="text-xs font-bold text-kapital-night">{{ item.date.split('-')[2] }}</span>
-                <span class="text-sm font-semibold text-gray-900">{{ getMonthAbbr(item.date) }}</span>
+              <div class="flex flex-col items-center min-w-[3rem] bg-slate-50 rounded-lg p-2 border border-slate-100">
+                <span class="text-lg font-bold text-slate-900 leading-none">{{ item.date.split('-')[2] }}</span>
+                <span class="text-[10px] font-bold text-slate-500 uppercase mt-1">{{ getMonthAbbr(item.date) }}</span>
               </div>
-              <div class="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-3">
-                <p class="text-sm font-medium text-gray-900">{{ item.title }}</p>
+              <div class="flex-1 bg-white border border-slate-200 rounded-xl p-3 shadow-sm group-hover:border-kapital-dark/30 transition-colors">
+                <p class="text-sm font-semibold text-slate-900">{{ item.title }}</p>
                 <div class="flex gap-2 mt-2">
-                  <i v-for="channel in item.channels.split(', ')" :key="channel" :class="['fa-brands', getChannelIcon(channel), 'text-kapital-light-1']"></i>
+                  <component 
+                    v-for="channel in item.channels.split(', ')" 
+                    :key="channel" 
+                    :is="getChannelIcon(channel)" 
+                    class="text-slate-400" 
+                    :size="14" 
+                  />
                 </div>
               </div>
             </div>
@@ -163,44 +211,51 @@
       </div>
     </div>
 
-
+    <!-- Analytics -->
     <div>
       <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-4">
-        <h2 class="text-xl font-bold text-gray-900">Análisis de Rendimiento</h2>
+        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <BarChart3 :size="20" class="text-kapital-dark" /> Análisis de Rendimiento
+        </h2>
         <button @click="goTo('reports')" class="btn-secondary text-sm">
-          <i class="fas fa-bar-chart"></i> Ver Reportes Completos
+          <PieChart :size="16" /> Ver Reportes Completos
         </button>
       </div>
       
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 card">
+        <div 
+          v-motion-slide-visible-once-bottom
+          class="lg:col-span-2 card"
+        >
           <div class="flex justify-between items-center mb-6">
-            <h2 class="text-lg font-bold text-gray-900">Rendimiento Semanal</h2>
+            <h3 class="font-bold text-slate-800">Rendimiento Semanal</h3>
           </div>
           <div class="h-64">
             <Bar v-if="weeklyChartData" :data="weeklyChartData" :options="weeklyChartOptions" />
           </div>
-          <div class="flex justify-center gap-6 mt-6 pt-6 border-t border-gray-200">
-            <div class="flex items-center gap-2">
-              <div class="w-3 h-3 rounded bg-kapital-night"></div>
-              <span class="text-sm text-gray-700">Publicaciones</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <div class="w-3 h-3 rounded bg-kapital-light-1"></div>
-              <span class="text-sm text-gray-700">Engagement %</span>
-            </div>
-          </div>
         </div>
 
-        <div class="lg:col-span-1 card">
-          <h2 class="text-lg font-bold text-gray-900 mb-6">Distribución de Contenido</h2>
-          <div class="flex items-center justify-center h-48">
+        <div 
+          v-motion-slide-visible-once-bottom
+          class="lg:col-span-1 card"
+        >
+          <h3 class="font-bold text-slate-800 mb-6">Distribución de Contenido</h3>
+          <div class="flex items-center justify-center h-48 relative">
              <Doughnut v-if="contentChartData" :data="contentChartData" :options="contentChartOptions" />
+             <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+               <div class="text-center">
+                 <span class="block text-2xl font-bold text-slate-900">100%</span>
+                 <span class="text-[10px] text-slate-500 uppercase font-bold">Total</span>
+               </div>
+             </div>
           </div>
-          <div class="flex flex-col items-center gap-4 mt-6 pt-6 border-t border-gray-200">
-            <div v-for="item in contentChartLegend" :key="item.label" class="flex items-center gap-2">
-              <div class="w-3 h-3 rounded" :style="{ backgroundColor: item.color }"></div>
-              <span class="text-sm text-gray-700">{{ item.label }}</span>
+          <div class="flex flex-col gap-3 mt-6">
+            <div v-for="item in contentChartLegend" :key="item.label" class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-2.5 h-2.5 rounded-full" :style="{ backgroundColor: item.color }"></div>
+                <span class="text-xs font-medium text-slate-600">{{ item.label.split(' (')[0] }}</span>
+              </div>
+              <span class="text-xs font-bold text-slate-900">{{ item.label.split(' (')[1].replace(')', '') }}</span>
             </div>
           </div>
         </div>
@@ -217,6 +272,11 @@ import {
   Chart as ChartJS, 
   Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement
 } from 'chart.js'
+import { 
+  Share2, Flame, Users, MessageSquare, ArrowUp, ArrowDown, 
+  Wand2, Plus, BarChart3, CheckCircle2, Calendar, Edit3, FileText,
+  ChevronDown, Activity, Layers, PieChart, Facebook, Instagram, Linkedin, Twitter, Link
+} from 'lucide-vue-next'
 
 ChartJS.register(
   Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement
@@ -288,28 +348,24 @@ const allPublications = ref([
 // 1. KPIs para el Resumen Ejecutivo
 const executiveMetrics = computed(() => [
   { 
-    id: 'publications', icon: 'fa-share-alt', label: 'Publicaciones Totales', 
+    id: 'publications', icon: Share2, label: 'Publicaciones', 
     value: allPublications.value.length, 
-    // CAMBIO: color: 'text-kapital-night'
-    bgColor: 'bg-gray-100', color: 'text-kapital-night', trend: 8
+    bgColor: 'bg-blue-50', color: 'text-blue-600', trend: 8
   },
   { 
-    id: 'engagement', icon: 'fa-fire', label: 'Engagement (Reportes)', 
-    value: '3.8%', // Dato estático de ejemplo, similar a Reports.vue
-    // CAMBIO: color: 'text-kapital-night'
-    bgColor: 'bg-gray-100', color: 'text-kapital-night', trend: -5
+    id: 'engagement', icon: Flame, label: 'Engagement', 
+    value: '3.8%', 
+    bgColor: 'bg-amber-50', color: 'text-amber-600', trend: -5
   },
   { 
-    id: 'leads', icon: 'fa-users', label: 'Nuevos Leads (CRM)', 
+    id: 'leads', icon: Users, label: 'Nuevos Leads', 
     value: allLeads.value.filter(l => l.status === 'new').length, 
-    // CAMBIO: color: 'text-kapital-night'
-    bgColor: 'bg-gray-100', color: 'text-kapital-night', trend: 15
+    bgColor: 'bg-emerald-50', color: 'text-emerald-600', trend: 15
   },
   { 
-    id: 'interactions', icon: 'fa-comments', label: 'Interacciones Pendientes', 
+    id: 'interactions', icon: MessageSquare, label: 'Mensajes', 
     value: allInteractions.value.filter(m => m.status === 'pending').length, 
-    // CAMBIO: color: 'text-kapital-night'
-    bgColor: 'bg-gray-100', color: 'text-kapital-night', trend: 12
+    bgColor: 'bg-rose-50', color: 'text-rose-600', trend: 12
   }
 ])
 
@@ -347,14 +403,14 @@ const weeklyChartData = ref({
   labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
   datasets: [
     {
-      // Color: kapital-night (negro)
-      label: 'Publicaciones', backgroundColor: '#111827', borderRadius: 4,
-      data: [6, 8, 5, 9, 7, 4, 3], yAxisID: 'y'
+      // Color: kapital-dark (Blue-600)
+      label: 'Publicaciones', backgroundColor: '#2563EB', borderRadius: 6,
+      data: [6, 8, 5, 9, 7, 4, 3], yAxisID: 'y', barThickness: 12
     },
     {
-      // Color: kapital-light-1 (azul más suave)
-      label: 'Engagement %', backgroundColor: '#61A3FF', borderRadius: 4,
-      data: [3.2, 4.1, 2.8, 5.2, 4.5, 2.1, 1.8], yAxisID: 'y1'
+      // Color: kapital-light-1 (Blue-400)
+      label: 'Engagement %', backgroundColor: '#60A5FA', borderRadius: 6,
+      data: [3.2, 4.1, 2.8, 5.2, 4.5, 2.1, 1.8], yAxisID: 'y1', barThickness: 12
     }
   ]
 })
@@ -363,14 +419,14 @@ const weeklyChartOptions = ref({
   responsive: true, maintainAspectRatio: false,
   plugins: { legend: { display: false } },
   scales: {
-    x: { grid: { display: false } },
+    x: { grid: { display: false }, ticks: { font: { size: 11 } } },
     y: {
       type: 'linear', display: true, position: 'left', beginAtZero: true,
-      grid: { color: '#f3f4f6' }, title: { display: true, text: 'Publicaciones' }
+      grid: { color: '#f1f5f9', borderDash: [4, 4] }, title: { display: false }
     },
     y1: {
       type: 'linear', display: true, position: 'right', beginAtZero: true,
-      grid: { drawOnChartArea: false }, title: { display: true, text: 'Engagement %' }
+      grid: { drawOnChartArea: false }, title: { display: false }
     }
   }
 })
@@ -379,34 +435,34 @@ const contentChartData = ref({
   labels: ['Productos', 'Promociones', 'Educativo'],
   datasets: [
     { 
-      // Colores ajustados para menos fatiga visual
-      backgroundColor: ['#111827', '#61A3FF', '#4BC0C0'], // kapital-night, kapital-light-1, kapital-accent-medium (ejemplo)
+      // Blue-600, Blue-400, Amber-500
+      backgroundColor: ['#2563EB', '#60A5FA', '#F59E0B'], 
+      borderWidth: 0,
       data: [65, 20, 15] 
     }
   ]
 })
 
 const contentChartLegend = [
-  { label: 'Productos (65%)', color: '#111827' },       // kapital-night
-  { label: 'Promociones (20%)', color: '#61A3FF' },     // kapital-light-1
-  { label: 'Educativo (15%)', color: '#4BC0C0' }        // kapital-accent-medium
+  { label: 'Productos (65%)', color: '#2563EB' },       
+  { label: 'Promociones (20%)', color: '#60A5FA' },     
+  { label: 'Educativo (15%)', color: '#F59E0B' }        
 ]
 
 const contentChartOptions = ref({
   responsive: true, maintainAspectRatio: false,
-  cutout: '75%', plugins: { legend: { display: false } }
+  cutout: '80%', plugins: { legend: { display: false } }
 })
 
 // --- Funciones de Utilidad (para consistencia visual) ---
 
-// Se usan clases de la paleta de tailwind.config.js
 function getStatusClass(status) {
   const classes = {
-    'published': 'bg-kapital-light-2 text-kapital-night', // Cyan bg, texto oscuro
-    'scheduled': 'bg-kapital-light-1 text-white',     // Azul claro bg, texto blanco
-    'draft': 'bg-kapital-gray text-kapital-night'      // Gris bg, texto oscuro
+    'published': 'bg-emerald-100 text-emerald-700', 
+    'scheduled': 'bg-blue-100 text-blue-700',     
+    'draft': 'bg-slate-100 text-slate-700'      
   }
-  return classes[status] || 'bg-kapital-gray text-kapital-night'
+  return classes[status] || 'bg-slate-100 text-slate-700'
 }
 
 function getStatusLabel(status) {
@@ -420,31 +476,31 @@ function getStatusLabel(status) {
 
 function getStatusIcon(status) {
   const icons = {
-    'published': 'fa-check-circle',
-    'scheduled': 'fa-calendar-alt',
-    'draft': 'fa-edit'
+    'published': CheckCircle2,
+    'scheduled': Calendar,
+    'draft': Edit3
   }
-  return icons[status] || 'fa-file-alt'
+  return icons[status] || FileText
 }
 
 // Se usan los valores HEX de la paleta de tailwind.config.js
 function getStatusColor(status) {
   const colors = {
-    'published': '#00FFFF', // kapital-light-2
-    'scheduled': '#61A3FF', // kapital-light-1
-    'draft': '#C9C9C9'     // kapital-gray
+    'published': '#10B981', // Emerald-500
+    'scheduled': '#3B82F6', // Blue-500
+    'draft': '#94A3B8'     // Slate-400
   }
-  return colors[status] || '#C9C9C9'
+  return colors[status] || '#94A3B8'
 }
 
 function getChannelIcon(channel) {
   const icons = {
-    'Facebook': 'fa-facebook',
-    'Instagram': 'fa-instagram',
-    'LinkedIn': 'fa-linkedin',
-    'Twitter': 'fa-twitter'
+    'Facebook': Facebook,
+    'Instagram': Instagram,
+    'LinkedIn': Linkedin,
+    'Twitter': Twitter
   }
-  return icons[channel] || 'fa-link'
+  return icons[channel] || Link
 }
 
 function getMonthAbbr(dateString) {
@@ -455,39 +511,31 @@ function getMonthAbbr(dateString) {
 
 </script>
 
-<style scoped>
+<style scoped lang="postcss">
 .btn-primary {
-  @apply px-6 py-3 bg-kapital-night text-white font-medium rounded-md transition-all hover:bg-kapital-light-1 active:scale-95 flex items-center gap-2 justify-center;
+  @apply px-5 py-2.5 bg-kapital-dark text-white font-medium rounded-xl transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 active:scale-95 flex items-center gap-2 justify-center;
 }
 
 .btn-secondary {
-  @apply px-6 py-3 bg-gray-100 text-gray-800 font-medium rounded-md border border-gray-300 transition-all hover:bg-gray-200 flex items-center gap-2 justify-center;
+  @apply px-5 py-2.5 bg-white text-slate-700 font-medium rounded-xl border border-slate-200 transition-all hover:bg-slate-50 hover:border-slate-300 flex items-center gap-2 justify-center;
 }
 
 .card {
-  @apply bg-white border border-gray-200 rounded-lg p-6 shadow-sm;
+  @apply bg-white/80 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-soft;
 }
 
-/* Estilo para el scroll de las tarjetas */
-.overflow-y-auto::-webkit-scrollbar {
-  width: 6px;
+/* Scrollbar fina para las columnas */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 5px;
 }
-.overflow-y-auto::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 6px;
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
 }
-.overflow-y-auto::-webkit-scrollbar-thumb {
-  background: #C9C9C9; /* Usando kapital-gray */
-  border-radius: 6px;
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #cbd5e1; 
+  border-radius: 10px;
 }
-.overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: #a9a9a9;
-}
-
-.line-clamp-1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 </style>

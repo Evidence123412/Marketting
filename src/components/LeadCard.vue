@@ -1,36 +1,53 @@
 <template>
-  <div class="relative bg-white p-3 rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-kapital-dark transition-all cursor-pointer" @click.self="$emit('view')">
-    <div class="flex justify-between items-start mb-2">
-      <span class="font-semibold text-sm text-gray-800 pr-4" @click.self="$emit('view')">{{ lead.name }}</span>
+  <div 
+    class="relative bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-kapital-dark/50 transition-all cursor-pointer group" 
+    @click.self="$emit('view')"
+  >
+    <div class="flex justify-between items-start mb-3">
+      <span class="font-bold text-sm text-slate-800 pr-4 leading-tight" @click.self="$emit('view')">{{ lead.name }}</span>
       <div class="relative">
-        <button @click.stop="showMenu = !showMenu" class="text-gray-500 hover:text-gray-800 px-2 py-1 rounded-full hover:bg-gray-200">
-          <i class="fas fa-ellipsis-v"></i>
+        <button 
+          @click.stop="showMenu = !showMenu" 
+          class="text-slate-400 hover:text-kapital-dark p-1 rounded-lg hover:bg-slate-100 transition-colors opacity-0 group-hover:opacity-100"
+        >
+          <MoreVertical :size="16" />
         </button>
         <!-- Actions Menu -->
-        <div v-if="showMenu" class="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-10 border" v-click-outside="() => showMenu = false">
+        <div 
+          v-if="showMenu" 
+          class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl z-20 border border-slate-100 overflow-hidden" 
+          v-click-outside="() => showMenu = false"
+        >
           <a @click.prevent="$emit('view'); showMenu = false" class="action-link">
-            <i class="fas fa-eye w-6"></i> Ver Detalles
+            <Eye :size="16" /> Ver Detalles
           </a>
           <a @click.prevent="$emit('edit'); showMenu = false" class="action-link">
-            <i class="fas fa-edit w-6"></i> Editar
+            <Edit2 :size="16" /> Editar
           </a>
-          <a @click.prevent="$emit('delete'); showMenu = false" class="action-link text-red-600 hover:bg-red-50">
-            <i class="fas fa-trash w-6"></i> Eliminar
+          <div class="h-px bg-slate-100 my-1"></div>
+          <a @click.prevent="$emit('delete'); showMenu = false" class="action-link text-rose-600 hover:bg-rose-50">
+            <Trash2 :size="16" /> Eliminar
           </a>
         </div>
       </div>
     </div>
+    
     <div @click.self="$emit('view')">
-      <p v-if="lead.company" class="text-xs font-medium text-gray-500 mb-2">{{ lead.company }}</p>
-      <p class="text-xs text-gray-500 mb-3 break-words">
+      <div v-if="lead.company" class="flex items-center gap-1.5 mb-2">
+        <Building2 :size="12" class="text-slate-400" />
+        <p class="text-xs font-semibold text-slate-500">{{ lead.company }}</p>
+      </div>
+      
+      <p class="text-xs text-slate-500 mb-4 line-clamp-2 leading-relaxed">
         {{ latestConversationPreview }}
       </p>
-      <div class="flex justify-between items-center">
-        <div class="flex items-center gap-1 text-xs text-gray-500">
-          <i class="fas fa-user"></i>
+      
+      <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+        <div class="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+          <User :size="12" />
           <span>{{ lead.assignedTo }}</span>
         </div>
-        <span :class="['px-2 py-0.5 rounded-full text-xs font-semibold inline-flex items-center gap-1', getOriginColor(lead.origin)]">
+        <span :class="['px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider flex items-center gap-1', getOriginColor(lead.origin)]">
           {{ lead.origin }}
         </span>
       </div>
@@ -40,6 +57,7 @@
 
 <script setup>
 import { computed, ref } from 'vue';
+import { MoreVertical, Eye, Edit2, Trash2, Building2, User } from 'lucide-vue-next';
 
 const props = defineProps({
   lead: {
@@ -57,7 +75,7 @@ const latestConversationPreview = computed(() => {
     // Assuming conversations are sorted newest first
     return props.lead.conversations[0].preview;
   }
-  return 'Sin conversaciones aún.';
+  return 'Sin conversaciones recientes.';
 });
 
 // Custom directive to detect clicks outside an element
@@ -77,19 +95,19 @@ const vClickOutside = {
 
 function getOriginColor(origin) {
   const colors = {
-    'Instagram': 'bg-pink-100 text-pink-700',
-    'Facebook': 'bg-blue-100 text-blue-700',
-    'LinkedIn': 'bg-indigo-100 text-indigo-700',
-    'Web': 'bg-green-100 text-green-700',
-    'Email': 'bg-orange-100 text-orange-700',
-    'Otro': 'bg-gray-100 text-gray-700'
+    'Instagram': 'bg-pink-50 text-pink-600',
+    'Facebook': 'bg-blue-50 text-blue-600',
+    'LinkedIn': 'bg-indigo-50 text-indigo-600',
+    'Web': 'bg-emerald-50 text-emerald-600',
+    'Email': 'bg-amber-50 text-amber-600',
+    'Otro': 'bg-slate-50 text-slate-600'
   };
-  return colors[origin] || 'bg-gray-100 text-gray-700';
+  return colors[origin] || 'bg-slate-50 text-slate-600';
 }
 </script>
 
 <style scoped lang="postcss">
 .action-link {
-  @apply flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer;
+  @apply flex items-center gap-2 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-kapital-dark cursor-pointer transition-colors font-medium;
 }
 </style>

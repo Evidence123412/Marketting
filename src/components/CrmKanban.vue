@@ -1,59 +1,73 @@
 <template>
-  <div class="space-y-8">
+  <div class="space-y-6 h-full flex flex-col">
     <!-- Filters and Actions -->
-    <div class="flex flex-col md:flex-row gap-4 items-start md:items-end">
-      <div class="flex-1 w-full md:w-auto">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Búsqueda</label>
+    <div 
+      v-motion
+      :initial="{ opacity: 0, y: -20 }"
+      :enter="{ opacity: 1, y: 0, transition: { duration: 500 } }"
+      class="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-white/50 backdrop-blur-sm p-4 rounded-2xl border border-white/20 shadow-sm"
+    >
+      <div class="relative w-full md:w-96">
+        <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" :size="18" />
         <input 
           v-model="searchQuery"
           type="text" 
-          placeholder="Buscar por nombre, email..." 
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-blue-100"
+          placeholder="Buscar por nombre, empresa o email..." 
+          class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20 text-sm text-slate-700 placeholder-slate-400 transition-all"
         />
       </div>
 
       <button 
         @click="showNewLeadModal = true"
-        class="btn-primary w-full md:w-auto"
+        class="btn-primary w-full md:w-auto shadow-lg shadow-kapital-dark/20"
       >
-        <i class="fas fa-plus"></i> Nuevo Lead
+        <Plus :size="18" /> Nuevo Lead
       </button>
     </div>
 
     <!-- Kanban Board -->
-    <div class="flex gap-4 pb-4">
-      <div 
-        v-for="status in statusOptions" 
-        :key="status.value" 
-        class="kanban-column"
-      >
-        <div class="column-header">
-          <i :class="['fas', status.icon, `text-${status.color}-600`]"></i>
-          <h3 class="font-semibold text-sm text-gray-700">{{ status.label }}</h3>
-          <span class="text-xs font-bold text-gray-500 bg-gray-200 rounded-full px-2 py-0.5">
-            {{ leadsByStatus[status.value] ? leadsByStatus[status.value].length : 0 }}
-          </span>
-        </div>
-        
-        <draggable
-          class="kanban-cards"
-          :list="leadsByStatus[status.value]"
-          group="leads"
-          @change="handleDragChange($event, status.value)"
-          item-key="id"
-          ghost-class="ghost"
-          drag-class="dragging"
-          animation="300"
+    <div class="flex-1 overflow-x-auto overflow-y-hidden">
+      <div class="flex gap-6 h-full pb-4 min-w-max px-2">
+        <div 
+          v-for="(status, index) in statusOptions" 
+          :key="status.value" 
+          v-motion
+          :initial="{ opacity: 0, x: 20 }"
+          :enter="{ opacity: 1, x: 0, transition: { delay: index * 100 } }"
+          class="kanban-column group"
         >
-          <template #item="{element}">
-            <LeadCard 
-              :lead="element"
-              @view="openDetailsModal(element)"
-              @edit="openEditModal(element)"
-              @delete="$emit('delete-lead', element.id)"
-            />
-          </template>
-        </draggable>
+          <!-- Column Header -->
+          <div class="column-header">
+            <div class="flex items-center gap-2">
+              <div :class="['w-2 h-2 rounded-full', getStatusColorClass(status.value)]"></div>
+              <h3 class="font-bold text-sm text-slate-700 uppercase tracking-wide">{{ status.label }}</h3>
+            </div>
+            <span class="text-xs font-bold text-slate-500 bg-white/50 border border-slate-200 rounded-full px-2.5 py-0.5">
+              {{ leadsByStatus[status.value] ? leadsByStatus[status.value].length : 0 }}
+            </span>
+          </div>
+          
+          <!-- Draggable Area -->
+          <draggable
+            class="kanban-cards scrollbar-thin"
+            :list="leadsByStatus[status.value]"
+            group="leads"
+            @change="handleDragChange($event, status.value)"
+            item-key="id"
+            ghost-class="ghost"
+            drag-class="dragging"
+            animation="200"
+          >
+            <template #item="{element}">
+              <LeadCard 
+                :lead="element"
+                @view="openDetailsModal(element)"
+                @edit="openEditModal(element)"
+                @delete="$emit('delete-lead', element.id)"
+              />
+            </template>
+          </draggable>
+        </div>
       </div>
     </div>
 
@@ -93,6 +107,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import draggable from 'vuedraggable'
+import { Plus, Search } from 'lucide-vue-next'
 
 import LeadCard from './LeadCard.vue'
 import NewLeadModal from './modals/NewLeadModal.vue'
@@ -151,6 +166,20 @@ const leadsByStatus = computed(() => {
   return grouped;
 });
 
+// Helper for status colors
+function getStatusColorClass(status) {
+  const colors = {
+    'new': 'bg-blue-500',
+    'contacted': 'bg-amber-500',
+    'qualified': 'bg-purple-500',
+    'proposal': 'bg-indigo-500',
+    'negotiation': 'bg-pink-500',
+    'closed': 'bg-emerald-500',
+    'lost': 'bg-slate-500'
+  }
+  return colors[status] || 'bg-slate-400'
+}
+
 // Modal Openers
 function openEditModal(lead) {
   selectedLead.value = { ...lead };
@@ -179,36 +208,41 @@ function handleDragChange(event, newStatus) {
 
 <style scoped lang="postcss">
 .btn-primary {
-  @apply px-6 py-3 bg-kapital-dark text-white font-medium rounded-md transition-all hover:bg-blue-700 active:scale-95 flex items-center justify-center gap-2;
+  @apply px-5 py-2.5 bg-kapital-dark text-white font-medium rounded-xl transition-all hover:bg-blue-700 active:scale-95 flex items-center justify-center gap-2;
 }
+
 .kanban-column {
-  @apply flex-shrink-0 w-72 bg-gray-100 rounded-lg p-2 flex flex-col;
+  @apply flex-shrink-0 w-80 bg-slate-100/50 rounded-2xl p-3 flex flex-col border border-slate-200/60 backdrop-blur-sm transition-colors hover:bg-slate-100/80;
 }
+
 .column-header {
-  @apply flex items-center justify-between px-2 py-2 mb-2;
+  @apply flex items-center justify-between px-3 py-3 mb-2;
 }
+
 .kanban-cards {
-  @apply flex-grow min-h-[100px] space-y-3 p-1;
+  @apply flex-grow min-h-[100px] space-y-3 p-1 overflow-y-auto;
 }
 
 .ghost {
-  @apply bg-gray-200 opacity-50 rounded-lg;
+  @apply bg-slate-200/50 opacity-50 rounded-xl border-2 border-dashed border-slate-300;
 }
 
 .dragging {
-  @apply cursor-grabbing transform rotate-3 shadow-2xl;
+  @apply cursor-grabbing rotate-2 scale-105 shadow-2xl ring-2 ring-kapital-dark ring-offset-2 ring-offset-slate-100;
 }
 
-.kanban-card-enter-active,
-.kanban-card-leave-active {
-  transition: all 0.3s ease;
+/* Scrollbar fina para las columnas */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
 }
-.kanban-card-enter-from,
-.kanban-card-leave-to {
-  opacity: 0;
-  transform: translateY(30px);
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
 }
-.kanban-card-move {
-  transition: transform 0.3s ease;
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #cbd5e1; 
+  border-radius: 10px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 </style>

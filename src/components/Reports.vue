@@ -1,474 +1,505 @@
 <template>
-  <div class="space-y-8">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+  <div class="space-y-6 h-full flex flex-col">
+    <!-- Header & Controls -->
+    <div 
+      v-motion
+      :initial="{ opacity: 0, y: -20 }"
+      :enter="{ opacity: 1, y: 0, transition: { duration: 500 } }"
+      class="flex flex-col gap-6"
+    >
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-          <i class="fas fa-calendar-alt mr-2 text-kapital-night"></i>Desde
-        </label>
-        <input 
-          v-model="dateRange.start"
-          type="date" 
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-night focus:ring-2 focus:ring-blue-100"
-        />
+        <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Reportes y Análisis</h1>
+        <p class="text-slate-500 mt-1">Visualiza el rendimiento de tus campañas y redes sociales.</p>
       </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-          <i class="fas fa-calendar-alt mr-2 text-kapital-night"></i>Hasta
-        </label>
-        <input 
-          v-model="dateRange.end"
-          type="date" 
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-night focus:ring-2 focus:ring-blue-100"
-        />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-          <i class="fas fa-layer-group mr-2 text-kapital-night"></i>Canal
-        </label>
-        <select 
-          v-model="selectedChannel"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-night focus:ring-2 focus:ring-blue-100"
-        >
-          <option value="">Todos los canales</option>
-          <option value="instagram">Instagram</option>
-          <option value="facebook">Facebook</option>
-          <option value="linkedin">LinkedIn</option>
-          <option value="twitter">Twitter</option>
-        </select>
-      </div>
-      <div class="flex items-end gap-2">
-        <button @click="generateReport" class="btn-primary w-full">
-          <i class="fas fa-chart-bar"></i> Generar Reporte
-        </button>
-        <button @click="exportReport" class="btn-secondary px-4 py-2">
-          <i class="fas fa-download"></i>
-        </button>
+
+      <div class="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-white/20 shadow-soft flex flex-col md:flex-row gap-4 items-end">
+        <div class="flex-1 w-full">
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">
+            <Calendar :size="14" class="inline mr-1" /> Rango de Fechas
+          </label>
+          <div class="flex gap-2 items-center">
+            <input 
+              v-model="dateRange.start"
+              type="date" 
+              class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20 transition-all"
+            />
+            <span class="text-slate-400">-</span>
+            <input 
+              v-model="dateRange.end"
+              type="date" 
+              class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20 transition-all"
+            />
+          </div>
+        </div>
+        
+        <div class="flex-1 w-full">
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">
+            <Share2 :size="14" class="inline mr-1" /> Canal
+          </label>
+          <div class="relative">
+            <select 
+              v-model="selectedChannel"
+              class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:border-kapital-dark appearance-none cursor-pointer"
+            >
+              <option value="">Todos los canales</option>
+              <option value="instagram">Instagram</option>
+              <option value="facebook">Facebook</option>
+              <option value="linkedin">LinkedIn</option>
+              <option value="twitter">Twitter</option>
+            </select>
+            <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" :size="16" />
+          </div>
+        </div>
+
+        <div class="flex gap-2 w-full md:w-auto">
+          <button @click="generateReport" class="btn-primary flex-1 md:w-auto shadow-lg shadow-kapital-dark/20 whitespace-nowrap">
+            <BarChart2 :size="18" /> Generar
+          </button>
+          <button @click="exportReport" class="btn-secondary px-3" title="Exportar PDF">
+            <Download :size="18" />
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="border-b border-gray-200">
-      <nav class="-mb-px flex gap-6" aria-label="Tabs">
+    <!-- Tabs -->
+    <div class="border-b border-slate-200/60">
+      <nav class="-mb-px flex gap-8 overflow-x-auto scrollbar-hide" aria-label="Tabs">
         <button 
           @click="activeTab = 'resumen'" 
           :class="[
-            'py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2',
+            'py-4 px-1 border-b-2 font-bold text-sm flex items-center gap-2 transition-all whitespace-nowrap',
             activeTab === 'resumen' 
-              ? 'border-kapital-night text-kapital-night' 
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              ? 'border-kapital-dark text-kapital-dark' 
+              : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
           ]"
         >
-          <i class="fas fa-home"></i>Resumen General
+          <LayoutDashboard :size="18" /> Resumen General
         </button>
         <button 
           @click="activeTab = 'analisis'" 
           :class="[
-            'py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2',
+            'py-4 px-1 border-b-2 font-bold text-sm flex items-center gap-2 transition-all whitespace-nowrap',
             activeTab === 'analisis' 
-              ? 'border-kapital-night text-kapital-night' 
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              ? 'border-kapital-dark text-kapital-dark' 
+              : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
           ]"
         >
-          <i class="fas fa-chart-pie"></i>Análisis de KPIs
+          <PieChart :size="18" /> Análisis de KPIs
         </button>
         <button 
           @click="activeTab = 'canales'" 
           :class="[
-            'py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2',
+            'py-4 px-1 border-b-2 font-bold text-sm flex items-center gap-2 transition-all whitespace-nowrap',
             activeTab === 'canales' 
-              ? 'border-kapital-night text-kapital-night' 
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              ? 'border-kapital-dark text-kapital-dark' 
+              : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
           ]"
         >
-          <i class="fas fa-share-alt"></i>Desempeño por Canal
+          <Share2 :size="18" /> Desempeño por Canal
         </button>
       </nav>
     </div>
 
-    <div v-show="activeTab === 'resumen'" class="space-y-8">
+    <!-- Content Area -->
+    <div class="flex-1 overflow-y-auto scrollbar-thin pr-2 pb-4">
       
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div 
-          v-for="kpi in kpis" 
-          :key="kpi.id" 
-          :class="[
-            'card hover:shadow-lg transition-all cursor-pointer group',
-            selectedKpi && selectedKpi.id === kpi.id ? 'ring-2 ring-kapital-night shadow-lg' : ''
-          ]"
-          @click="selectKpiForDetail(kpi)"
-        >
-          <div class="flex items-start justify-between mb-3">
-            <div :class="['w-12 h-12 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform', kpi.bgColor, kpi.iconColor]">
-              <i :class="['fas', kpi.icon, 'text-lg']"></i>
+      <!-- TAB: RESUMEN -->
+      <div v-show="activeTab === 'resumen'" class="space-y-6">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div 
+            v-for="(kpi, index) in kpis" 
+            :key="kpi.id" 
+            v-motion
+            :initial="{ opacity: 0, y: 20 }"
+            :enter="{ opacity: 1, y: 0, transition: { delay: index * 100 } }"
+            :class="[
+              'bg-white p-5 rounded-2xl border transition-all cursor-pointer group relative overflow-hidden',
+              selectedKpi && selectedKpi.id === kpi.id ? 'border-kapital-dark ring-1 ring-kapital-dark shadow-md' : 'border-slate-200 hover:border-kapital-dark/50 hover:shadow-sm'
+            ]"
+            @click="selectKpiForDetail(kpi)"
+          >
+            <div class="flex items-start justify-between mb-4 relative z-10">
+              <div :class="['w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110', kpi.bgClass, kpi.textClass]">
+                <component :is="kpi.iconComponent" :size="24" />
+              </div>
+              <span :class="['text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1', kpi.trend > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700']">
+                <component :is="kpi.trend > 0 ? TrendingUp : TrendingDown" :size="12" />
+                {{ Math.abs(kpi.trend) }}%
+              </span>
             </div>
-            <span :class="['text-xs font-bold px-2 py-1 rounded-full', kpi.trend > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700']">
-              <i :class="['fas', kpi.trend > 0 ? 'fa-arrow-up' : 'fa-arrow-down']"></i>
-              {{ Math.abs(kpi.trend) }}%
-            </span>
+            <h4 class="text-sm font-bold text-slate-500 mb-1 relative z-10">{{ kpi.label }}</h4>
+            <p class="text-3xl font-bold text-slate-900 mb-3 relative z-10">{{ kpi.value }}</p>
+            <div class="w-full bg-slate-100 rounded-full h-1.5 relative z-10">
+              <div 
+                class="h-1.5 rounded-full transition-all duration-1000 ease-out" 
+                :style="{ width: kpi.progress + '%', backgroundColor: kpi.color }"
+              ></div>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-3 font-medium relative z-10">{{ kpi.detail }}</p>
+            
+            <!-- Background decoration -->
+            <div :class="['absolute -bottom-6 -right-6 w-24 h-24 rounded-full opacity-5 transition-transform group-hover:scale-150', kpi.bgClass]"></div>
           </div>
-          <h4 class="text-sm font-medium text-gray-600 mb-1">{{ kpi.label }}</h4>
-          <p class="text-2xl font-bold text-gray-900 mb-2">{{ kpi.value }}</p>
-          <div class="w-full bg-gray-200 rounded-full h-2">
+        </div>
+
+        <div v-if="selectedKpi" class="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 flex items-center gap-4">
+          <div :class="['w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center', selectedKpi.bgClass, selectedKpi.textClass]">
+            <Lightbulb :size="20" />
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-900 text-sm">Insight: {{ selectedKpi.label }}</h3>
+            <p class="text-sm text-slate-600 mt-0.5">{{ computedInsightText }}</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div class="flex justify-between items-center mb-8">
+            <div>
+              <h2 class="text-lg font-bold text-slate-900">{{ computedChartTitle }}</h2>
+              <p class="text-sm text-slate-500 mt-1">Últimos 7 días</p>
+            </div>
+            <div class="flex bg-slate-100 p-1 rounded-xl">
+              <button 
+                @click="chartView = 'performance'"
+                :class="['px-4 py-1.5 text-xs font-bold rounded-lg transition-all', chartView === 'performance' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700']"
+              >
+                Comparativa
+              </button>
+              <button 
+                @click="chartView = 'reach'"
+                :class="['px-4 py-1.5 text-xs font-bold rounded-lg transition-all', chartView === 'reach' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700']"
+              >
+                {{ selectedKpi ? selectedKpi.label : 'Detalle' }}
+              </button>
+            </div>
+          </div>
+
+          <div v-if="chartView === 'performance'" class="flex items-end justify-around gap-4 h-64 mb-6 px-4">
             <div 
-              class="h-2 rounded-full transition-all duration-500" 
-              :style="{ width: kpi.progress + '%', backgroundColor: kpi.accentColor }"
-            ></div>
-          </div>
-          <small class="text-gray-600 mt-2 block">{{ kpi.detail }}</small>
-        </div>
-      </div>
-
-      <div v-if="selectedKpi" class="card bg-gray-50 border border-gray-200">
-        <div class="flex items-center gap-4">
-          <div :class="['w-12 h-12 rounded-lg flex-shrink-0 flex items-center justify-center', selectedKpi.bgColor, selectedKpi.iconColor]">
-            <i :class="['fas', selectedKpi.icon, 'text-lg']"></i>
-          </div>
-          <div>
-            <h3 class="font-semibold text-gray-900">Insight: {{ selectedKpi.label }}</h3>
-            <p class="text-sm text-gray-700 mt-1">{{ computedInsightText }}</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="flex justify-between items-center mb-6">
-          <div>
-            <h2 class="text-lg font-bold text-gray-900">{{ computedChartTitle }}</h2>
-            <p class="text-sm text-gray-600 mt-1">Últimos 7 días</p>
-          </div>
-          <div class="flex gap-2">
-            <button 
-              @click="chartView = 'performance'"
-              :class="['px-3 py-1 text-xs font-medium rounded transition-colors', chartView === 'performance' ? 'bg-kapital-night text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300']"
+              v-for="(bar, idx) in chartData" 
+              :key="'perf-' + idx" 
+              class="flex-1 flex flex-col items-center justify-end gap-3 group relative"
             >
-              Comparativa
-            </button>
-            <button 
-              @click="chartView = 'reach'"
-              :class="['px-3 py-1 text-xs font-medium rounded transition-colors', chartView === 'reach' ? 'bg-kapital-night text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300']"
+              <div class="flex gap-1 h-full w-full items-end justify-center">
+                <div 
+                  class="bg-slate-800 rounded-t-md w-full transition-all group-hover:opacity-80 relative"
+                  :style="{ height: bar.height + '%' }"
+                >
+                  <div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded pointer-events-none whitespace-nowrap z-20">
+                    {{ bar.reach }}
+                  </div>
+                </div>
+                <div 
+                  class="bg-blue-600 rounded-t-md w-full transition-all group-hover:opacity-80 relative"
+                  :style="{ height: bar.interactionHeight + '%' }"
+                >
+                  <div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded pointer-events-none whitespace-nowrap z-20">
+                    {{ bar.interactions }}
+                  </div>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-slate-400">{{ bar.day }}</span>
+            </div>
+          </div>
+
+          <div v-else class="flex items-end justify-around gap-4 h-64 mb-6 px-4">
+            <div 
+              v-for="(bar, idx) in chartData" 
+              :key="'reach-' + idx" 
+              class="flex-1 flex flex-col items-center gap-3 group relative cursor-pointer"
             >
-              {{ selectedKpi ? selectedKpi.label : 'Detalle' }}
-            </button>
-          </div>
-        </div>
-
-        <div v-if="chartView === 'performance'" class="flex items-end justify-around gap-2 h-80 mb-4 px-2 bg-gray-50 rounded-lg p-4">
-          <div 
-            v-for="(bar, idx) in chartData" 
-            :key="'perf-' + idx" 
-            class="flex-1 flex flex-col items-end justify-end gap-3 group"
-            :title="`${bar.day}: Alcance ${bar.reach} | Interacciones ${bar.interactions}`"
-          >
-            <div class="flex gap-2 h-full w-full items-end justify-center">
-              <div 
-                class="bg-kapital-night rounded-t transition-all group-hover:shadow-lg cursor-pointer"
-                :style="{ height: bar.height + '%', width: '40%', minHeight: bar.height +'px' }"
-              ></div>
-              <div 
-                class="bg-kapital-dark rounded-t transition-all group-hover:shadow-lg cursor-pointer"
-                :style="{ height: bar.interactionHeight + '%', width: '40%', minHeight: bar.interactionHeight +'px' }"
-              ></div>
+              <div class="relative w-full h-full flex items-end justify-center">
+                <div 
+                  :class="['w-full max-w-[40px] rounded-t-lg transition-all group-hover:opacity-80', selectedKpi ? selectedKpi.bgClass.replace('/10', '') : 'bg-slate-800']"
+                  :style="{ height: bar.height + '%', backgroundColor: selectedKpi ? selectedKpi.color : undefined }"
+                ></div>
+                <span class="absolute -top-8 text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">{{ bar.reach }}</span>
+              </div>
+              <span class="text-xs font-bold text-slate-400">{{ bar.day }}</span>
             </div>
-            <small class="text-gray-700 font-bold text-center w-full">{{ bar.day }}</small>
           </div>
-        </div>
 
-        <div v-else class="flex items-end justify-around gap-3 h-64 mb-4">
-          <div 
-            v-for="(bar, idx) in chartData" 
-            :key="'reach-' + idx" 
-            class="flex-1 flex flex-col items-center gap-2 group cursor-pointer"
-            :title="`${bar.day}: ${bar.reach}`"
-          >
-            <div class="relative w-full h-full flex items-end justify-center">
-              <div 
-                :class="['w-full rounded-t transition-all group-hover:opacity-80', selectedKpi ? selectedKpi.bgColor : 'bg-kapital-night']"
-                :style="{ height: bar.height + '%' , width: '40%', minHeight: bar.height +'px' }"
-              ></div>
-              <span class="absolute -top-6 text-xs font-bold text-gray-700">{{ bar.reach }}</span>
+          <div class="border-t border-slate-100 pt-4 flex justify-center gap-8 text-xs font-medium text-slate-500">
+            <div v-if="chartView === 'performance'" class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full bg-slate-800"></div>
+              <span>Alcance</span>
             </div>
-            <small class="text-gray-600 font-medium mt-2">{{ bar.day }}</small>
+            <div v-if="chartView === 'performance'" class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full bg-blue-600"></div>
+              <span>Interacciones</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <Info :size="14" />
+              <span>Hover para ver detalles</span>
+            </div>
           </div>
         </div>
 
-        <div class="border-t border-gray-200 pt-4 flex justify-center gap-6 text-sm text-gray-600">
-          <div v-if="chartView === 'performance'" class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded bg-kapital-night"></div>
-            <span>Alcance</span>
-          </div>
-          <div v-if="chartView === 'performance'" class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded bg-kapital-dark"></div>
-            <span>Interacciones</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <i class="fas fa-info-circle"></i>
-            <span>Hover para ver detalles</span>
-          </div>
-        </div>
       </div>
 
-    </div> <div v-show="activeTab === 'analisis'" class="space-y-8">
-      
-      <div class="card">
-        <h2 class="text-lg font-bold text-gray-900 mb-6">Comparativa KPIs - Período Anterior vs Actual</h2>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div>
-            <h3 class="font-semibold text-gray-900 mb-4">Rendimiento Comparativo</h3>
-            <div class="space-y-6">
-              <div v-for="kpi in kpis" :key="kpi.id" class="space-y-2">
-                <div class="flex justify-between items-center mb-2">
-                  <div class="flex items-center gap-2">
-                    <div :class="['w-8 h-8 rounded-lg flex items-center justify-center', kpi.bgColor, kpi.iconColor]">
-                      <i :class="['fas', kpi.icon, 'text-sm']"></i>
+      <!-- TAB: ANALISIS -->
+      <div v-show="activeTab === 'analisis'" class="space-y-6">
+        
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <h2 class="text-lg font-bold text-slate-900 mb-6">Comparativa KPIs - Período Anterior vs Actual</h2>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div>
+              <h3 class="font-bold text-slate-700 mb-6 text-sm uppercase tracking-wide">Rendimiento Comparativo</h3>
+              <div class="space-y-6">
+                <div v-for="kpi in kpis" :key="kpi.id" class="space-y-2">
+                  <div class="flex justify-between items-center mb-1">
+                    <div class="flex items-center gap-3">
+                      <div :class="['w-8 h-8 rounded-lg flex items-center justify-center', kpi.bgClass, kpi.textClass]">
+                        <component :is="kpi.iconComponent" :size="14" />
+                      </div>
+                      <span class="font-bold text-slate-700 text-sm">{{ kpi.label }}</span>
                     </div>
-                    <span class="font-medium text-gray-900">{{ kpi.label }}</span>
+                    <span class="font-bold text-slate-900">{{ kpi.value }}</span>
                   </div>
-                  <span class="font-bold text-gray-900">{{ kpi.value }}</span>
-                </div>
-                <div class="flex gap-2 h-6">
-                  <div class="flex-1 bg-gray-200 rounded-lg overflow-hidden">
-                    <div 
-                      class="h-full rounded-lg transition-all duration-500 opacity-70"
-                      :style="{ width: '65%', backgroundColor: kpi.accentColor }"
-                      title="Período anterior"
-                    ></div>
-                  </div>
-                  <div class="flex-1 bg-gray-200 rounded-lg overflow-hidden">
-                    <div 
-                      class="h-full rounded-lg transition-all duration-500"
-                      :style="{ width: '85%', backgroundColor: kpi.accentColor }"
-                      title="Período actual"
-                    ></div>
-                  </div>
-                </div>
-                <div class="flex justify-between text-xs text-gray-600">
-                  <span>Anterior</span>
-                  <span>Actual (+{{ kpi.trend }}%)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="font-semibold text-gray-900 mb-4">Progreso hacia Metas</h3>
-            <div class="grid grid-cols-2 gap-6">
-              <div v-for="kpi in kpis" :key="'goal-' + kpi.id" class="flex flex-col items-center">
-                <svg class="w-20 h-20 mb-3" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="45" fill="none" :stroke="kpi.accentColor" opacity="0.2" stroke-width="6" />
-                  <circle 
-                    cx="50" 
-                    cy="50" 
-                    r="45" 
-                    fill="none" 
-                    :stroke="kpi.accentColor" 
-                    stroke-width="6"
-                    stroke-dasharray="282.74"
-                    :stroke-dashoffset="282.74 - (282.74 * kpi.progress / 100)"
-                    stroke-linecap="round"
-                    style="transform: rotate(-90deg); transform-origin: 50% 50%;"
-                    class="transition-all duration-500"
-                  />
-                  <text 
-                    x="50" 
-                    y="55" 
-                    text-anchor="middle" 
-                    font-size="20" 
-                    font-weight="bold"
-                    :fill="kpi.textColor"
-                  >
-                    {{ kpi.progress }}%
-                  </text>
-                </svg>
-                <p class="text-xs font-medium text-gray-900 text-center">{{ kpi.label }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="border-t border-gray-200 mt-6 pt-6 flex justify-center gap-8">
-          <div class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded" :style="{ backgroundColor: '#C9C9C9', opacity: '0.7' }"></div> <span class="text-sm text-gray-600">Período Anterior</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded bg-kapital-night"></div>
-            <span class="text-sm text-gray-600">Período Actual</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="flex justify-between items-center mb-6">
-          <div>
-            <h2 class="text-lg font-bold text-gray-900">Tendencia de Engagement</h2>
-            <p class="text-sm text-gray-600 mt-1">Comportamiento semanal - CTR vs Engagement</p>
-          </div>
-          <div class="flex gap-2">
-            <button 
-              @click="engagementView = 'comparative'"
-              :class="['px-3 py-1 text-xs font-medium rounded transition-colors', engagementView === 'comparative' ? 'bg-kapital-night text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300']"
-            >
-              Comparativa
-            </button>
-            <button 
-              @click="engagementView = 'engagement'"
-              :class="['px-3 py-1 text-xs font-medium rounded transition-colors', engagementView === 'engagement' ? 'bg-kapital-night text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300']"
-            >
-              Engagement
-            </button>
-          </div>
-        </div>
-
-        <div v-if="engagementView === 'comparative'" class="h-64 flex items-end justify-around gap-1 mb-4 relative px-2">
-          <div 
-            v-for="(point, idx) in engagementData" 
-            :key="'comp-' + idx" 
-            class="flex-1 flex flex-col items-center gap-2 group relative z-10"
-            :title="`${point.day}: Engagement ${point.engagement}% | CTR ${point.ctr}%`"
-          >
-            <div class="relative w-full h-full flex items-end justify-center gap-0.5">
-              <div 
-                class="flex-1 bg-kapital-dark rounded-t transition-all group-hover:opacity-80"
-                :style="{ height: point.height + '%', width: '40%', minHeight: point.height +'px' }"
-              ></div>
-              <div 
-                class="flex-1 bg-kapital-light-1 rounded-t transition-all group-hover:opacity-80"
-                :style="{ height: point.ctrHeight + '%' , width: '40%', minHeight: point.ctrHeight +'px'}"
-              ></div>
-            </div>
-            <small class="text-gray-600 font-medium mt-2">{{ point.day }}</small>
-          </div>
-        </div>
-
-        <div v-else class="h-64 flex items-end justify-around gap-2 mb-4 relative">
-          <div 
-            v-for="(point, idx) in engagementData" 
-            :key="'eng-' + idx" 
-            class="flex-1 flex flex-col items-center gap-2 group relative z-10"
-            :title="`${point.day}: ${point.engagement}%`"
-          >
-            <div class="relative w-full h-full flex items-end justify-center">
-              <div 
-                class="w-3/4 bg-kapital-dark rounded-t transition-all group-hover:opacity-80"
-                :style="{ height: point.height + '%', width: '40%', minHeight: point.height +'px' }"
-              ></div>
-              <span class="absolute -top-6 text-xs font-bold text-kapital-night">{{ point.engagement }}%</span>
-            </div>
-            <small class="text-gray-600 font-medium mt-2">{{ point.day }}</small>
-          </div>
-        </div>
-
-        <div class="border-t border-gray-200 pt-4 flex justify-center gap-6 text-sm text-gray-600">
-          <div v-if="engagementView === 'comparative'" class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded bg-kapital-dark"></div>
-            <span>Engagement</span>
-          </div>
-          <div v-if="engagementView === 'comparative'" class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded bg-kapital-light-1"></div>
-            <span>CTR</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <i class="fas fa-info-circle"></i>
-            <span>Promedio: {{ avgEngagement }}%</span>
-          </div>
-        </div>
-      </div>
-
-    </div> <div v-show="activeTab === 'canales'" class="space-y-8">
-      
-      <div class="card">
-        <h2 class="text-lg font-bold text-gray-900 mb-6">Desempeño por Red Social</h2>
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b-2 border-gray-200">
-              <tr>
-                <th class="px-6 py-3 text-left font-semibold text-gray-700">
-                  <i class="fas fa-globe mr-2 text-kapital-night"></i>Red Social
-                </th>
-                <th class="px-6 py-3 text-left font-semibold text-gray-700">
-                  <i class="fas fa-eye mr-2 text-kapital-night"></i>Alcance
-                </th>
-                <th class="px-6 py-3 text-left font-semibold text-gray-700">
-                  <i class="fas fa-heart mr-2 text-kapital-night"></i>Engagement
-                </th>
-                <th class="px-6 py-3 text-left font-semibold text-gray-700">
-                  <i class="fas fa-mouse mr-2 text-kapital-night"></i>CTR
-                </th>
-                <th class="px-6 py-3 text-left font-semibold text-gray-700">
-                  <i class="fas fa-user-plus mr-2 text-kapital-night"></i>Followers
-                </th>
-                <th class="px-6 py-3 text-left font-semibold text-gray-700">
-                  <i class="fas fa-chart-line mr-2 text-kapital-night"></i>Crecimiento
-                </th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-              <tr v-for="network in networkPerformance" :key="network.id" class="hover:bg-gray-50 transition-colors">
-                <td class="px-6 py-3">
-                  <div class="flex items-center gap-2">
-                    <i 
-                  :class="[network.icon, 'text-lg']" 
-                  :style="{ color: network.color }">
-                  </i>
-                    <span class="font-medium text-gray-900">{{ network.name }}</span>
-                  </div>
-                </td>
-                <td class="px-6 py-3">
-                  <span class="font-bold text-gray-900">{{ network.reach }}</span>
-                  <small class="text-gray-600 block">+{{ network.reachChange }}%</small>
-                </td>
-                <td class="px-6 py-3">
-                  <div class="flex items-center gap-2">
-                    <div class="w-16 bg-gray-200 rounded-full h-2">
+                  <div class="flex gap-1 h-2.5 w-full">
+                    <div class="flex-1 bg-slate-100 rounded-l-full overflow-hidden relative group">
                       <div 
-                        class="h-2 rounded-full" 
-                        :style="{ width: network.engagement + '%', backgroundColor: network.color }"
+                        class="h-full rounded-l-full transition-all duration-500 opacity-40"
+                        :style="{ width: '65%', backgroundColor: kpi.color }"
                       ></div>
+                      <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/5 text-[8px] font-bold transition-opacity">ANTERIOR</div>
                     </div>
-                    <span class="font-bold text-gray-900">{{ network.engagement }}%</span>
+                    <div class="flex-1 bg-slate-100 rounded-r-full overflow-hidden relative group">
+                      <div 
+                        class="h-full rounded-r-full transition-all duration-500"
+                        :style="{ width: '85%', backgroundColor: kpi.color }"
+                      ></div>
+                      <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/5 text-[8px] font-bold transition-opacity">ACTUAL</div>
+                    </div>
                   </div>
-                </td>
-                <td class="px-6 py-3">
-                  <span class="font-bold text-gray-900">{{ network.ctr }}%</span>
-                </td>
-                <td class="px-6 py-3">
-                  <span class="font-bold text-gray-900">{{ network.followers }}</span>
-                </td>
-                <td class="px-6 py-3">
-                  <span :class="['text-xs font-bold px-2 py-1 rounded-full', network.growth > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700']">
-                    <i :class="['fas', network.growth > 0 ? 'fa-arrow-up' : 'fa-arrow-down']"></i>
-                    {{ Math.abs(network.growth) }}%
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wide">
+                    <span>Anterior</span>
+                    <span class="text-emerald-600">Actual (+{{ kpi.trend }}%)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="font-bold text-slate-700 mb-6 text-sm uppercase tracking-wide">Progreso hacia Metas</h3>
+              <div class="grid grid-cols-2 gap-6">
+                <div v-for="kpi in kpis" :key="'goal-' + kpi.id" class="flex flex-col items-center bg-slate-50/50 rounded-xl p-4 border border-slate-100">
+                  <div class="relative w-24 h-24 mb-3">
+                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="40" fill="none" stroke="#e2e8f0" stroke-width="8" />
+                      <circle 
+                        cx="50" 
+                        cy="50" 
+                        r="40" 
+                        fill="none" 
+                        :stroke="kpi.color" 
+                        stroke-width="8"
+                        stroke-dasharray="251.2"
+                        :stroke-dashoffset="251.2 - (251.2 * kpi.progress / 100)"
+                        stroke-linecap="round"
+                        class="transition-all duration-1000 ease-out"
+                      />
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center flex-col">
+                      <span class="text-xl font-bold text-slate-900">{{ kpi.progress }}%</span>
+                    </div>
+                  </div>
+                  <p class="text-xs font-bold text-slate-600 text-center">{{ kpi.label }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div class="flex justify-between items-center mb-8">
+            <div>
+              <h2 class="text-lg font-bold text-slate-900">Tendencia de Engagement</h2>
+              <p class="text-sm text-slate-500 mt-1">Comportamiento semanal - CTR vs Engagement</p>
+            </div>
+            <div class="flex bg-slate-100 p-1 rounded-xl">
+              <button 
+                @click="engagementView = 'comparative'"
+                :class="['px-4 py-1.5 text-xs font-bold rounded-lg transition-all', engagementView === 'comparative' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700']"
+              >
+                Comparativa
+              </button>
+              <button 
+                @click="engagementView = 'engagement'"
+                :class="['px-4 py-1.5 text-xs font-bold rounded-lg transition-all', engagementView === 'engagement' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700']"
+              >
+                Engagement
+              </button>
+            </div>
+          </div>
+
+          <div v-if="engagementView === 'comparative'" class="h-64 flex items-end justify-around gap-1 mb-6 relative px-2">
+            <div 
+              v-for="(point, idx) in engagementData" 
+              :key="'comp-' + idx" 
+              class="flex-1 flex flex-col items-center gap-2 group relative z-10"
+            >
+              <div class="relative w-full h-full flex items-end justify-center gap-1">
+                <div 
+                  class="flex-1 bg-slate-800 rounded-t transition-all group-hover:opacity-80 relative"
+                  :style="{ height: point.height + '%' }"
+                >
+                   <div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded pointer-events-none whitespace-nowrap z-20">
+                    Eng: {{ point.engagement }}%
+                  </div>
+                </div>
+                <div 
+                  class="flex-1 bg-blue-400 rounded-t transition-all group-hover:opacity-80 relative"
+                  :style="{ height: point.ctrHeight + '%' }"
+                >
+                   <div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-[10px] font-bold px-2 py-1 rounded pointer-events-none whitespace-nowrap z-20">
+                    CTR: {{ point.ctr }}%
+                  </div>
+                </div>
+              </div>
+              <small class="text-slate-500 font-bold text-xs">{{ point.day }}</small>
+            </div>
+          </div>
+
+          <div v-else class="h-64 flex items-end justify-around gap-2 mb-6 relative">
+            <div 
+              v-for="(point, idx) in engagementData" 
+              :key="'eng-' + idx" 
+              class="flex-1 flex flex-col items-center gap-2 group relative z-10"
+            >
+              <div class="relative w-full h-full flex items-end justify-center">
+                <div 
+                  class="w-2/3 bg-slate-800 rounded-t-lg transition-all group-hover:opacity-80"
+                  :style="{ height: point.height + '%' }"
+                ></div>
+                <span class="absolute -top-8 text-xs font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">{{ point.engagement }}%</span>
+              </div>
+              <small class="text-slate-500 font-bold text-xs">{{ point.day }}</small>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-4 flex justify-center gap-8 text-xs font-medium text-slate-500">
+            <div v-if="engagementView === 'comparative'" class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full bg-slate-800"></div>
+              <span>Engagement</span>
+            </div>
+            <div v-if="engagementView === 'comparative'" class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full bg-blue-400"></div>
+              <span>CTR</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <Info :size="14" />
+              <span>Promedio: {{ avgEngagement }}%</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TAB: CANALES -->
+      <div v-show="activeTab === 'canales'" class="space-y-6">
+        
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-6 border-b border-slate-100">
+            <h2 class="text-lg font-bold text-slate-900">Desempeño por Red Social</h2>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+              <thead class="bg-slate-50 text-slate-500 font-bold uppercase text-xs tracking-wider">
+                <tr>
+                  <th class="px-6 py-4">Red Social</th>
+                  <th class="px-6 py-4">Alcance</th>
+                  <th class="px-6 py-4">Engagement</th>
+                  <th class="px-6 py-4">CTR</th>
+                  <th class="px-6 py-4">Seguidores</th>
+                  <th class="px-6 py-4">Crecimiento</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr v-for="network in networkPerformance" :key="network.id" class="hover:bg-slate-50/50 transition-colors">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div :class="['w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm', network.bgClass]">
+                        <component :is="network.iconComponent" :size="16" />
+                      </div>
+                      <span class="font-bold text-slate-900">{{ network.name }}</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="font-bold text-slate-900 block">{{ network.reach }}</span>
+                    <small class="text-emerald-600 font-bold text-[10px]">+{{ network.reachChange }}%</small>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-16 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                        <div 
+                          class="h-full rounded-full" 
+                          :style="{ width: network.engagement + '%', backgroundColor: network.color }"
+                        ></div>
+                      </div>
+                      <span class="font-bold text-slate-700">{{ network.engagement }}%</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="font-bold text-slate-700">{{ network.ctr }}%</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="font-bold text-slate-900">{{ network.followers }}</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span :class="['text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 w-fit', network.growth > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700']">
+                      <component :is="network.growth > 0 ? TrendingUp : TrendingDown" :size="10" />
+                      {{ Math.abs(network.growth) }}%
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-slate-900 rounded-2xl p-6 text-white relative overflow-hidden">
+            <div class="relative z-10">
+              <h3 class="font-bold text-lg mb-2 flex items-center gap-2">
+                <FileText :size="20" class="text-blue-400" /> Exportar Datos
+              </h3>
+              <p class="text-slate-400 text-sm mb-6">Descarga el reporte completo en formato CSV para realizar tus propios análisis.</p>
+              <button @click="exportCSV" class="w-full py-3 bg-white text-slate-900 font-bold rounded-xl hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
+                <Download :size="18" /> Descargar CSV
+              </button>
+            </div>
+            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl -mr-10 -mt-10"></div>
+          </div>
+
+          <div class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-6 text-white relative overflow-hidden">
+            <div class="relative z-10">
+              <h3 class="font-bold text-lg mb-2 flex items-center gap-2">
+                <Mail :size="20" class="text-blue-200" /> Compartir Reporte
+              </h3>
+              <p class="text-blue-100 text-sm mb-6">Envía este reporte automáticamente por correo electrónico a tu equipo o clientes.</p>
+              <button @click="emailReport" class="w-full py-3 bg-white/20 backdrop-blur-md border border-white/30 text-white font-bold rounded-xl hover:bg-white/30 transition-colors flex items-center justify-center gap-2">
+                <Send :size="18" /> Enviar por Email
+              </button>
+            </div>
+             <div class="absolute bottom-0 left-0 w-32 h-32 bg-indigo-500/40 rounded-full blur-3xl -ml-10 -mb-10"></div>
+          </div>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="card bg-kapital-dark/5 border border-kapital-dark/20">
-          <h3 class="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <i class="fas fa-file-csv text-kapital-dark"></i> Exportar Datos
-          </h3>
-          <p class="text-sm text-gray-700 mb-4">Descarga el reporte en formato CSV para análisis avanzado</p>
-          <button @click="exportCSV" class="btn-primary w-full">
-            <i class="fas fa-download"></i> Descargar CSV
-          </button>
-        </div>
-
-        <div class="card bg-kapital-light-1/5 border border-kapital-light-1/20">
-          <h3 class="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <i class="fas fa-envelope text-kapital-light-1"></i> Enviar por Email
-          </h3>
-          <p class="text-sm text-gray-700 mb-4">Comparte el reporte automáticamente con tu equipo</p>
-          <button @click="emailReport" class="btn-primary w-full">
-            <i class="fas fa-envelope"></i> Enviar Reporte
-          </button>
-        </div>
-      </div>
-    </div> </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
+import { 
+  Calendar, Share2, BarChart2, Download, LayoutDashboard, PieChart, TrendingUp, TrendingDown, 
+  Lightbulb, Info, FileText, Mail, Send, ChevronDown,
+  Facebook, Instagram, Linkedin, Twitter, Youtube, MessageCircle
+} from 'lucide-vue-next'
 
 const emit = defineEmits(['showToast'])
 
@@ -481,57 +512,52 @@ const activeTab = ref('resumen') // 'resumen', 'analisis', 'canales'
 
 // --- DATOS ---
 
-// kpis ahora usa los colores de tu tailwind.config.js
 const kpis = ref([
   { 
     id: 1, 
-    icon: 'fa-globe', 
+    iconComponent: Share2, 
     label: 'Alcance Total', 
     value: '45.2K', 
     trend: 12,
-    bgColor: 'bg-kapital-night',
-    accentColor: '#111827',
-    iconColor: 'text-white', // Color del ícono sobre el fondo
-    textColor: '#111827', // Color del texto en el gráfico de dona
+    bgClass: 'bg-slate-900',
+    textClass: 'text-white',
+    color: '#0f172a',
     progress: 75,
     detail: '+5.4K desde el período anterior'
   },
   { 
     id: 2, 
-    icon: 'fa-heart', 
+    iconComponent: TrendingUp, 
     label: 'Engagement', 
     value: '3.8%', 
     trend: 5,
-    bgColor: 'bg-kapital-dark',
-    accentColor: '#2B66FF',
-    iconColor: 'text-white',
-    textColor: '#2B66FF',
+    bgClass: 'bg-blue-600',
+    textClass: 'text-white',
+    color: '#2563eb',
     progress: 65,
     detail: '+0.5% desde el período anterior'
   },
   { 
     id: 3, 
-    icon: 'fa-mouse', 
+    iconComponent: BarChart2, 
     label: 'CTR', 
     value: '2.1%', 
     trend: 3,
-    bgColor: 'bg-kapital-light-1',
-    accentColor: '#61A3FF',
-    iconColor: 'text-white',
-    textColor: '#61A3FF',
+    bgClass: 'bg-indigo-500',
+    textClass: 'text-white',
+    color: '#6366f1',
     progress: 55,
     detail: '+0.3% desde el período anterior'
   },
   { 
     id: 4, 
-    icon: 'fa-user-plus', 
+    iconComponent: MessageCircle, 
     label: 'Leads', 
     value: '87', 
     trend: 25,
-    bgColor: 'bg-kapital-light-2',
-    accentColor: '#00FFFF',
-    iconColor: 'text-kapital-night', // Texto oscuro sobre fondo cyan brillante
-    textColor: '#111827', // Texto oscuro para el gráfico de dona
+    bgClass: 'bg-cyan-400',
+    textClass: 'text-slate-900',
+    color: '#22d3ee',
     progress: 85,
     detail: '+25 desde el período anterior'
   }
@@ -560,16 +586,12 @@ const engagementData = ref([
   { day: 'Dom', height: 40, engagement: '2.1', ctr: '1.0', ctrHeight: 27 }
 ])
 
-// (Los colores de las redes sociales son de marca, se mantienen)
 const networkPerformance = ref([
-  { id: 1, name: 'Instagram', icon: 'bi bi-instagram', color: '#E4405F', reach: '18.5K', reachChange: 15, engagement: 5.2, ctr: 2.8, followers: '5.2K', growth: 8 },
-  { id: 2, name: 'Facebook', icon: 'bi bi-facebook', color: '#1877F2', reach: '14.2K', reachChange: 9, engagement: 3.1, ctr: 1.9, followers: '3.8K', growth: 5 },
-  { id: 3, name: 'LinkedIn', icon: 'bi bi-linkedin', color: '#0A66C2', reach: '8.6K', reachChange: 12, engagement: 4.5, ctr: 3.2, followers: '2.1K', growth: 12 },
-  { id: 4, name: 'X / Twitter', icon: 'bi bi-twitter-x', color: '#000000', reach: '3.9K', reachChange: 6, engagement: 2.1, ctr: 1.5, followers: '1.4K', growth: -2 },
-  { id: 5, name: 'TikTok', icon: 'bi bi-tiktok', color: '#010101', reach: '11.7K', reachChange: 18, engagement: 7.9, ctr: 3.8, followers: '4.6K', growth: 10 },
-  { id: 6, name: 'YouTube', icon: 'bi bi-youtube', color: '#FF0000', reach: '22.3K', reachChange: 21, engagement: 6.3, ctr: 4.2, followers: '7.4K', growth: 14 },
-  { id: 7, name: 'Pinterest', icon: 'bi bi-pinterest', color: '#E60023', reach: '4.2K', reachChange: 5, engagement: 2.7, ctr: 1.8, followers: '1.8K', growth: 3 },
-  { id: 8, name: 'WhatsApp', icon: 'bi bi-whatsapp', color: '#25D366', reach: '9.5K', reachChange: 11, engagement: 4.9, ctr: 2.6, followers: '3.1K', growth: 7 }
+  { id: 1, name: 'Instagram', iconComponent: Instagram, bgClass: 'bg-pink-600', color: '#db2777', reach: '18.5K', reachChange: 15, engagement: 5.2, ctr: 2.8, followers: '5.2K', growth: 8 },
+  { id: 2, name: 'Facebook', iconComponent: Facebook, bgClass: 'bg-blue-600', color: '#2563eb', reach: '14.2K', reachChange: 9, engagement: 3.1, ctr: 1.9, followers: '3.8K', growth: 5 },
+  { id: 3, name: 'LinkedIn', iconComponent: Linkedin, bgClass: 'bg-blue-700', color: '#1d4ed8', reach: '8.6K', reachChange: 12, engagement: 4.5, ctr: 3.2, followers: '2.1K', growth: 12 },
+  { id: 4, name: 'X / Twitter', iconComponent: Twitter, bgClass: 'bg-slate-900', color: '#0f172a', reach: '3.9K', reachChange: 6, engagement: 2.1, ctr: 1.5, followers: '1.4K', growth: -2 },
+  { id: 5, name: 'YouTube', iconComponent: Youtube, bgClass: 'bg-red-600', color: '#dc2626', reach: '22.3K', reachChange: 21, engagement: 6.3, ctr: 4.2, followers: '7.4K', growth: 14 },
 ])
 
 // --- COMPUTED PROPERTIES ---
@@ -579,7 +601,7 @@ const avgEngagement = computed(() => {
   return avg.toFixed(1)
 })
 
-// Computed property para el Insight (Neuromarketing)
+// Computed property para el Insight
 const computedInsightText = computed(() => {
   if (!selectedKpi.value) return 'Selecciona una KPI para ver más detalles.'
   
@@ -596,7 +618,7 @@ const computedInsightText = computed(() => {
   }
 })
 
-// Computed property para el título del gráfico (Maestro-Detalle)
+// Computed property para el título del gráfico
 const computedChartTitle = computed(() => {
   return selectedKpi.value ? `Tendencia de ${selectedKpi.value.label}` : 'Rendimiento por Día'
 })
@@ -624,20 +646,39 @@ function exportCSV() {
 }
 
 function emailReport() {
-  // Aplicando disparador mental de "Exclusividad" (Neuromarketing)
-  emit('showToast', 'Tu reporte *exclusivo* ha sido enviado a tu equipo')
+  emit('showToast', 'Tu reporte exclusivo ha sido enviado a tu equipo')
 }
 </script>
 
-<style scoped>
-/* MODIFICADO: .btn-primary ahora usa 
-  bg-kapital-night y hover:bg-kapital-night-hover de tu config
-*/
+<style scoped lang="postcss">
 .btn-primary {
-  @apply px-6 py-3 bg-kapital-night text-white font-medium rounded-md transition-all hover:bg-kapital-night-hover active:scale-95 flex items-center gap-2 justify-center;
+  @apply px-5 py-2.5 bg-kapital-dark text-white font-medium rounded-xl transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 active:scale-95 flex items-center gap-2 justify-center text-sm;
 }
 
 .btn-secondary {
-  @apply bg-gray-100 text-gray-800 font-medium rounded-md border border-gray-300 transition-all hover:bg-gray-200;
+  @apply px-5 py-2.5 bg-white text-slate-700 font-medium rounded-xl border border-slate-200 transition-all hover:bg-slate-50 hover:border-slate-300 flex items-center gap-2 justify-center text-sm;
+}
+
+/* Scrollbar fina */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 20px;
+}
+.scrollbar-thin:hover::-webkit-scrollbar-thumb {
+  background-color: #94a3b8;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 </style>

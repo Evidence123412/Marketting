@@ -784,7 +784,7 @@ function getContrastingTextColor(hexcolor) {
 }
 </script>
 
-<style scoped>
+<style scoped lang="postcss">
 /* Estilos Base */
 .btn-primary {
   @apply px-6 py-3 bg-kapital-night text-white font-medium rounded-md transition-all hover:bg-kapital-night-hover active:scale-95 flex items-center gap-2 justify-center;

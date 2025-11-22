@@ -1,144 +1,193 @@
 <template>
-  <div class="space-y-8">
-    <div class="section-header">
-      <h1>Interacciones</h1>
-      <p>Gestiona tus mensajes y conversaciones</p>
+  <div class="space-y-6 h-full flex flex-col">
+    <!-- Header -->
+    <div 
+      v-motion
+      :initial="{ opacity: 0, y: -20 }"
+      :enter="{ opacity: 1, y: 0, transition: { duration: 500 } }"
+      class="flex justify-between items-end"
+    >
+      <div>
+        <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Mensajes</h1>
+        <p class="text-slate-500 mt-1">Gestiona todas tus conversaciones en un solo lugar.</p>
+      </div>
     </div>
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <div class="flex items-center gap-3 mb-2">
-          <i class="fas fa-comments text-kapital-dark text-xl"></i>
-          <span class="text-sm text-gray-600">Total Mensajes</span>
+      <div 
+        v-motion
+        :initial="{ opacity: 0, y: 20 }"
+        :enter="{ opacity: 1, y: 0, transition: { delay: 100 } }"
+        class="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 flex items-center gap-4"
+      >
+        <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+          <MessageSquare :size="24" />
         </div>
-        <p class="text-2xl font-bold text-kapital-dark">{{ messages.length }}</p>
+        <div>
+          <p class="text-2xl font-bold text-slate-900">{{ messages.length }}</p>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total Mensajes</span>
+        </div>
       </div>
-      <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-        <div class="flex items-center gap-3 mb-2">
-          <i class="fas fa-check-circle text-green-600 text-xl"></i>
-          <span class="text-sm text-gray-600">Respondidos</span>
+      
+      <div 
+        v-motion
+        :initial="{ opacity: 0, y: 20 }"
+        :enter="{ opacity: 1, y: 0, transition: { delay: 200 } }"
+        class="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-4 flex items-center gap-4"
+      >
+        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+          <CheckCircle2 :size="24" />
         </div>
-        <p class="text-2xl font-bold text-green-600">{{ messages.filter(m => m.status === 'replied').length }}</p>
+        <div>
+          <p class="text-2xl font-bold text-slate-900">{{ messages.filter(m => m.status === 'replied').length }}</p>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Respondidos</span>
+        </div>
       </div>
-      <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-        <div class="flex items-center gap-3 mb-2">
-          <i class="fas fa-hourglass-half text-yellow-600 text-xl"></i>
-          <span class="text-sm text-gray-600">Pendientes</span>
+
+      <div 
+        v-motion
+        :initial="{ opacity: 0, y: 20 }"
+        :enter="{ opacity: 1, y: 0, transition: { delay: 300 } }"
+        class="bg-amber-50/50 border border-amber-100 rounded-2xl p-4 flex items-center gap-4"
+      >
+        <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+          <Clock :size="24" />
         </div>
-        <p class="text-2xl font-bold text-yellow-600">{{ messages.filter(m => m.status === 'pending').length }}</p>
+        <div>
+          <p class="text-2xl font-bold text-slate-900">{{ messages.filter(m => m.status === 'pending').length }}</p>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Pendientes</span>
+        </div>
       </div>
-      <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
-        <div class="flex items-center gap-3 mb-2">
-          <i class="fas fa-user-tie text-purple-600 text-xl"></i>
-          <span class="text-sm text-gray-600">Asignados</span>
+
+      <div 
+        v-motion
+        :initial="{ opacity: 0, y: 20 }"
+        :enter="{ opacity: 1, y: 0, transition: { delay: 400 } }"
+        class="bg-purple-50/50 border border-purple-100 rounded-2xl p-4 flex items-center gap-4"
+      >
+        <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center">
+          <UserCheck :size="24" />
         </div>
-        <p class="text-2xl font-bold text-purple-600">{{ messages.filter(m => m.assigned).length }}</p>
+        <div>
+          <p class="text-2xl font-bold text-slate-900">{{ messages.filter(m => m.assigned).length }}</p>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Asignados</span>
+        </div>
       </div>
     </div>
 
     <!-- Main Chat Area -->
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-1 min-h-0">
       <!-- Messages List -->
-      <div class="lg:col-span-1 card p-0 overflow-hidden flex flex-col h-96 lg:h-full">
-        <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-transparent">
-          <div class="flex justify-between items-center mb-3">
-            <h2 class="font-semibold text-gray-900">Mensajes</h2>
-            <span class="text-xs font-bold bg-kapital-dark text-white px-2 py-1 rounded-full">{{ messages.length }}</span>
+      <div class="lg:col-span-1 bg-white/80 backdrop-blur-sm border border-white/20 shadow-soft rounded-2xl overflow-hidden flex flex-col">
+        <div class="p-4 border-b border-slate-100">
+          <div class="relative">
+            <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" :size="16" />
+            <input 
+              v-model="searchMessage"
+              type="text" 
+              placeholder="Buscar mensajes..." 
+              class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-kapital-dark/20 focus:border-kapital-dark transition-all"
+            />
           </div>
-          <input 
-            v-model="searchMessage"
-            type="text" 
-            placeholder="Buscar..." 
-            class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-kapital-dark"
-          />
         </div>
 
-        <div class="flex-1 overflow-y-auto divide-y">
+        <div class="flex-1 overflow-y-auto scrollbar-thin">
           <div 
             v-for="msg in filteredMessages" 
             :key="msg.id" 
             @click="selectMessage(msg)"
             :class="[
-              'p-4 cursor-pointer transition-all duration-200',
+              'p-4 cursor-pointer transition-all border-l-4 hover:bg-slate-50',
               selectedMessage?.id === msg.id 
-                ? 'bg-blue-100 border-l-4 border-kapital-dark' 
-                : 'hover:bg-gray-50 border-l-4 border-transparent'
+                ? 'bg-blue-50/50 border-kapital-dark' 
+                : 'border-transparent'
             ]"
           >
-            <div class="flex gap-3 mb-2">
-              <div :class="['w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white', getStatusColor(msg.status)]">
+            <div class="flex gap-3 mb-1">
+              <div :class="['w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-sm', getStatusColor(msg.status)]">
                 {{ msg.initials }}
               </div>
               <div class="flex-1 min-w-0">
-                <h4 class="font-semibold text-sm text-gray-900 truncate">{{ msg.name }}</h4>
-                <p class="text-xs text-gray-600 truncate">{{ msg.preview }}</p>
+                <div class="flex justify-between items-start">
+                  <h4 class="font-semibold text-sm text-slate-900 truncate">{{ msg.name }}</h4>
+                  <span v-if="msg.status === 'pending'" class="w-2 h-2 bg-rose-500 rounded-full mt-1.5"></span>
+                </div>
+                <p class="text-xs text-slate-500 truncate">{{ msg.preview }}</p>
               </div>
             </div>
-            <div class="flex items-center justify-between">
-              <small class="text-gray-500 flex items-center gap-1">
-                <i class="fas fa-clock"></i> {{ msg.time }}
-              </small>
-              <span v-if="msg.status === 'pending'" class="w-2 h-2 bg-red-500 rounded-full"></span>
+            <div class="flex items-center justify-between pl-13 mt-1">
+              <div class="flex items-center gap-1 text-[10px] text-slate-400 font-medium uppercase tracking-wide">
+                <component :is="getNetworkIcon(msg.network)" :size="12" />
+                {{ msg.network }}
+              </div>
+              <small class="text-slate-400 text-[10px]">{{ msg.time }}</small>
             </div>
           </div>
 
-          <div v-if="filteredMessages.length === 0" class="p-6 text-center text-gray-500">
-            <i class="fas fa-inbox text-2xl mb-2 block text-gray-400"></i>
-            <p class="text-sm">No hay mensajes</p>
+          <div v-if="filteredMessages.length === 0" class="p-8 text-center text-slate-400 flex flex-col items-center">
+            <Inbox :size="32" class="mb-2 opacity-50" />
+            <p class="text-sm">No se encontraron mensajes</p>
           </div>
         </div>
       </div>
 
       <!-- Chat Panel -->
-      <div class="lg:col-span-3 card p-0 overflow-hidden flex flex-col h-96 lg:h-full">
+      <div class="lg:col-span-3 bg-white/80 backdrop-blur-sm border border-white/20 shadow-soft rounded-2xl overflow-hidden flex flex-col">
         <!-- Chat Header -->
-        <div v-if="selectedMessage" class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-transparent flex justify-between items-center">
-          <div class="flex items-center gap-3">
-            <div :class="['w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white', getStatusColor(selectedMessage.status)]">
+        <div v-if="selectedMessage" class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white/50">
+          <div class="flex items-center gap-4">
+            <div :class="['w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-sm', getStatusColor(selectedMessage.status)]">
               {{ selectedMessage.initials }}
             </div>
             <div>
-              <h3 class="font-semibold text-gray-900">{{ selectedMessage.name }}</h3>
-              <small class="text-gray-600">{{ selectedMessage.network }} • {{ selectedMessage.time }}</small>
+              <h3 class="font-bold text-slate-900">{{ selectedMessage.name }}</h3>
+              <div class="flex items-center gap-2 text-xs text-slate-500">
+                <span class="flex items-center gap-1">
+                  <component :is="getNetworkIcon(selectedMessage.network)" :size="12" />
+                  {{ selectedMessage.network }}
+                </span>
+                <span>•</span>
+                <span>{{ selectedMessage.time }}</span>
+              </div>
             </div>
           </div>
           <div class="flex gap-2">
             <button 
               @click="toggleAssign"
-              :class="['px-3 py-1 text-sm rounded transition-all', selectedMessage.assigned ? 'bg-purple-100 text-purple-700 font-medium' : 'bg-gray-100 text-gray-600 hover:bg-gray-200']"
+              :class="['px-3 py-1.5 text-xs font-bold uppercase tracking-wide rounded-lg transition-all flex items-center gap-2', selectedMessage.assigned ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200']"
             >
-              <i class="fas fa-user-tie mr-1"></i> {{ selectedMessage.assigned ? 'Asignado' : 'Asignar' }}
+              <UserPlus :size="14" /> {{ selectedMessage.assigned ? 'Asignado' : 'Asignar' }}
             </button>
             <button 
               @click="markAsResolved"
-              :class="['px-3 py-1 text-sm rounded transition-all', selectedMessage.status === 'replied' ? 'bg-green-100 text-green-700 font-medium' : 'bg-gray-100 text-gray-600 hover:bg-gray-200']"
+              :class="['px-3 py-1.5 text-xs font-bold uppercase tracking-wide rounded-lg transition-all flex items-center gap-2', selectedMessage.status === 'replied' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200']"
             >
-              <i class="fas fa-check mr-1"></i> Resuelto
+              <Check :size="14" /> {{ selectedMessage.status === 'replied' ? 'Resuelto' : 'Resolver' }}
             </button>
           </div>
         </div>
 
         <!-- Empty State -->
-        <div v-else class="flex-1 flex items-center justify-center text-gray-500">
-          <div class="text-center">
-            <i class="fas fa-comments text-4xl text-gray-300 mb-4 block"></i>
-            <p class="text-lg font-medium text-gray-600">Selecciona una conversación</p>
-            <p class="text-sm text-gray-500 mt-2">Elige un mensaje para ver los detalles</p>
+        <div v-else class="flex-1 flex flex-col items-center justify-center text-slate-400 p-8">
+          <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+            <MessageSquare :size="40" class="text-slate-300" />
           </div>
+          <p class="text-lg font-semibold text-slate-600">Selecciona una conversación</p>
+          <p class="text-sm text-slate-400 mt-1">Elige un mensaje de la lista para ver los detalles</p>
         </div>
 
         <!-- Chat Messages -->
-        <div v-if="selectedMessage" class="flex-1 overflow-y-auto bg-gray-50 p-6 space-y-4">
+        <div v-if="selectedMessage" class="flex-1 overflow-y-auto bg-slate-50/50 p-6 space-y-6">
           <div v-for="(chat, idx) in selectedMessage.conversation" :key="idx" :class="['flex', chat.sender === 'me' ? 'justify-end' : 'justify-start']">
             <div :class="[
-              'max-w-xs px-4 py-2 rounded-lg',
+              'max-w-md px-5 py-3 rounded-2xl shadow-sm text-sm leading-relaxed',
               chat.sender === 'me' 
                 ? 'bg-kapital-dark text-white rounded-br-none' 
-                : 'bg-white text-gray-900 border border-gray-200 rounded-bl-none'
+                : 'bg-white text-slate-700 border border-slate-100 rounded-bl-none'
             ]">
-              <p class="text-sm">{{ chat.text }}</p>
-              <small :class="['text-xs mt-1 block', chat.sender === 'me' ? 'text-blue-100' : 'text-gray-500']">
+              <p>{{ chat.text }}</p>
+              <small :class="['text-[10px] mt-1 block font-medium opacity-70', chat.sender === 'me' ? 'text-blue-100' : 'text-slate-400']">
                 {{ chat.time }}
               </small>
             </div>
@@ -146,28 +195,31 @@
         </div>
 
         <!-- Chat Input -->
-        <div v-if="selectedMessage" class="px-6 py-4 border-t border-gray-200 bg-white">
+        <div v-if="selectedMessage" class="p-4 bg-white border-t border-slate-100">
           <div class="space-y-3">
-            <select v-model="selectedTemplate" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-kapital-dark">
-              <option value="">Respuesta personalizada</option>
-              <option value="info">Plantilla: Información general</option>
-              <option value="promo">Plantilla: Promoción especial</option>
-              <option value="support">Plantilla: Soporte técnico</option>
-              <option value="follow">Plantilla: Seguimiento</option>
-            </select>
+            <div class="relative">
+              <select v-model="selectedTemplate" class="w-full pl-4 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-600 focus:outline-none focus:border-kapital-dark appearance-none cursor-pointer">
+                <option value="">✨ Respuesta personalizada</option>
+                <option value="info">📋 Plantilla: Información general</option>
+                <option value="promo">🏷️ Plantilla: Promoción especial</option>
+                <option value="support">🛠️ Plantilla: Soporte técnico</option>
+                <option value="follow">👋 Plantilla: Seguimiento</option>
+              </select>
+              <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" :size="16" />
+            </div>
 
             <div class="flex gap-3">
               <textarea 
                 v-model="replyMessage"
                 placeholder="Escribe tu respuesta..."
-                rows="2"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-kapital-dark resize-none"
+                rows="1"
+                class="flex-1 px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-kapital-dark/20 focus:border-kapital-dark resize-none transition-all"
               ></textarea>
               <button 
                 @click="sendMessage"
-                class="btn-primary px-4 h-fit"
+                class="btn-primary px-4 h-auto rounded-xl shadow-lg shadow-kapital-dark/20"
               >
-                <i class="fas fa-paper-plane"></i>
+                <Send :size="18" />
               </button>
             </div>
           </div>
@@ -176,32 +228,38 @@
     </div>
 
     <!-- Assign Modal -->
-    <div v-if="showAssignModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div class="bg-white rounded-lg p-6 max-w-md w-full">
-        <h3 class="text-lg font-bold text-gray-900 mb-4">Asignar a asesor</h3>
+    <div v-if="showAssignModal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div 
+        v-motion
+        :initial="{ opacity: 0, scale: 0.95 }"
+        :enter="{ opacity: 1, scale: 1 }"
+        class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-white/20"
+      >
+        <h3 class="text-lg font-bold text-slate-900 mb-4">Asignar a asesor</h3>
         
         <div class="space-y-3 mb-6">
           <div 
             v-for="advisor in advisors"
             :key="advisor.id"
             @click="selectedAdvisor = advisor.id"
-            :class="['p-3 border rounded-lg cursor-pointer transition-all', selectedAdvisor === advisor.id ? 'bg-blue-50 border-kapital-dark' : 'border-gray-200 hover:border-gray-300']"
+            :class="['p-3 border rounded-xl cursor-pointer transition-all flex items-center gap-3', selectedAdvisor === advisor.id ? 'bg-blue-50 border-kapital-dark ring-1 ring-kapital-dark' : 'border-slate-200 hover:border-kapital-dark/50 hover:bg-slate-50']"
           >
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-kapital-dark to-kapital-light-1 text-white flex items-center justify-center font-bold text-sm">
-                {{ advisor.initials }}
-              </div>
-              <div>
-                <p class="font-medium text-gray-900">{{ advisor.name }}</p>
-                <small class="text-gray-600">{{ advisor.role }}</small>
-              </div>
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-kapital-dark to-kapital-light-1 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+              {{ advisor.initials }}
+            </div>
+            <div>
+              <p class="font-semibold text-slate-900 text-sm">{{ advisor.name }}</p>
+              <p class="text-xs text-slate-500">{{ advisor.role }}</p>
+            </div>
+            <div v-if="selectedAdvisor === advisor.id" class="ml-auto text-kapital-dark">
+              <CheckCircle2 :size="18" />
             </div>
           </div>
         </div>
 
         <div class="flex gap-3">
           <button @click="showAssignModal = false" class="btn-secondary flex-1">Cancelar</button>
-          <button @click="confirmAssign" class="btn-primary flex-1">Asignar</button>
+          <button @click="confirmAssign" class="btn-primary flex-1">Confirmar Asignación</button>
         </div>
       </div>
     </div>
@@ -210,6 +268,10 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { 
+  MessageSquare, CheckCircle2, Clock, UserCheck, Search, Inbox, 
+  UserPlus, Check, Send, ChevronDown, Facebook, Instagram, Linkedin, Twitter, Mail 
+} from 'lucide-vue-next'
 
 const emit = defineEmits(['showToast'])
 
@@ -325,11 +387,23 @@ const filteredMessages = computed(() => {
 
 function getStatusColor(status) {
   const colors = {
-    'pending': 'bg-yellow-500',
-    'replied': 'bg-green-500',
+    'pending': 'bg-amber-500',
+    'replied': 'bg-emerald-500',
     'assigned': 'bg-purple-500'
   }
   return colors[status] || 'bg-kapital-dark'
+}
+
+function getNetworkIcon(network) {
+  const icons = {
+    'Facebook': Facebook,
+    'Instagram': Instagram,
+    'LinkedIn': Linkedin,
+    'Twitter': Twitter,
+    'Email': Mail,
+    'WhatsApp': MessageSquare
+  }
+  return icons[network] || MessageSquare
 }
 
 function selectMessage(msg) {
@@ -383,10 +457,25 @@ function markAsResolved() {
 
 <style scoped lang="postcss">
 .btn-primary {
-  @apply px-6 py-3 bg-kapital-dark text-white font-medium rounded-md transition-all hover:bg-blue-700 active:scale-95 flex items-center gap-2;
+  @apply px-5 py-2.5 bg-kapital-dark text-white font-medium rounded-xl transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 active:scale-95 flex items-center gap-2 justify-center;
 }
 
 .btn-secondary {
-  @apply px-6 py-3 bg-gray-100 text-gray-800 font-medium rounded-md border border-gray-300 transition-all hover:bg-gray-200;
+  @apply px-5 py-2.5 bg-white text-slate-700 font-medium rounded-xl border border-slate-200 transition-all hover:bg-slate-50 hover:border-slate-300 flex items-center gap-2 justify-center;
+}
+
+/* Scrollbar fina */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #cbd5e1; 
+  border-radius: 10px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 </style>

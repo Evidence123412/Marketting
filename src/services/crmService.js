@@ -1,19 +1,4 @@
-import { crmModule } from './crm';
-import { analyticsModule } from './analytics';
-
-// --- ANALYTICS SERVICE FACADE ---
-
-export const analyticsService = {
-    getDashboardMetrics: () => Promise.resolve(analyticsModule.getDashboardMetrics()),
-    getAudienceDemographics: () => Promise.resolve(analyticsModule.getAudienceDemographics()),
-    getContentPerformance: () => Promise.resolve(analyticsModule.getContentPerformance()),
-    getCampaignResults: () => Promise.resolve(analyticsModule.getCampaignResults()),
-    getTopPerformingPosts: () => Promise.resolve(analyticsModule.getTopPerformingPosts()),
-    getAudienceGrowth: () => Promise.resolve(analyticsModule.getAudienceGrowth()),
-    getRecentActivities: () => Promise.resolve(analyticsModule.getRecentActivities()),
-    getReportNetworkPerformance: () => Promise.resolve(analyticsModule.getReportNetworkPerformance()),
-    // Add other analytics functions if needed, mapping to the module
-};
+// --- ANALYTICS SERVICE REMOVED ---
 
 
 // --- CRM SERVICE FACADE ---

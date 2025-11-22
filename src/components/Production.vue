@@ -1,30 +1,42 @@
 <template>
   <div class="space-y-6 h-full flex flex-col">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <!-- Header -->
+    <div 
+      v-motion
+      :initial="{ opacity: 0, y: -20 }"
+      :enter="{ opacity: 1, y: 0, transition: { duration: 500 } }"
+      class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+    >
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Producción de Contenido</h1>
-        <p class="text-sm text-gray-600">Gestiona el ciclo de vida de tus publicaciones.</p>
+        <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Producción</h1>
+        <p class="text-slate-500 mt-1">Gestiona el ciclo de vida de tus publicaciones.</p>
       </div>
       <button @click="openNewPostModal" class="btn-primary shadow-lg shadow-kapital-dark/20">
-        <i class="fas fa-plus"></i> Nueva Publicación
+        <Plus :size="18" /> Nueva Publicación
       </button>
     </div>
 
-    <div class="bg-white p-3 rounded-lg border border-gray-200 flex flex-col md:flex-row gap-3 items-center shadow-sm">
+    <!-- Filters -->
+    <div 
+      v-motion
+      :initial="{ opacity: 0, y: 20 }"
+      :enter="{ opacity: 1, y: 0, transition: { delay: 100 } }"
+      class="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-white/20 shadow-soft flex flex-col md:flex-row gap-4 items-center"
+    >
       <div class="relative flex-1 w-full">
-        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+        <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" :size="18" />
         <input 
           v-model="searchQuery" 
           type="text" 
           placeholder="Buscar por título o contenido..." 
-          class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-kapital-dark transition-colors"
+          class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-kapital-dark/20 focus:border-kapital-dark transition-all"
         >
       </div>
       
-      <div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+      <div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
         <button 
           @click="filterChannel = ''"
-          :class="['px-3 py-1.5 rounded-md text-sm font-medium transition-all whitespace-nowrap', !filterChannel ? 'bg-kapital-night text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200']"
+          :class="['px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap shadow-sm', !filterChannel ? 'bg-kapital-dark text-white shadow-kapital-dark/20' : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200']"
         >
           Todos
         </button>
@@ -32,30 +44,34 @@
           v-for="ch in channels" 
           :key="ch.name"
           @click="filterChannel = ch.name"
-          :class="['px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 whitespace-nowrap border', filterChannel === ch.name ? 'bg-white border-kapital-dark text-kapital-dark ring-1 ring-kapital-dark' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300']"
+          :class="['px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 whitespace-nowrap border shadow-sm', filterChannel === ch.name ? 'bg-white border-kapital-dark text-kapital-dark ring-1 ring-kapital-dark' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50']"
         >
-          <i :class="ch.icon" :style="{ color: ch.color }"></i>
+          <component :is="ch.icon" :size="16" :class="ch.colorClass" />
           {{ ch.name }}
         </button>
       </div>
     </div>
 
+    <!-- Kanban Board -->
     <div class="flex-1 overflow-x-auto overflow-y-hidden">
-      <div class="flex gap-6 h-full min-w-[1000px]">
+      <div class="flex gap-6 h-full min-w-[1000px] pb-4 px-2">
         
         <div 
-          v-for="col in columns" 
+          v-for="(col, index) in columns" 
           :key="col.id"
-          class="flex-1 flex flex-col min-w-[280px] bg-gray-50 rounded-xl border border-gray-200 h-full max-h-[calc(100vh-240px)]"
+          v-motion
+          :initial="{ opacity: 0, y: 20 }"
+          :enter="{ opacity: 1, y: 0, transition: { delay: 200 + (index * 100) } }"
+          class="flex-1 flex flex-col min-w-[280px] bg-slate-100/50 rounded-2xl border border-slate-200/60 backdrop-blur-sm h-full max-h-[calc(100vh-240px)]"
           @dragover.prevent
           @drop="onDrop($event, col.id)"
         >
-          <div :class="['p-3 border-b flex justify-between items-center sticky top-0 bg-gray-50 rounded-t-xl z-10', col.headerBorder]">
+          <div class="p-4 flex justify-between items-center sticky top-0 bg-slate-100/90 backdrop-blur-md rounded-t-2xl z-10 border-b border-slate-200/60">
             <div class="flex items-center gap-2">
-              <span :class="['w-2 h-2 rounded-full', col.dotColor]"></span>
-              <h3 class="font-bold text-gray-700 text-sm">{{ col.title }}</h3>
+              <div :class="['w-2.5 h-2.5 rounded-full ring-2 ring-white shadow-sm', col.dotColor]"></div>
+              <h3 class="font-bold text-slate-700 text-sm uppercase tracking-wide">{{ col.title }}</h3>
             </div>
-            <span class="bg-white border border-gray-200 px-2 py-0.5 rounded text-xs font-bold text-gray-500">
+            <span class="bg-white border border-slate-200 px-2.5 py-0.5 rounded-full text-xs font-bold text-slate-500 shadow-sm">
               {{ getColumnItems(col.id).length }}
             </span>
           </div>
@@ -67,40 +83,42 @@
               draggable="true"
               @dragstart="startDrag($event, pub)"
               @click="editPublication(pub)"
-              class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-kapital-dark/30 transition-all group relative"
+              class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-kapital-dark/30 transition-all group relative"
             >
-              <div v-if="pub.hasImage" class="h-24 w-full bg-gray-100 rounded-md mb-3 overflow-hidden relative">
-                 <div class="absolute inset-0 flex items-center justify-center text-gray-300">
-                    <i class="fas fa-image text-2xl"></i>
+              <div v-if="pub.hasImage" class="h-32 w-full bg-slate-100 rounded-lg mb-3 overflow-hidden relative group-hover:opacity-90 transition-opacity">
+                 <div class="absolute inset-0 flex items-center justify-center text-slate-300">
+                    <ImageIcon :size="32" />
                  </div>
-                 <div class="absolute bottom-1 left-1 flex gap-1">
-                    <div v-for="net in pub.channels.split(', ')" :key="net" class="w-5 h-5 rounded-full bg-white shadow-sm flex items-center justify-center">
-                       <i :class="['bi text-[10px]', getChannelIcon(net)]" :style="{ color: getChannelIconColor(net) }"></i>
+                 <div class="absolute bottom-2 left-2 flex gap-1">
+                    <div v-for="net in pub.channels.split(', ')" :key="net" class="w-6 h-6 rounded-full bg-white shadow-md flex items-center justify-center">
+                       <component :is="getChannelIcon(net)" :size="12" :class="getChannelColorClass(net)" />
                     </div>
                  </div>
               </div>
 
-              <div class="mb-2">
-                <h4 class="font-semibold text-gray-900 text-sm leading-tight mb-1 line-clamp-2">{{ pub.title }}</h4>
-                <p class="text-xs text-gray-500 line-clamp-2">{{ pub.description }}</p>
+              <div class="mb-3">
+                <h4 class="font-bold text-slate-900 text-sm leading-tight mb-1 line-clamp-2">{{ pub.title }}</h4>
+                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">{{ pub.description }}</p>
               </div>
 
-              <div class="flex justify-between items-center mt-2 pt-2 border-t border-gray-100">
-                <small class="text-[10px] font-medium text-gray-400 flex items-center gap-1">
-                  <i class="far fa-calendar"></i> {{ pub.date || 'Sin fecha' }}
-                </small>
-                
-                <div class="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                   <button @click.stop="deletePublication(pub.id)" class="w-6 h-6 rounded hover:bg-red-50 text-gray-400 hover:text-red-500 flex items-center justify-center transition-colors">
-                     <i class="fas fa-trash-alt text-xs"></i>
-                   </button>
+              <div class="flex justify-between items-center pt-3 border-t border-slate-50">
+                <div class="flex items-center gap-1.5 text-[10px] font-medium text-slate-400 bg-slate-50 px-2 py-1 rounded-md">
+                  <Calendar :size="12" />
+                  {{ pub.date || 'Sin fecha' }}
                 </div>
+                
+                <button 
+                  @click.stop="deletePublication(pub.id)" 
+                  class="w-7 h-7 rounded-lg hover:bg-rose-50 text-slate-300 hover:text-rose-500 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                >
+                  <Trash2 :size="14" />
+                </button>
               </div>
             </div>
             
-            <div v-if="getColumnItems(col.id).length === 0" class="h-32 border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center text-gray-400">
-               <i class="fas fa-ghost text-2xl mb-2 opacity-50"></i>
-               <span class="text-xs">Sin items</span>
+            <div v-if="getColumnItems(col.id).length === 0" class="h-32 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center text-slate-400 bg-slate-50/50">
+               <Ghost :size="24" class="mb-2 opacity-50" />
+               <span class="text-xs font-medium">Sin publicaciones</span>
             </div>
           </div>
         </div>
@@ -108,52 +126,59 @@
       </div>
     </div>
 
-    <div v-if="showModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl h-[90vh] flex flex-col overflow-hidden">
+    <!-- Modal -->
+    <div v-if="showModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div 
+        v-motion
+        :initial="{ opacity: 0, scale: 0.95 }"
+        :enter="{ opacity: 1, scale: 1 }"
+        class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl h-[90vh] flex flex-col overflow-hidden border border-white/20"
+      >
         
-        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-white">
+        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white">
           <div>
-            <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <i :class="['fas', formData.id ? 'fa-edit' : 'fa-pen-nib', 'text-kapital-dark']"></i>
+            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <component :is="formData.id ? Edit3 : PenTool" class="text-kapital-dark" :size="20" />
               {{ formData.id ? 'Editar Publicación' : 'Crear Nueva Publicación' }}
             </h2>
-            <p class="text-xs text-gray-500">Completa los detalles y visualiza el resultado en tiempo real.</p>
+            <p class="text-xs text-slate-500 mt-0.5">Completa los detalles y visualiza el resultado en tiempo real.</p>
           </div>
-          <button @click="closeModal" class="text-gray-400 hover:text-gray-600 transition-colors">
-            <i class="fas fa-times text-xl"></i>
+          <button @click="closeModal" class="text-slate-400 hover:text-slate-600 transition-colors p-1 hover:bg-slate-100 rounded-lg">
+            <X :size="24" />
           </button>
         </div>
 
         <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
           
-          <div class="w-full lg:w-1/2 p-6 overflow-y-auto border-r border-gray-200 bg-gray-50">
-            <form @submit.prevent="savePost" class="space-y-5">
+          <!-- Form -->
+          <div class="w-full lg:w-1/2 p-6 overflow-y-auto border-r border-slate-100 bg-slate-50/30">
+            <form @submit.prevent="savePost" class="space-y-6">
               
-              <div class="grid grid-cols-2 gap-4">
-                <div class="col-span-2">
-                  <label class="form-label">Título Interno</label>
-                  <input v-model="formData.title" type="text" class="form-input" placeholder="Ej: Promo Verano 2025" required />
-                </div>
+              <div>
+                <label class="form-label">Título Interno</label>
+                <input v-model="formData.title" type="text" class="form-input" placeholder="Ej: Promo Verano 2025" required />
               </div>
 
               <div>
                 <label class="form-label flex justify-between">
                   <span>Copy / Descripción</span>
-                  <span :class="['text-xs', formData.description.length > 2200 ? 'text-red-500' : 'text-gray-400']">{{ formData.description.length }} / 2200</span>
+                  <span :class="['text-xs', formData.description.length > 2200 ? 'text-rose-500' : 'text-slate-400']">{{ formData.description.length }} / 2200</span>
                 </label>
-                <textarea 
-                  v-model="formData.description" 
-                  rows="5" 
-                  class="form-input font-mono text-sm leading-relaxed resize-none"
-                  placeholder="Escribe aquí el texto de tu publicación..."
-                  required
-                ></textarea>
-                <div class="flex gap-2 mt-2">
-                  <button type="button" @click="addHashtag('#Kapital')" class="text-xs bg-white border border-gray-300 px-2 py-1 rounded hover:border-kapital-dark transition-colors">#Kapital</button>
-                  <button type="button" @click="addHashtag('#Marketing')" class="text-xs bg-white border border-gray-300 px-2 py-1 rounded hover:border-kapital-dark transition-colors">#Marketing</button>
-                  <button type="button" @click="goToGenerator" class="text-xs bg-purple-50 text-purple-700 border border-purple-200 px-2 py-1 rounded hover:bg-purple-100 transition-colors ml-auto flex items-center gap-1">
-                    <i class="fas fa-wand-magic-sparkles"></i> Usar IA
+                <div class="relative">
+                  <textarea 
+                    v-model="formData.description" 
+                    rows="6" 
+                    class="form-input font-mono text-sm leading-relaxed resize-none pr-10"
+                    placeholder="Escribe aquí el texto de tu publicación..."
+                    required
+                  ></textarea>
+                  <button type="button" @click="goToGenerator" class="absolute top-2 right-2 p-1.5 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors" title="Generar con IA">
+                    <Wand2 :size="16" />
                   </button>
+                </div>
+                <div class="flex gap-2 mt-2 flex-wrap">
+                  <button type="button" @click="addHashtag('#Kapital')" class="text-xs bg-white border border-slate-200 px-2.5 py-1 rounded-lg hover:border-kapital-dark hover:text-kapital-dark transition-colors font-medium text-slate-600">#Kapital</button>
+                  <button type="button" @click="addHashtag('#Marketing')" class="text-xs bg-white border border-slate-200 px-2.5 py-1 rounded-lg hover:border-kapital-dark hover:text-kapital-dark transition-colors font-medium text-slate-600">#Marketing</button>
                 </div>
               </div>
 
@@ -163,19 +188,19 @@
                   <label 
                     v-for="ch in channels" 
                     :key="ch.name"
-                    :class="['flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-all', formData.channels.includes(ch.name) ? 'bg-white border-kapital-dark ring-1 ring-kapital-dark shadow-sm' : 'bg-white border-gray-200 hover:border-gray-300']"
+                    :class="['flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all', formData.channels.includes(ch.name) ? 'bg-white border-kapital-dark ring-1 ring-kapital-dark shadow-sm' : 'bg-white border-slate-200 hover:border-slate-300']"
                   >
                     <input type="checkbox" :value="ch.name" v-model="formData.channels" class="hidden">
-                    <i :class="[ch.icon, 'text-lg']" :style="{ color: ch.color }"></i>
-                    <span class="text-sm font-medium text-gray-700">{{ ch.name }}</span>
-                    <i v-if="formData.channels.includes(ch.name)" class="fas fa-check-circle text-kapital-dark ml-auto"></i>
+                    <component :is="ch.icon" :size="18" :class="ch.colorClass" />
+                    <span class="text-sm font-medium text-slate-700">{{ ch.name }}</span>
+                    <CheckCircle2 v-if="formData.channels.includes(ch.name)" :size="16" class="text-kapital-dark ml-auto" />
                   </label>
                 </div>
               </div>
 
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label class="form-label">Fecha de Publicación</label>
+                  <label class="form-label">Fecha</label>
                   <input v-model="formData.date" type="date" class="form-input" />
                 </div>
                 <div>
@@ -186,88 +211,92 @@
 
               <div>
                 <label class="form-label">Estado</label>
-                <select v-model="formData.status" class="form-input">
-                  <option value="draft">Borrador</option>
-                  <option value="review">En Revisión</option>
-                  <option value="scheduled">Programado</option>
-                  <option value="published">Publicado</option>
-                </select>
+                <div class="relative">
+                  <select v-model="formData.status" class="form-input appearance-none cursor-pointer">
+                    <option value="draft">📝 Borrador</option>
+                    <option value="review">👀 En Revisión</option>
+                    <option value="scheduled">📅 Programado</option>
+                    <option value="published">✅ Publicado</option>
+                  </select>
+                  <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" :size="16" />
+                </div>
               </div>
 
             </form>
           </div>
 
-          <div class="w-full lg:w-1/2 bg-gray-100 p-6 flex flex-col items-center justify-center relative border-l border-gray-200">
-            <div class="absolute top-4 right-4 flex gap-2 bg-white rounded-lg p-1 shadow-sm">
+          <!-- Preview -->
+          <div class="w-full lg:w-1/2 bg-slate-100 p-8 flex flex-col items-center justify-center relative border-l border-slate-200">
+            <div class="absolute top-6 right-6 flex gap-2 bg-white rounded-xl p-1.5 shadow-sm border border-slate-200">
               <button 
                 v-for="ch in channels"
                 :key="ch.name"
                 @click="previewChannel = ch.name"
-                :class="['w-8 h-8 rounded flex items-center justify-center transition-all', previewChannel === ch.name ? 'bg-gray-100 text-gray-900' : 'text-gray-400 hover:text-gray-600']"
+                :class="['w-9 h-9 rounded-lg flex items-center justify-center transition-all', previewChannel === ch.name ? 'bg-slate-100 text-slate-900' : 'text-slate-400 hover:text-slate-600']"
                 :title="ch.name"
               >
-                <i :class="ch.icon"></i>
+                <component :is="ch.icon" :size="18" />
               </button>
             </div>
 
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Vista Previa: {{ previewChannel }}</p>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Vista Previa: {{ previewChannel }}</p>
 
-            <div class="bg-white w-[320px] rounded-[2rem] shadow-2xl border-[8px] border-gray-800 overflow-hidden relative h-[580px] flex flex-col">
-              <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-5 bg-gray-800 rounded-b-xl z-20"></div>
+            <div class="bg-white w-[340px] rounded-[2.5rem] shadow-2xl border-[8px] border-slate-800 overflow-hidden relative h-[620px] flex flex-col">
+              <div class="absolute top-0 left-1/2 -translate-x-1/2 w-36 h-6 bg-slate-800 rounded-b-2xl z-20"></div>
               
-              <div class="pt-8 pb-2 px-4 flex justify-between items-center border-b border-gray-100 bg-white z-10">
-                <div class="flex items-center gap-2">
-                  <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-yellow-400 to-purple-600"></div>
-                  <span class="text-xs font-bold">kapital_cms</span>
+              <div class="pt-10 pb-3 px-5 flex justify-between items-center border-b border-slate-50 bg-white z-10">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 to-purple-600 ring-2 ring-white"></div>
+                  <span class="text-xs font-bold text-slate-900">kapital_cms</span>
                 </div>
-                <i class="fas fa-ellipsis-h text-xs text-gray-400"></i>
+                <MoreHorizontal :size="16" class="text-slate-400" />
               </div>
 
               <div class="flex-1 overflow-y-auto bg-white scrollbar-hide">
-                <div class="aspect-square bg-gray-100 flex items-center justify-center relative group">
-                  <div class="text-center p-6">
-                    <i class="fas fa-image text-4xl text-gray-300 mb-2"></i>
-                    <p class="text-xs text-gray-400">Imagen del Post (1:1)</p>
+                <div class="aspect-square bg-slate-100 flex items-center justify-center relative group">
+                  <div class="text-center p-8">
+                    <ImageIcon :size="48" class="text-slate-300 mb-3 mx-auto" />
+                    <p class="text-xs text-slate-400 font-medium">Imagen del Post (1:1)</p>
                   </div>
-                  <div v-if="previewChannel === 'TikTok' || previewChannel === 'Instagram Reels'" class="absolute inset-0 border-[40px] border-transparent border-y-[60px] bg-red-500/10 pointer-events-none"></div>
+                  <div v-if="previewChannel === 'TikTok' || previewChannel === 'Instagram Reels'" class="absolute inset-0 border-[40px] border-transparent border-y-[60px] bg-slate-900/5 pointer-events-none"></div>
                 </div>
 
-                <div class="px-4 py-3 flex justify-between text-xl">
+                <div class="px-4 py-3 flex justify-between text-slate-800">
                   <div class="flex gap-4">
-                    <i :class="['bi', previewChannel === 'LinkedIn' ? 'bi-hand-thumbs-up' : 'bi-heart']"></i>
-                    <i class="bi bi-chat"></i>
-                    <i class="bi bi-send"></i>
+                    <component :is="previewChannel === 'LinkedIn' ? ThumbsUp : Heart" :size="22" />
+                    <MessageCircle :size="22" />
+                    <Send :size="22" />
                   </div>
-                  <i class="bi bi-bookmark"></i>
+                  <Bookmark :size="22" />
                 </div>
 
-                <div class="px-4 pb-6 text-sm">
-                  <p class="font-bold mb-1">1,024 Me gusta</p>
-                  <p>
+                <div class="px-4 pb-8 text-sm">
+                  <p class="font-bold mb-1.5 text-slate-900">1,024 Me gusta</p>
+                  <p class="text-slate-800 leading-relaxed">
                     <span class="font-bold mr-1">kapital_cms</span>
-                    <span class="text-gray-800 whitespace-pre-wrap">{{ formData.description || 'Escribe una descripción...' }}</span>
+                    <span class="whitespace-pre-wrap">{{ formData.description || 'Escribe una descripción...' }}</span>
                   </p>
-                  <p class="text-blue-600 mt-1 text-xs">{{ formData.hashtags }}</p>
-                  <p class="text-[10px] text-gray-400 mt-2 uppercase">Hace 2 horas</p>
+                  <p class="text-blue-600 mt-1.5 text-xs font-medium">{{ formData.hashtags }}</p>
+                  <p class="text-[10px] text-slate-400 mt-2 uppercase font-medium">Hace 2 horas</p>
                 </div>
               </div>
 
-              <div class="h-12 border-t border-gray-100 flex justify-around items-center text-xl text-gray-400 bg-white">
-                <i class="bi bi-house-door-fill text-black"></i>
-                <i class="bi bi-search"></i>
-                <i class="bi bi-plus-square"></i>
-                <i class="bi bi-heart"></i>
-                <div class="w-6 h-6 rounded-full bg-gray-300"></div>
+              <div class="h-14 border-t border-slate-50 flex justify-around items-center text-slate-400 bg-white px-2">
+                <Home :size="22" class="text-slate-900" />
+                <Search :size="22" />
+                <PlusSquare :size="22" />
+                <Heart :size="22" />
+                <div class="w-6 h-6 rounded-full bg-slate-200"></div>
               </div>
             </div>
 
           </div>
         </div>
 
-        <div class="px-6 py-4 border-t border-gray-200 bg-white flex justify-end gap-3">
+        <div class="px-6 py-4 border-t border-slate-100 bg-white flex justify-end gap-3">
           <button type="button" @click="closeModal" class="btn-secondary">Cancelar</button>
-          <button type="button" @click="savePost" class="btn-primary w-40">
-            <i class="fas fa-save"></i> Guardar
+          <button type="button" @click="savePost" class="btn-primary w-40 shadow-lg shadow-kapital-dark/20">
+            <Save :size="18" /> Guardar
           </button>
         </div>
 
@@ -279,6 +308,11 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { 
+  Plus, Search, Calendar, Trash2, Image as ImageIcon, Ghost, Edit3, PenTool, X, 
+  Wand2, CheckCircle2, ChevronDown, MoreHorizontal, Heart, ThumbsUp, MessageCircle, 
+  Send, Bookmark, Home, PlusSquare, Save, Facebook, Instagram, Linkedin, Twitter, Share2 
+} from 'lucide-vue-next'
 
 const emit = defineEmits(['showToast', 'navigate'])
 
@@ -290,18 +324,18 @@ const previewChannel = ref('Instagram')
 const draggingItem = ref(null)
 
 const channels = [
-  { name: 'Instagram', icon: 'bi bi-instagram', color: '#E4405F' },
-  { name: 'Facebook', icon: 'bi bi-facebook', color: '#1877F2' },
-  { name: 'LinkedIn', icon: 'bi bi-linkedin', color: '#0A66C2' },
-  { name: 'Twitter', icon: 'bi bi-twitter-x', color: '#000000' },
-  { name: 'TikTok', icon: 'bi bi-tiktok', color: '#000000' }
+  { name: 'Instagram', icon: Instagram, colorClass: 'text-pink-600' },
+  { name: 'Facebook', icon: Facebook, colorClass: 'text-blue-600' },
+  { name: 'LinkedIn', icon: Linkedin, colorClass: 'text-blue-700' },
+  { name: 'Twitter', icon: Twitter, colorClass: 'text-slate-900' },
+  { name: 'TikTok', icon: Share2, colorClass: 'text-slate-900' } // Using Share2 as placeholder for TikTok
 ]
 
 const columns = [
-  { id: 'draft', title: 'Borradores', dotColor: 'bg-gray-400', headerBorder: 'border-gray-200' },
-  { id: 'review', title: 'En Revisión', dotColor: 'bg-blue-400', headerBorder: 'border-blue-200' },
-  { id: 'scheduled', title: 'Programados', dotColor: 'bg-yellow-400', headerBorder: 'border-yellow-200' },
-  { id: 'published', title: 'Publicados', dotColor: 'bg-green-400', headerBorder: 'border-green-200' }
+  { id: 'draft', title: 'Borradores', dotColor: 'bg-slate-400' },
+  { id: 'review', title: 'En Revisión', dotColor: 'bg-blue-400' },
+  { id: 'scheduled', title: 'Programados', dotColor: 'bg-amber-400' },
+  { id: 'published', title: 'Publicados', dotColor: 'bg-emerald-400' }
 ]
 
 // Datos iniciales (Simulados)
@@ -346,8 +380,6 @@ function startDrag(evt, item) {
   draggingItem.value = item
   evt.dataTransfer.dropEffect = 'move'
   evt.dataTransfer.effectAllowed = 'move'
-  // Pequeño hack para que la imagen fantasma no sea la tarjeta completa si es muy grande
-  // evt.dataTransfer.setDragImage(evt.target, 0, 0) 
 }
 
 function onDrop(evt, statusId) {
@@ -436,17 +468,17 @@ function goToGenerator() {
 // --- UTILIDADES VISUALES ---
 function getChannelIcon(channelName) {
   const ch = channels.find(c => c.name === channelName.trim())
-  return ch ? ch.icon : 'bi-share'
+  return ch ? ch.icon : Share2
 }
 
-function getChannelIconColor(channelName) {
+function getChannelColorClass(channelName) {
   const ch = channels.find(c => c.name === channelName.trim())
-  return ch ? ch.color : '#666'
+  return ch ? ch.colorClass : 'text-slate-500'
 }
 
 </script>
 
-<style scoped>
+<style scoped lang="postcss">
 /* Scrollbar fina para las columnas */
 .scrollbar-thin::-webkit-scrollbar {
   width: 4px;
@@ -455,11 +487,11 @@ function getChannelIconColor(channelName) {
   background: transparent;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background-color: #e5e7eb;
+  background-color: #cbd5e1;
   border-radius: 20px;
 }
 .scrollbar-thin:hover::-webkit-scrollbar-thumb {
-  background-color: #d1d5db;
+  background-color: #94a3b8;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
@@ -472,16 +504,16 @@ function getChannelIconColor(channelName) {
 
 /* Estilos de Formulario */
 .form-label {
-  @apply block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1;
+  @apply block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5;
 }
 .form-input {
-  @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20 transition-all bg-white text-sm;
+  @apply w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20 transition-all bg-white text-sm text-slate-700;
 }
 
 .btn-primary {
-  @apply px-6 py-2.5 bg-kapital-night text-white font-medium rounded-lg hover:bg-kapital-night-hover active:scale-95 transition-all flex items-center gap-2 justify-center text-sm;
+  @apply px-5 py-2.5 bg-kapital-dark text-white font-medium rounded-xl hover:bg-blue-700 active:scale-95 transition-all flex items-center gap-2 justify-center text-sm;
 }
 .btn-secondary {
-  @apply px-6 py-2.5 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 active:scale-95 transition-all text-sm;
+  @apply px-5 py-2.5 bg-white text-slate-700 font-medium rounded-xl border border-slate-200 hover:bg-slate-50 active:scale-95 transition-all text-sm;
 }
 </style>

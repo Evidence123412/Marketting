@@ -8,19 +8,26 @@ export default {
     extend: {
       colors: {
         kapital: {
-          'dark': '#2B66FF',        
-          'light-1': '#61A3FF',     
-          'light-2': '#00FFFF',    
-          'white': '#FFFFFF',      
-          'gray': '#C9C9C9',       
-          
-          
-          'night': '#111827',     
-          'night-hover': '#374151', 
+          'dark': '#2563EB',        // Blue-600 (More vibrant)
+          'light-1': '#60A5FA',     // Blue-400
+          'light-2': '#93C5FD',     // Blue-300
+          'accent': '#F59E0B',      // Amber-500 (For highlights)
+          'night': '#0F172A',       // Slate-900 (Deep dark)
+          'night-hover': '#1E293B', // Slate-800
+          'gray': '#F1F5F9',        // Slate-100 (Backgrounds)
+          'text-main': '#334155',   // Slate-700
+          'text-light': '#64748B',  // Slate-500
         }
       },
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+      },
+      boxShadow: {
+        'glass': '0 4px 30px rgba(0, 0, 0, 0.1)',
+        'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
+      },
+      backdropBlur: {
+        'xs': '2px',
       }
     },
   },
