@@ -1,778 +1,421 @@
 <template>
   <div class="space-y-6 h-full flex flex-col">
-    <!-- Header -->
+    
     <div 
       v-motion
       :initial="{ opacity: 0, y: -20 }"
       :enter="{ opacity: 1, y: 0, transition: { duration: 500 } }"
-      class="flex justify-between items-end"
+      class="flex flex-col md:flex-row justify-between items-end gap-4"
     >
       <div>
-        <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Programación</h1>
-        <p class="text-slate-500 mt-1">Administra y visualiza tus publicaciones programadas.</p>
-      </div>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <div 
-        v-motion
-        :initial="{ opacity: 0, y: 20 }"
-        :enter="{ opacity: 1, y: 0, transition: { delay: 100 } }"
-        class="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 flex items-center gap-4"
-      >
-        <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
-          <Calendar :size="24" />
-        </div>
-        <div>
-          <p class="text-2xl font-bold text-slate-900">{{ totalScheduled }}</p>
-          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total Programadas</span>
-        </div>
+        <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Calendario Editorial</h1>
+        <p class="text-slate-500 mt-1 text-sm">Visualiza y orquesta tu estrategia de contenido global.</p>
       </div>
       
-      <div 
-        v-motion
-        :initial="{ opacity: 0, y: 20 }"
-        :enter="{ opacity: 1, y: 0, transition: { delay: 200 } }"
-        class="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-4 flex items-center gap-4"
-      >
-        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
-          <Clock :size="24" />
-        </div>
-        <div>
-          <p class="text-2xl font-bold text-slate-900">{{ todayCount }}</p>
-          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Para Hoy</span>
-        </div>
-      </div>
-
-      <div 
-        v-motion
-        :initial="{ opacity: 0, y: 20 }"
-        :enter="{ opacity: 1, y: 0, transition: { delay: 300 } }"
-        class="bg-amber-50/50 border border-amber-100 rounded-2xl p-4 flex items-center gap-4"
-      >
-        <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
-          <AlertTriangle :size="24" />
-        </div>
-        <div>
-          <p class="text-2xl font-bold text-slate-900">{{ weekCount }}</p>
-          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Esta Semana</span>
-        </div>
-      </div>
-
-      <div 
-        v-motion
-        :initial="{ opacity: 0, y: 20 }"
-        :enter="{ opacity: 1, y: 0, transition: { delay: 400 } }"
-        class="bg-purple-50/50 border border-purple-100 rounded-2xl p-4 flex items-center gap-4"
-      >
-        <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center">
-          <CheckCircle2 :size="24" />
-        </div>
-        <div>
-          <p class="text-2xl font-bold text-slate-900">{{ publishedCount }}</p>
-          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Publicadas</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Filters -->
-    <div 
-      v-motion
-      :initial="{ opacity: 0, y: 20 }"
-      :enter="{ opacity: 1, y: 0, transition: { delay: 500 } }"
-      class="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-white/20 shadow-soft flex flex-col md:flex-row gap-4"
-    >
-      <div class="flex-1">
-        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Campaña</label>
-        <div class="relative">
-          <select 
-            v-model="filterCampaign"
-            class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:border-kapital-dark appearance-none cursor-pointer"
-          >
-            <option value="">Todas las campañas</option>
-            <option value="Verano">Verano</option>
-            <option value="Promociones">Promociones</option>
-            <option value="Educativo">Educativo</option>
-            <option value="Eventos">Eventos</option>
-          </select>
-          <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" :size="16" />
-        </div>
-      </div>
-      <div class="flex-1">
-        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Red Social</label>
-        <div class="relative">
-          <select 
-            v-model="filterNetwork"
-            class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:border-kapital-dark appearance-none cursor-pointer"
-          >
-            <option value="">Todas las redes</option>
-            <option value="Instagram">Instagram</option>
-            <option value="Facebook">Facebook</option>
-            <option value="LinkedIn">LinkedIn</option>
-            <option value="Twitter">Twitter</option>
-          </select>
-          <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" :size="16" />
-        </div>
-      </div>
-      <div class="flex-1">
-        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Estado</label>
-        <div class="relative">
-          <select 
-            v-model="filterStatus"
-            class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:border-kapital-dark appearance-none cursor-pointer"
-          >
-            <option value="">Todos los estados</option>
-            <option value="scheduled">Programado</option>
-            <option value="published">Publicado</option>
-            <option value="failed">Fallido</option>
-          </select>
-          <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" :size="16" />
-        </div>
-      </div>
-    </div>
-
-    <!-- Calendar & Info -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-0">
-      <!-- Calendar -->
-      <div class="lg:col-span-2 bg-white/80 backdrop-blur-sm border border-white/20 shadow-soft rounded-2xl p-6 flex flex-col">
-        <div class="flex justify-between items-center mb-6">
-          <button 
-            @click="previousMonth"
-            class="text-slate-400 hover:text-kapital-dark hover:bg-slate-100 p-2 rounded-lg transition-colors"
-            title="Mes anterior"
-          >
-            <ChevronLeft :size="24" />
-          </button>
-          <div class="text-center">
-            <h3 class="text-xl font-bold text-slate-900">{{ monthYear }}</h3>
-            <small class="text-slate-500 font-medium">{{ dayCountInfo }}</small>
-          </div>
-          <button 
-            @click="nextMonth"
-            class="text-slate-400 hover:text-kapital-dark hover:bg-slate-100 p-2 rounded-lg transition-colors"
-            title="Próximo mes"
-          >
-            <ChevronRight :size="24" />
-          </button>
-        </div>
-
-        <!-- Days of week header -->
-        <div class="grid grid-cols-7 gap-2 mb-4">
-          <div v-for="day in ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']" :key="day" class="text-center font-bold text-slate-400 text-xs uppercase tracking-wider py-2">
-            {{ day }}
-          </div>
-        </div>
-
-        <!-- Calendar days -->
-        <div class="grid grid-cols-7 gap-2 flex-1">
-          <div 
-            v-for="item in calendarDays" 
-            :key="item.key"
-            @click="item.day && selectDate(item.day)"
-            :class="[
-              'aspect-square border rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all relative p-1',
-              item.isCurrentMonth ? 'border-slate-200 hover:border-kapital-dark bg-white hover:shadow-md' : 'border-slate-100 bg-slate-50/50 text-slate-300',
-              item.isToday ? 'border-kapital-dark bg-blue-50 ring-1 ring-kapital-dark' : '',
-              item.hasPublications ? 'border-kapital-dark/50' : ''
-            ]"
-          >
-            <span v-if="item.day" :class="['text-sm font-medium', item.isToday ? 'text-kapital-dark font-bold' : '']">{{ item.day }}</span>
-            <span v-if="item.count" class="text-[10px] font-bold text-white bg-kapital-dark px-1.5 py-0.5 rounded-full mt-1 shadow-sm">{{ item.count }}</span>
-            <div v-if="item.hasPublications && !item.count" class="w-1.5 h-1.5 rounded-full bg-kapital-dark mt-1"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sidebar Info -->
-      <div class="space-y-4 flex flex-col overflow-y-auto scrollbar-hide">
-        <div class="bg-blue-50/50 border border-blue-100 rounded-2xl p-5">
-          <h3 class="font-bold text-slate-900 mb-3 flex items-center gap-2 text-sm uppercase tracking-wide">
-            <Info :size="16" class="text-kapital-dark" /> Próxima
-          </h3>
-          <div v-if="nextPublication" class="space-y-3">
-            <p class="font-bold text-slate-900 text-lg leading-tight">{{ nextPublication.title }}</p>
-            <p class="text-sm text-slate-600 flex items-center gap-2 bg-white/50 p-2 rounded-lg w-fit">
-              <Calendar :size="14" /> {{ nextPublication.date }}
-            </p>
-            <div class="flex gap-1.5 flex-wrap">
-              <span v-for="net in nextPublication.networks.split(', ')" :key="net" class="text-[10px] font-bold px-2 py-1 bg-kapital-dark text-white rounded-md uppercase tracking-wide shadow-sm">
-                {{ net }}
-              </span>
-            </div>
-          </div>
-          <p v-else class="text-slate-500 text-sm italic">No hay publicaciones próximas</p>
-        </div>
-
-        <div class="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-5">
-          <h3 class="font-bold text-slate-900 mb-3 flex items-center gap-2 text-sm uppercase tracking-wide">
-            <PieChart :size="16" class="text-emerald-600" /> Distribución
-          </h3>
-          <div class="space-y-2 text-sm">
-            <div class="flex justify-between items-center p-2 bg-white/50 rounded-lg">
-              <span class="text-slate-600 font-medium">Programadas</span>
-              <span class="font-bold text-slate-900 bg-white px-2 py-0.5 rounded shadow-sm">{{ scheduled.filter(p => p.status === 'scheduled').length }}</span>
-            </div>
-            <div class="flex justify-between items-center p-2 bg-white/50 rounded-lg">
-              <span class="text-slate-600 font-medium">Publicadas</span>
-              <span class="font-bold text-slate-900 bg-white px-2 py-0.5 rounded shadow-sm">{{ scheduled.filter(p => p.status === 'published').length }}</span>
-            </div>
-            <div class="flex justify-between items-center p-2 bg-white/50 rounded-lg">
-              <span class="text-slate-600 font-medium">Fallidas</span>
-              <span class="font-bold text-slate-900 bg-white px-2 py-0.5 rounded shadow-sm">{{ scheduled.filter(p => p.status === 'failed').length }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-amber-50/50 border border-amber-100 rounded-2xl p-5">
-          <h3 class="font-bold text-slate-900 mb-3 flex items-center gap-2 text-sm uppercase tracking-wide">
-            <Bell :size="16" class="text-amber-600" /> Recordatorios
-          </h3>
-          <p class="text-sm text-slate-700 font-medium">
-            <span class="font-bold text-amber-600 text-lg">{{ upcomingCount }}</span> publicación(es) en próximas 48 horas
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Scheduled Publications List -->
-    <div class="bg-white/80 backdrop-blur-sm border border-white/20 shadow-soft rounded-2xl p-6">
-      <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-        <List :size="20" class="text-kapital-dark" /> Publicaciones Programadas
-      </h2>
-      
-      <div class="space-y-3">
-        <div 
-          v-for="item in filteredScheduled" 
-          :key="item.id"
-          class="bg-slate-50/50 border border-slate-200 rounded-xl p-4 hover:shadow-md hover:border-kapital-dark/30 transition-all group"
-        >
-          <div class="flex justify-between items-start gap-4 mb-3">
-            <div class="flex-1">
-              <h4 class="font-bold text-slate-900 text-base">{{ item.title }}</h4>
-              <p class="text-sm text-slate-600 mt-1 line-clamp-1">{{ item.description }}</p>
-            </div>
-            <span :class="['px-3 py-1 text-[10px] font-bold uppercase tracking-wide rounded-lg whitespace-nowrap shadow-sm', getStatusBadge(item.status)]">
-              {{ item.statusLabel }}
-            </span>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 text-sm">
-            <div class="flex items-center gap-2 text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-100">
-              <Calendar :size="14" class="text-kapital-dark" />
-              <input 
-                type="date" 
-                :value="item.date"
-                @change="(e) => updatePublicationDate(item.id, e.target.value)"
-                class="bg-transparent border-none p-0 text-xs focus:ring-0 w-full text-slate-700 font-medium"
-              />
-            </div>
-            <div class="flex items-center gap-2 text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-100">
-              <Clock :size="14" class="text-kapital-dark" />
-              <input 
-                type="time" 
-                :value="item.time || ''"
-                @change="(e) => updatePublicationTime(item.id, e.target.value)"
-                class="bg-transparent border-none p-0 text-xs focus:ring-0 w-full text-slate-700 font-medium"
-              />
-            </div>
-            <div class="flex items-center gap-2 text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-100">
-              <Tag :size="14" class="text-kapital-dark" />
-              <span class="text-xs font-medium">{{ item.campaign || 'Sin campaña' }}</span>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between pt-3 border-t border-slate-200/60">
-            <div class="flex gap-2 flex-wrap">
-              <span 
-                v-for="net in item.networks.split(', ')" 
-                :key="net"
-                :class="['text-[10px] px-2 py-1 rounded-md font-bold uppercase tracking-wide flex items-center gap-1', getNetworkColor(net)]"
-              >
-                <component :is="getNetworkIcon(net)" :size="10" /> {{ net }}
-              </span>
-            </div>
-            <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button 
-                @click="editPublication(item)"
-                class="p-2 text-slate-400 hover:text-kapital-dark hover:bg-blue-50 rounded-lg transition-colors"
-                title="Editar"
-              >
-                <Edit2 :size="16" />
-              </button>
-              <button 
-                @click="changeStatus(item)"
-                class="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-                title="Cambiar estado"
-              >
-                <RefreshCw :size="16" />
-              </button>
-              <button 
-                @click="deletePublication(item.id)"
-                class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                title="Eliminar"
-              >
-                <Trash2 :size="16" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div v-if="filteredScheduled.length === 0" class="text-center py-12 flex flex-col items-center">
-          <CalendarCheck :size="48" class="text-slate-200 mb-3" />
-          <p class="text-slate-400 font-medium">No hay publicaciones con estos filtros</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Edit Publication Modal -->
-    <div v-if="showEditModal && editingPub" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div 
-        v-motion
-        :initial="{ opacity: 0, scale: 0.95 }"
-        :enter="{ opacity: 1, scale: 1 }"
-        class="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-white/20"
-      >
-        <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <Edit3 :size="20" class="text-kapital-dark" /> Editar Publicación
-          </h3>
-          <button @click="showEditModal = false" class="text-slate-400 hover:text-slate-600 p-1 hover:bg-slate-100 rounded-lg transition-colors">
-            <X :size="24" />
-          </button>
-        </div>
-
-        <form @submit.prevent="saveChanges" class="space-y-5">
-          <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Título</label>
-            <input 
-              v-model="editingPub.title"
-              type="text"
-              class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20 transition-all text-sm"
-            />
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Descripción</label>
-            <textarea 
-              v-model="editingPub.description"
-              rows="3"
-              class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20 transition-all text-sm resize-none"
-            ></textarea>
-          </div>
-
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Fecha</label>
-              <input 
-                v-model="editingPub.date"
-                type="date"
-                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20 transition-all text-sm"
-              />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Hora</label>
-              <input 
-                v-model="editingPub.time"
-                type="time"
-                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20 transition-all text-sm"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Canales</label>
-            <input 
-              v-model="editingPub.networks"
-              type="text"
-              placeholder="Ej: Instagram, Facebook"
-              class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20 transition-all text-sm"
-            />
-          </div>
-
-          <div class="flex gap-3 pt-6 border-t border-slate-100">
-            <button 
-              type="button"
-              @click="showEditModal = false"
-              class="btn-secondary flex-1"
-            >
-              Cancelar
-            </button>
-            <button 
-              type="submit"
-              class="btn-primary flex-1 shadow-lg shadow-kapital-dark/20"
-            >
-              <Save :size="18" /> Guardar Cambios
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Change Status Modal -->
-    <div v-if="showStatusModal && statusEditPub" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div 
-        v-motion
-        :initial="{ opacity: 0, scale: 0.95 }"
-        :enter="{ opacity: 1, scale: 1 }"
-        class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-white/20"
-      >
-        <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-          <RefreshCw :size="20" class="text-kapital-dark" /> Cambiar Estado
-        </h3>
-        
-        <div class="space-y-3 mb-6">
-          <button 
-            v-for="status in statusOptions"
-            :key="status.value"
-            @click="updateStatus(status.value)"
-            :class="['w-full p-4 rounded-xl border transition-all text-left flex items-center gap-4 group', 
-              statusEditPub.status === status.value ? 'border-kapital-dark bg-blue-50 ring-1 ring-kapital-dark' : 'border-slate-200 hover:border-kapital-dark/50 hover:bg-slate-50']"
-          >
-            <div :class="['w-10 h-10 rounded-full flex items-center justify-center transition-colors', statusEditPub.status === status.value ? 'bg-kapital-dark text-white' : 'bg-slate-100 text-slate-400 group-hover:text-kapital-dark']">
-              <component :is="status.icon" :size="18" />
-            </div>
-            <div>
-              <p class="font-bold text-slate-900 text-sm">{{ status.label }}</p>
-              <small class="text-slate-500">{{ status.description }}</small>
-            </div>
-            <CheckCircle2 v-if="statusEditPub.status === status.value" :size="18" class="ml-auto text-kapital-dark" />
-          </button>
-        </div>
-
+      <div class="flex items-center gap-3 bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm">
         <button 
-          @click="showStatusModal = false"
-          class="btn-secondary w-full"
+          v-for="view in viewOptions" 
+          :key="view.id"
+          @click="currentView = view.id"
+          :class="[
+            'px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2',
+            currentView === view.id 
+              ? 'bg-slate-900 text-white shadow-md' // Cambiado a bg-slate-900 para el color oscuro
+              : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+          ]"
         >
-          Cancelar
+          <component :is="view.icon" :size="16" />
+          {{ view.label }}
         </button>
       </div>
+
+      <button @click="openModal" class="btn-primary shadow-lg shadow-slate-900/20">
+        <Plus :size="20" /> Programar Post
+      </button>
     </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div v-for="(stat, index) in stats" :key="index" 
+        class="bg-white/60 backdrop-blur-sm border border-slate-200/60 p-4 rounded-2xl flex items-center gap-4 hover:bg-white transition-all duration-300 group"
+      >
+        <div :class="['w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110', stat.bg, stat.color]">
+          <component :is="stat.icon" :size="24" stroke-width="2" />
+        </div>
+        <div>
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">{{ stat.label }}</p>
+          <div class="flex items-baseline gap-2">
+            <span class="text-2xl font-bold text-slate-900">{{ stat.value }}</span>
+            <span v-if="stat.trend" :class="['text-xs font-bold px-1.5 py-0.5 rounded', stat.trend > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700']">
+              {{ stat.trend > 0 ? '+' : ''}}{{ stat.trend }}%
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-6 flex-1 min-h-0">
+      
+      <div class="flex-[3] card flex flex-col h-full overflow-hidden relative">
+        
+        <div v-if="currentView === 'calendar'" class="flex flex-col h-full animate-in fade-in zoom-in-95 duration-300">
+          <div class="flex justify-between items-center mb-6 px-2">
+            <div class="flex items-center gap-4">
+              <h2 class="text-2xl font-bold text-slate-900 capitalize">{{ monthName }} <span class="text-slate-300">{{ year }}</span></h2>
+              <div class="flex bg-slate-100 rounded-lg p-1 gap-1">
+                <button @click="changeMonth(-1)" class="p-1 hover:bg-white hover:shadow-sm rounded-md transition-all text-slate-500"><ChevronLeft :size="18" /></button>
+                <button @click="goToToday" class="px-3 text-xs font-bold text-slate-600 hover:bg-white hover:shadow-sm rounded-md transition-all">Hoy</button>
+                <button @click="changeMonth(1)" class="p-1 hover:bg-white hover:shadow-sm rounded-md transition-all text-slate-500"><ChevronRight :size="18" /></button>
+              </div>
+            </div>
+            
+            <div class="flex gap-2">
+                <button 
+                    v-for="filter in networkFilters" :key="filter.name"
+                    @click="toggleFilter(filter.name)"
+                    :class="['w-8 h-8 rounded-full flex items-center justify-center transition-all border-2', activeFilters.includes(filter.name) ? 'border-current bg-slate-50 grayscale-0' : 'border-transparent grayscale opacity-50 hover:opacity-100']"
+                    :style="{ color: activeFilters.includes(filter.name) ? filter.color : '' }"
+                    :title="filter.name"
+                >
+                    <component :is="filter.icon" :size="14" />
+                </button>
+            </div>
+          </div>
+
+          <div class="flex-1 flex flex-col">
+            <div class="grid grid-cols-7 mb-2">
+              <div v-for="day in weekDays" :key="day" class="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ day }}</div>
+            </div>
+            <div class="grid grid-cols-7 gap-2 flex-1 auto-rows-fr">
+              <div 
+                v-for="(day, idx) in calendarDays" 
+                :key="idx"
+                @click="day.date && openDayDetails(day)"
+                :class="[
+                  'relative rounded-xl border p-2 transition-all flex flex-col gap-1 group min-h-[100px]',
+                  day.isCurrentMonth ? 'bg-white border-slate-100 hover:border-slate-400 hover:shadow-md cursor-pointer' : 'bg-slate-50/50 border-transparent text-slate-300 pointer-events-none',
+                  day.isToday ? 'ring-2 ring-slate-900 ring-offset-2 z-10' : ''
+                ]"
+              >
+                <span :class="['text-sm font-bold w-7 h-7 flex items-center justify-center rounded-full', day.isToday ? 'bg-slate-900 text-white' : 'text-slate-700']">
+                  {{ day.date }}
+                </span>
+
+                <div class="flex flex-col gap-1 mt-1 overflow-y-auto scrollbar-hide max-h-[80px]">
+                  <div 
+                    v-for="event in getEventsForDay(day)" 
+                    :key="event.id"
+                    class="text-[10px] font-semibold px-2 py-1 rounded-md border-l-2 bg-slate-50 truncate transition-colors hover:bg-white shadow-sm flex items-center justify-between"
+                    :class="getNetworkBorderClass(event.network)"
+                  >
+                    <span class="truncate">{{ event.title }}</span>
+                    <component :is="getNetworkIcon(event.network)" :size="10" class="text-slate-400 flex-shrink-0 ml-1" />
+                  </div>
+                </div>
+                
+                <button v-if="day.isCurrentMonth" class="absolute bottom-2 right-2 w-6 h-6 bg-slate-900 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:scale-110">
+                    <Plus :size="14" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-else-if="currentView === 'list'" class="h-full flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <div class="mb-4 flex gap-4">
+                <div class="relative flex-1">
+                    <Search :size="16" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input type="text" placeholder="Buscar publicación..." class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-slate-900">
+                </div>
+                </div>
+            <div class="flex-1 overflow-y-auto scrollbar-thin">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-slate-50 text-slate-500 font-bold uppercase text-xs sticky top-0 z-10">
+                        <tr>
+                            <th class="px-4 py-3 rounded-tl-xl">Estado</th>
+                            <th class="px-4 py-3">Contenido</th>
+                            <th class="px-4 py-3">Canales</th>
+                            <th class="px-4 py-3">Fecha</th>
+                            <th class="px-4 py-3 rounded-tr-xl">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        <tr v-for="event in filteredEvents" :key="event.id" class="hover:bg-slate-50 group">
+                            <td class="px-4 py-3">
+                                <span :class="['px-2 py-1 rounded-full text-[10px] font-bold uppercase', getStatusBadge(event.status)]">{{ event.status }}</span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <p class="font-bold text-slate-900">{{ event.title }}</p>
+                                <p class="text-xs text-slate-500 truncate w-48">{{ event.description || 'Sin descripción' }}</p>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex -space-x-2">
+                                    <div v-for="net in event.networks" :key="net" class="w-6 h-6 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-sm z-0 relative hover:z-10 hover:scale-110 transition-transform">
+                                        <component :is="getNetworkIcon(net)" :size="12" />
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 font-medium text-slate-600">
+                                {{ event.date }} <span class="text-slate-400 text-xs">{{ event.time }}</span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <button class="p-1.5 hover:bg-white rounded-lg text-slate-400 hover:text-slate-900 transition-colors shadow-sm border border-transparent hover:border-slate-200">
+                                    <Edit3 :size="14" />
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div v-else class="h-full flex items-center justify-center text-slate-400 animate-in zoom-in duration-300">
+            <div class="text-center">
+                <GanttChartSquare :size="48" class="mx-auto mb-3 opacity-50" />
+                <p>Vista de Línea de Tiempo en desarrollo</p>
+            </div>
+        </div>
+
+      </div>
+
+      <div class="flex-1 min-w-[300px] flex flex-col gap-6">
+        
+        <div class="card p-0 overflow-hidden border-0 shadow-lg ring-1 ring-slate-900/5 relative group">
+          <div class="h-24 bg-gradient-to-r from-slate-900 to-indigo-600 relative p-6"> <div class="absolute bottom-0 right-0 opacity-10 transform translate-y-4 translate-x-4"><Rocket :size="100" /></div>
+             <span class="text-[10px] font-bold uppercase tracking-widest text-white/80 bg-white/10 px-2 py-1 rounded backdrop-blur-md">Siguiente en cola</span>
+             <h3 class="text-white font-bold text-lg mt-2 truncate pr-8">{{ nextEvent?.title || 'Nada programado' }}</h3>
+          </div>
+          
+          <div class="p-6 pt-2 relative bg-white">
+             <div class="absolute -top-8 right-6 bg-white rounded-xl shadow-md p-2 text-center min-w-[60px]">
+                <span class="block text-xs font-bold text-slate-400 uppercase">{{ getMonthShort(nextEvent?.date) }}</span>
+                <span class="block text-xl font-black text-slate-900">{{ getDayNumber(nextEvent?.date) }}</span>
+             </div>
+
+             <div v-if="nextEvent" class="mt-4 space-y-4">
+                <div class="flex items-center justify-between text-sm text-slate-600 border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2"><Clock :size="16" class="text-slate-900"/> {{ nextEvent.time }}</div> <div class="flex -space-x-2">
+                        <div v-for="net in nextEvent.networks" :key="net" class="w-6 h-6 rounded-full bg-slate-50 border border-white shadow-sm flex items-center justify-center">
+                            <component :is="getNetworkIcon(net)" :size="12" />
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden border-2 border-white shadow-sm">
+                        <img src="https://ui-avatars.com/api/?name=Ana+G&background=random" alt="User">
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-900">Asignado a Ana</p>
+                        <p class="text-[10px] text-slate-500">Copywriter</p>
+                    </div>
+                    <button class="ml-auto text-xs text-slate-900 font-bold hover:underline">Ver detalles</button> </div>
+             </div>
+             <div v-else class="mt-8 text-center text-sm text-slate-400">
+                ¡Todo listo! No hay publicaciones pendientes próximas.
+             </div>
+          </div>
+        </div>
+
+        <div class="card flex-1 flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2"><Sparkles :size="16" class="text-amber-500"/> Borradores / Ideas</h3>
+                <button class="p-1 hover:bg-slate-50 rounded"><Plus :size="16" class="text-slate-400" /></button>
+            </div>
+            <div class="flex-1 overflow-y-auto space-y-3 scrollbar-thin pr-1">
+                <div v-for="draft in drafts" :key="draft.id" class="p-3 rounded-xl border border-slate-100 hover:border-amber-200 hover:bg-amber-50/30 transition-all cursor-pointer group">
+                    <div class="flex justify-between mb-1">
+                        <span class="font-bold text-xs text-slate-700">{{ draft.title }}</span>
+                        <MoreHorizontal :size="14" class="text-slate-300 group-hover:text-slate-500" />
+                    </div>
+                    <p class="text-[10px] text-slate-500 line-clamp-2">{{ draft.notes }}</p>
+                </div>
+            </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div v-if="showEventModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
+            <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+                <h3 class="font-bold text-lg text-slate-900">Detalles del Evento</h3>
+                <button @click="showEventModal = false"><X :size="20" class="text-slate-400 hover:text-slate-600" /></button>
+            </div>
+            <div class="p-6">
+                <p class="text-sm text-slate-600 mb-4">Editando evento del día {{ selectedDay?.date }}.</p>
+                <div class="flex justify-end gap-2">
+                    <button @click="showEventModal = false" class="btn-secondary py-2">Cancelar</button>
+                    <button @click="showEventModal = false; emit('showToast', 'Guardado')" class="btn-primary py-2">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 import { 
-  Calendar, Clock, AlertTriangle, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, 
-  Info, PieChart, Bell, List, Tag, Edit2, RefreshCw, Trash2, CalendarCheck, Edit3, X, Save,
-  Facebook, Instagram, Linkedin, Twitter, Mail, Link as LinkIcon
+  Calendar as CalendarIcon, List, GanttChartSquare, Plus, ChevronLeft, ChevronRight, 
+  Rocket, Clock, Search, Edit3, MoreHorizontal, X, Sparkles,
+  Instagram, Facebook, Linkedin, Twitter, Youtube, CheckCircle2, AlertCircle, Timer
 } from 'lucide-vue-next'
 
 const emit = defineEmits(['showToast'])
 
-const currentDate = ref(new Date(2025, 10, 1))
-const filterCampaign = ref('')
-const filterNetwork = ref('')
-const filterStatus = ref('')
-const showEditModal = ref(false)
-const showStatusModal = ref(false)
-const editingPub = ref(null)
-const statusEditPub = ref(null)
+// --- STATE ---
+const currentView = ref('calendar')
+const currentDate = ref(new Date(2025, 10, 21)) // Simulating Nov 21, 2025
+const showEventModal = ref(false)
+const selectedDay = ref(null)
+const activeFilters = ref(['Instagram', 'Facebook', 'LinkedIn', 'Twitter']) // All active by default
 
-const statusOptions = [
-  { value: 'scheduled', label: 'Programado', description: 'Pendiente de publicación', icon: Calendar },
-  { value: 'published', label: 'Publicado', description: 'Ya publicado en redes', icon: CheckCircle2 },
-  { value: 'failed', label: 'Fallido', description: 'Error en publicación', icon: AlertTriangle }
+// --- STATIC DATA (Would come from schedulingService) ---
+const viewOptions = [
+  { id: 'calendar', label: 'Mes', icon: CalendarIcon },
+  { id: 'list', label: 'Lista', icon: List },
+  { id: 'timeline', label: 'Timeline', icon: GanttChartSquare }
 ]
 
-const scheduled = ref([
-  {
-    id: 1,
-    title: 'Lanzamiento de producto',
-    description: 'Anuncio oficial del nuevo producto Q4',
-    date: '2025-11-22',
-    time: '14:00',
-    networks: 'Instagram, Facebook',
-    campaign: 'Verano',
-    status: 'scheduled',
-    statusLabel: 'Programado'
-  },
-  {
-    id: 2,
-    title: 'Contenido educativo',
-    description: 'Tips de marketing digital para profesionales',
-    date: '2025-11-25',
-    time: '09:30',
-    networks: 'LinkedIn',
-    campaign: 'Educativo',
-    status: 'scheduled',
-    statusLabel: 'Programado'
-  },
-  {
-    id: 3,
-    title: 'Promoción Black Friday',
-    description: 'Descuentos especiales hasta fin de existencias',
-    date: '2025-11-28',
-    time: '10:00',
-    networks: 'Instagram, Facebook, Twitter',
-    campaign: 'Promociones',
-    status: 'scheduled',
-    statusLabel: 'Programado'
-  },
-  {
-    id: 4,
-    title: 'Post de gratitud',
-    description: 'Agradecimiento a nuestra comunidad',
-    date: '2025-11-20',
-    time: '18:00',
-    networks: 'Instagram',
-    campaign: 'Eventos',
-    status: 'published',
-    statusLabel: 'Publicado'
-  },
-  {
-    id: 5,
-    title: 'Webinar en vivo',
-    description: 'Sesión de preguntas y respuestas con expertos',
-    date: '2025-11-27',
-    time: '15:30',
-    networks: 'Facebook, LinkedIn',
-    campaign: 'Eventos',
-    status: 'scheduled',
-    statusLabel: 'Programado'
-  },
-  {
-    id: 6,
-    title: 'Newsletter semanal',
-    description: 'Resumen de contenido de la semana',
-    date: '2025-11-23',
-    time: '12:00',
-    networks: 'Email',
-    campaign: 'Educativo',
-    status: 'failed',
-    statusLabel: 'Fallido'
-  }
+const networkFilters = [
+    { name: 'Instagram', icon: Instagram, color: '#db2777' },
+    { name: 'Facebook', icon: Facebook, color: '#2563eb' },
+    { name: 'LinkedIn', icon: Linkedin, color: '#0077b5' },
+    { name: 'Twitter', icon: Twitter, color: '#000000' }
+]
+
+const events = ref([
+  { id: 1, title: 'Lanzamiento', date: '2025-11-22', day: 22, time: '14:00', networks: ['Instagram', 'Facebook'], status: 'scheduled' },
+  { id: 2, title: 'Blog SEO', date: '2025-11-24', day: 24, time: '09:00', networks: ['LinkedIn'], status: 'draft' },
+  { id: 3, title: 'Black Friday', date: '2025-11-28', day: 28, time: '10:00', networks: ['Instagram', 'Twitter'], status: 'scheduled' },
+  { id: 4, title: 'Promo Flash', date: '2025-11-15', day: 15, time: '18:00', networks: ['Instagram'], status: 'published' },
+  { id: 5, title: 'Webinar', date: '2025-11-27', day: 27, time: '16:00', networks: ['LinkedIn', 'Facebook'], status: 'scheduled' },
 ])
 
-const monthYear = computed(() => {
-  const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
-  return `${months[currentDate.value.getMonth()]} ${currentDate.value.getFullYear()}`
+const drafts = ref([
+    { id: 1, title: 'Idea para Navidad', notes: 'Usar colores rojos y dorados, enfocar en familia.' },
+    { id: 2, title: 'Meme de oficina', notes: 'Plantilla del gato, relacionar con lunes.' },
+    { id: 3, title: 'Quote motivacional', notes: 'Steve Jobs sobre diseño.' }
+])
+
+// --- COMPUTED ---
+const filteredEvents = computed(() => {
+    // Filter by active networks
+    return events.value.filter(e => e.networks.some(n => activeFilters.value.includes(n)))
 })
 
-const dayCountInfo = computed(() => {
-  return `${getDaysInMonth(currentDate.value)} días`
+const nextEvent = computed(() => {
+    const sorted = [...filteredEvents.value]
+        .filter(e => e.status === 'scheduled')
+        .sort((a, b) => a.day - b.day)
+    return sorted.find(e => e.day >= 21) || null // Assuming today is 21
 })
+
+const stats = computed(() => [
+    { label: 'Programados', value: events.value.filter(e => e.status === 'scheduled').length, icon: CalendarIcon, bg: 'bg-blue-50', color: 'text-blue-600', trend: 12 },
+    { label: 'Publicados', value: events.value.filter(e => e.status === 'published').length, icon: CheckCircle2, bg: 'bg-emerald-50', color: 'text-emerald-600', trend: 5 },
+    { label: 'Borradores', value: events.value.filter(e => e.status === 'draft').length, icon: Edit3, bg: 'bg-slate-50', color: 'text-slate-500' },
+    { label: 'Pendientes', value: 1, icon: AlertCircle, bg: 'bg-amber-50', color: 'text-amber-500', trend: -2 }
+])
+
+const monthName = computed(() => currentDate.value.toLocaleString('es-ES', { month: 'long' }))
+const year = computed(() => currentDate.value.getFullYear())
+const weekDays = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB']
 
 const calendarDays = computed(() => {
-  const year = currentDate.value.getFullYear()
-  const month = currentDate.value.getMonth()
-  const firstDay = new Date(year, month, 1).getDay()
-  const daysInMonth = getDaysInMonth(currentDate.value)
-  const daysInPrevMonth = getDaysInMonth(new Date(year, month, 0))
-  
   const days = []
+  const y = currentDate.value.getFullYear()
+  const m = currentDate.value.getMonth()
+  const firstDay = new Date(y, m, 1).getDay()
+  const daysInMonth = new Date(y, m + 1, 0).getDate()
   
-  for (let i = firstDay - 1; i >= 0; i--) {
-    days.push({
-      day: daysInPrevMonth - i,
-      isCurrentMonth: false,
-      key: `prev-${i}`,
-      hasPublications: false,
-      count: 0
-    })
-  }
-  
-  const today = new Date()
+  // Padding
+  for (let i = 0; i < firstDay; i++) days.push({ date: '', isCurrentMonth: false })
+  // Days
   for (let i = 1; i <= daysInMonth; i++) {
-    const pubCount = scheduled.value.filter(p => {
-      const pubDate = new Date(p.date)
-      return pubDate.getDate() === i && pubDate.getMonth() === month
-    }).length
-    
-    const isToday = today.getDate() === i && today.getMonth() === month && today.getFullYear() === year
-    
-    days.push({
-      day: i,
-      isCurrentMonth: true,
-      isToday: isToday,
-      key: `current-${i}`,
-      hasPublications: pubCount > 0,
-      count: pubCount > 0 ? pubCount : 0
-    })
+    days.push({ date: i, isCurrentMonth: true, isToday: i === 21 }) // Hardcoded today for demo
   }
-  
-  const remainingDays = 42 - days.length
-  for (let i = 1; i <= remainingDays; i++) {
-    days.push({
-      day: i,
-      isCurrentMonth: false,
-      key: `next-${i}`,
-      hasPublications: false,
-      count: 0
-    })
-  }
+  // Fill rest
+  while (days.length % 7 !== 0) days.push({ date: '', isCurrentMonth: false })
   
   return days
 })
 
-const filteredScheduled = computed(() => {
-  return scheduled.value.filter(item => {
-    const matchCampaign = !filterCampaign.value || item.campaign === filterCampaign.value
-    const matchNetwork = !filterNetwork.value || item.networks.includes(filterNetwork.value)
-    const matchStatus = !filterStatus.value || item.status === filterStatus.value
-    return matchCampaign && matchNetwork && matchStatus
-  })
-})
-
-const totalScheduled = computed(() => scheduled.value.length)
-const todayCount = computed(() => scheduled.value.filter(p => isToday(p.date)).length)
-const weekCount = computed(() => scheduled.value.filter(p => isThisWeek(p.date)).length)
-const publishedCount = computed(() => scheduled.value.filter(p => p.status === 'published').length)
-const upcomingCount = computed(() => scheduled.value.filter(p => isNext48Hours(p.date)).length)
-const nextPublication = computed(() => {
-  const sorted = [...scheduled.value].sort((a, b) => new Date(a.date) - new Date(b.date))
-  return sorted.find(p => new Date(p.date) >= new Date())
-})
-
-function getDaysInMonth(date) {
-  return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
+// --- METHODS ---
+function changeMonth(delta) {
+    currentDate.value = new Date(currentDate.value.setMonth(currentDate.value.getMonth() + delta))
+}
+function goToToday() {
+    currentDate.value = new Date(2025, 10, 21)
+}
+function getEventsForDay(day) {
+    if (!day.isCurrentMonth) return []
+    return filteredEvents.value.filter(e => e.day === day.date)
+}
+function openDayDetails(day) {
+    selectedDay.value = day
+    showEventModal.value = true
+}
+function openModal() {
+    selectedDay.value = { date: 21 } // Default to today
+    showEventModal.value = true
+}
+function toggleFilter(networkName) {
+    if (activeFilters.value.includes(networkName)) {
+        activeFilters.value = activeFilters.value.filter(n => n !== networkName)
+    } else {
+        activeFilters.value.push(networkName)
+    }
 }
 
-function previousMonth() {
-  currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() - 1)
+// --- HELPERS ---
+function getMonthShort(dateStr) {
+    if(!dateStr) return 'NOV'
+    return new Date(dateStr).toLocaleString('es-ES', { month: 'short' }).toUpperCase().replace('.','')
 }
-
-function nextMonth() {
-  currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1)
+function getDayNumber(dateStr) {
+    if(!dateStr) return '--'
+    return dateStr.split('-')[2]
 }
-
-function selectDate(day) {
-  emit('showToast', `Seleccionaste el día ${day}`)
+function getNetworkIcon(name) {
+    const map = { Instagram, Facebook, LinkedIn: Linkedin, Twitter, Youtube }
+    return map[name] || Rocket
 }
-
+function getNetworkBorderClass(networkArray) {
+    // Logic to determine color based on primary network
+    const primary = Array.isArray(networkArray) ? networkArray[0] : networkArray
+    if (primary === 'Instagram') return 'border-pink-500'
+    if (primary === 'LinkedIn') return 'border-blue-600'
+    if (primary === 'Facebook') return 'border-blue-500'
+    return 'border-slate-400'
+}
 function getStatusBadge(status) {
-  const classes = {
-    'scheduled': 'bg-blue-100 text-blue-700',
-    'published': 'bg-emerald-100 text-emerald-700',
-    'failed': 'bg-rose-100 text-rose-700'
-  }
-  return classes[status] || 'bg-slate-100 text-slate-700'
-}
-
-function getNetworkColor(network) {
-  const colors = {
-    'Instagram': 'bg-pink-50 text-pink-600',
-    'Facebook': 'bg-blue-50 text-blue-600',
-    'LinkedIn': 'bg-indigo-50 text-indigo-600',
-    'Twitter': 'bg-slate-100 text-slate-900',
-    'Email': 'bg-amber-50 text-amber-600'
-  }
-  return colors[network] || 'bg-slate-50 text-slate-600'
-}
-
-function getNetworkIcon(network) {
-  const icons = {
-    'Instagram': Instagram,
-    'Facebook': Facebook,
-    'LinkedIn': Linkedin,
-    'Twitter': Twitter,
-    'Email': Mail
-  }
-  return icons[network] || LinkIcon
-}
-
-function isToday(dateStr) {
-  const date = new Date(dateStr)
-  const today = new Date()
-  return date.toDateString() === today.toDateString()
-}
-
-function isThisWeek(dateStr) {
-  const date = new Date(dateStr)
-  const today = new Date()
-  const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()))
-  const endOfWeek = new Date(startOfWeek.getTime() + 6 * 24 * 60 * 60 * 1000)
-  return date >= startOfWeek && date <= endOfWeek
-}
-
-function isNext48Hours(dateStr) {
-  const date = new Date(dateStr)
-  const now = new Date()
-  const next48 = new Date(now.getTime() + 48 * 60 * 60 * 1000)
-  return date >= now && date <= next48
-}
-
-function editPublication(item) {
-  editingPub.value = { ...item }
-  showEditModal.value = true
-}
-
-function saveChanges() {
-  if (!editingPub.value) return
-  
-  const index = scheduled.value.findIndex(p => p.id === editingPub.value.id)
-  if (index !== -1) {
-    scheduled.value[index] = editingPub.value
-    showEditModal.value = false
-    emit('showToast', `Publicación "${editingPub.value.title}" actualizada`)
-    editingPub.value = null
-  }
-}
-
-function changeStatus(item) {
-  statusEditPub.value = item
-  showStatusModal.value = true
-}
-
-function updateStatus(newStatus) {
-  if (!statusEditPub.value) return
-  
-  const labels = {
-    'scheduled': 'Programado',
-    'published': 'Publicado',
-    'failed': 'Fallido'
-  }
-  
-  const index = scheduled.value.findIndex(p => p.id === statusEditPub.value.id)
-  if (index !== -1) {
-    scheduled.value[index].status = newStatus
-    scheduled.value[index].statusLabel = labels[newStatus]
-    showStatusModal.value = false
-    emit('showToast', `Estado cambiado a: ${labels[newStatus]}`)
-    statusEditPub.value = null
-  }
-}
-
-function updatePublicationDate(id, newDate) {
-  const pub = scheduled.value.find(p => p.id === id)
-  if (pub) {
-    pub.date = newDate
-    emit('showToast', 'Fecha actualizada')
-  }
-}
-
-function updatePublicationTime(id, newTime) {
-  const pub = scheduled.value.find(p => p.id === id)
-  if (pub) {
-    pub.time = newTime
-    emit('showToast', 'Hora actualizada')
-  }
-}
-
-function deletePublication(id) {
-  if (confirm('¿Estás seguro de que deseas eliminar esta publicación?')) {
-    scheduled.value = scheduled.value.filter(p => p.id !== id)
-    emit('showToast', 'Publicación eliminada')
-  }
+    if (status === 'published') return 'bg-emerald-100 text-emerald-700'
+    if (status === 'scheduled') return 'bg-blue-100 text-blue-700'
+    return 'bg-slate-100 text-slate-500'
 }
 </script>
 
 <style scoped lang="postcss">
-.btn-primary {
-  @apply px-5 py-2.5 bg-kapital-dark text-white font-medium rounded-xl transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 active:scale-95 flex items-center gap-2 justify-center;
+.card {
+  @apply bg-white/80 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-soft;
 }
+
+/* ESTILOS ACTUALIZADOS PARA EL COLOR SOLICITADO (AZUL MUY OSCURO/NEGRO) */
+.btn-primary {
+  @apply px-6 py-2.5 bg-slate-900 text-white font-medium rounded-xl transition-all hover:bg-slate-700 hover:shadow-lg hover:shadow-slate-900/30 active:scale-95 flex items-center gap-2 justify-center;
+}
+/* FIN ESTILOS ACTUALIZADOS */
 
 .btn-secondary {
-  @apply px-5 py-2.5 bg-white text-slate-700 font-medium rounded-xl border border-slate-200 transition-all hover:bg-slate-50 hover:border-slate-300 flex items-center gap-2 justify-center;
+  @apply px-4 py-2 bg-white text-slate-700 font-medium rounded-xl border border-slate-200 transition-all hover:bg-slate-50 hover:border-slate-300 flex items-center gap-2 justify-center;
 }
 
-/* Scrollbar fina */
-.scrollbar-hide::-webkit-scrollbar {
-    display: none;
-}
-.scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+.scrollbar-thin::-webkit-scrollbar { width: 4px; }
+.scrollbar-thin::-webkit-scrollbar-thumb { @apply bg-slate-300 rounded-full; }
+.scrollbar-thin::-webkit-scrollbar-track { @apply bg-transparent; }
 </style>
