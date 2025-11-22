@@ -62,6 +62,21 @@
         />
       </div>
 
+      <div class="flex bg-gray-100 p-1 rounded-lg">
+        <button 
+          @click="viewMode = 'list'"
+          :class="['px-3 py-2 rounded-md text-sm font-medium transition-all', viewMode === 'list' ? 'bg-white text-kapital-dark shadow-sm' : 'text-gray-500 hover:text-gray-700']"
+        >
+          <i class="fas fa-list mr-2"></i>Lista
+        </button>
+        <button 
+          @click="viewMode = 'kanban'"
+          :class="['px-3 py-2 rounded-md text-sm font-medium transition-all', viewMode === 'kanban' ? 'bg-white text-kapital-dark shadow-sm' : 'text-gray-500 hover:text-gray-700']"
+        >
+          <i class="fas fa-columns mr-2"></i>Kanban
+        </button>
+      </div>
+
       <button 
         @click="showNewLeadModal = true"
         class="btn-primary w-full md:w-auto"
@@ -70,8 +85,23 @@
       </button>
     </div>
 
-    <!-- Table -->
-    <div class="card overflow-hidden">
+    <!-- Kanban View -->
+    <div v-if="viewMode === 'kanban'">
+      <CrmKanban 
+        :leads="filteredLeads"
+        :users="users"
+        :status-options="statusOptions"
+        @save-lead="addNewLead"
+        @delete-lead="deleteLead"
+        @update-lead-status="handleUpdateStatus"
+        @add-note="handleAddNote"
+        @add-opportunity="handleAddOpportunity"
+        @view-conversations="handleViewConversations"
+      />
+    </div>
+
+    <!-- Table View -->
+    <div v-else class="card overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
@@ -279,7 +309,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { crmService } from '../services/crmService'
+import CrmKanban from './CrmKanban.vue'
 
 const emit = defineEmits(['showToast'])
 
@@ -302,63 +334,19 @@ const statusOptions = [
   { value: 'closed', label: 'Cerrado', description: 'Conversión completada o descartado', icon: 'fa-check-circle' }
 ]
 
-const leads = ref([
-  { 
-    id: 1, 
-    initials: 'AM',
-    name: 'Ana Martínez', 
-    email: 'ana@email.com', 
-    phone: '+34 612 345 678',
-    origin: 'Instagram', 
-    status: 'new', 
-    statusLabel: 'Nuevo',
-    date: '15 Nov 2025'
-  },
-  { 
-    id: 2, 
-    initials: 'RL',
-    name: 'Roberto López', 
-    email: 'roberto@company.com', 
-    phone: '+34 634 567 890',
-    origin: 'LinkedIn', 
-    status: 'following', 
-    statusLabel: 'En seguimiento',
-    date: '14 Nov 2025'
-  },
-  { 
-    id: 3, 
-    initials: 'LG',
-    name: 'Laura Gómez', 
-    email: 'laura@enterprise.com', 
-    phone: '+34 656 789 012',
-    origin: 'Facebook', 
-    status: 'closed', 
-    statusLabel: 'Cerrado',
-    date: '12 Nov 2025'
-  },
-  { 
-    id: 4, 
-    initials: 'CJ',
-    name: 'Carlos Jiménez', 
-    email: 'carlos.j@mail.com', 
-    phone: '+34 678 901 234',
-    origin: 'Web', 
-    status: 'new', 
-    statusLabel: 'Nuevo',
-    date: '13 Nov 2025'
-  },
-  { 
-    id: 5, 
-    initials: 'SV',
-    name: 'Sandra Vega', 
-    email: 'sandra.v@email.com', 
-    phone: '+34 612 098 765',
-    origin: 'Email', 
-    status: 'following', 
-    statusLabel: 'En seguimiento',
-    date: '11 Nov 2025'
-  }
-])
+const viewMode = ref('list') // 'list' or 'kanban'
+const users = ref([]) // Populated from service
+const leads = ref([])
+
+onMounted(async () => {
+  await loadData()
+})
+
+async function loadData() {
+  leads.value = await crmService.getLeads()
+  users.value = await crmService.getUsers()
+  // statusOptions is static, but could be fetched if needed
+}
 
 const filteredLeads = computed(() => {
   return leads.value.filter(lead => {
@@ -421,62 +409,88 @@ function changeLead(lead) {
   showChangeStatusModal.value = true
 }
 
-function updateLeadStatus(newStatus) {
+async function updateLeadStatus(newStatus, leadId = null) {
+  const id = leadId || selectedLead.value?.id
+  if (!id) return
+
   const statusLabels = {
     'new': 'Nuevo',
     'following': 'En seguimiento',
     'closed': 'Cerrado'
   }
   
-  selectedLead.value.status = newStatus
-  selectedLead.value.statusLabel = statusLabels[newStatus]
-  
-  const leadInList = leads.value.find(l => l.id === selectedLead.value.id)
-  if (leadInList) {
-    leadInList.status = newStatus
-    leadInList.statusLabel = statusLabels[newStatus]
-  }
+  await crmService.updateLeadStatus(id, newStatus)
+  await loadData() // Refresh data
   
   showChangeStatusModal.value = false
   emit('showToast', `Estado actualizado a: ${statusLabels[newStatus]}`)
 }
 
-function deleteLead(id) {
+// Handler for Kanban update
+async function handleUpdateStatus({ leadId, newStatus }) {
+  await updateLeadStatus(newStatus, leadId)
+}
+
+async function deleteLead(id) {
   if (confirm('¿Estás seguro de que deseas eliminar este lead?')) {
-    leads.value = leads.value.filter(l => l.id !== id)
+    await crmService.deleteLead(id)
+    await loadData()
     emit('showToast', 'Lead eliminado correctamente')
   }
 }
 
-function addNewLead() {
-  if (!newLead.value.name || !newLead.value.email || !newLead.value.origin) {
+async function addNewLead(leadData = null) {
+  // Support both direct call (modal in list) and event from Kanban
+  const data = leadData || newLead.value
+  
+  if (!data.name || !data.email || !data.origin) {
     emit('showToast', 'Por favor completa los campos requeridos', 'error')
     return
   }
 
-  const initials = newLead.value.name.split(' ').map(n => n[0]).join('').toUpperCase()
+  const initials = data.name.split(' ').map(n => n[0]).join('').toUpperCase()
   
   const lead = {
-    id: Math.max(...leads.value.map(l => l.id)) + 1,
     initials: initials,
-    name: newLead.value.name,
-    email: newLead.value.email,
-    phone: newLead.value.phone,
-    origin: newLead.value.origin,
+    name: data.name,
+    email: data.email,
+    phone: data.phone,
+    origin: data.origin,
     status: 'new',
     statusLabel: 'Nuevo',
     date: new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' })
   }
 
-  leads.value.unshift(lead)
+  await crmService.saveLead(lead)
+  await loadData()
+
   showNewLeadModal.value = false
   
-  newLead.value = { name: '', email: '', phone: '', origin: '' }
+  if (!leadData) {
+    newLead.value = { name: '', email: '', phone: '', origin: '' }
+  }
   emit('showToast', `Lead "${lead.name}" creado exitosamente`)
+}
+
+// Kanban specific handlers
+async function handleAddNote({ leadId, note }) {
+  await crmService.addNoteToLead(leadId, note.text, 'Me') // Hardcoded author for now
+  await loadData()
+  emit('showToast', 'Nota agregada')
+}
+
+async function handleAddOpportunity({ leadId, opportunity }) {
+  await crmService.addOpportunityToLead(leadId, opportunity)
+  await loadData()
+  emit('showToast', 'Oportunidad agregada')
+}
+
+function handleViewConversations(leadId) {
+  emit('showToast', `Ver conversaciones del lead ${leadId} (Próximamente)`)
 }
 </script>
 
-<style scoped>
+<style scoped lang="postcss">
 .btn-primary {
   @apply px-6 py-3 bg-kapital-dark text-white font-medium rounded-md transition-all hover:bg-blue-700 active:scale-95 flex items-center gap-2;
 }

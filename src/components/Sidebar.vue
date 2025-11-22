@@ -180,7 +180,7 @@ const navGroups = [
 ];
 </script>
 
-<style scoped>
+<style scoped lang="postcss">
 button {
   @apply outline-none;
 }

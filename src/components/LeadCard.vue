@@ -88,7 +88,7 @@ function getOriginColor(origin) {
 }
 </script>
 
-<style scoped>
+<style scoped lang="postcss">
 .action-link {
   @apply flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer;
 }
