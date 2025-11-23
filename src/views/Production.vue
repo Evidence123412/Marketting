@@ -340,12 +340,41 @@ const columns = [
 
 // Datos iniciales (Simulados)
 const publications = ref([
-  { id: 1, title: 'Lanzamiento Verano', description: '¡Llegó la nueva colección! ☀️ #Verano2025', channels: 'Instagram, Facebook', status: 'published', date: '2025-11-10', time: '10:00', hashtags: '#fashion #summer', hasImage: true },
-  { id: 2, title: 'Tips de Marketing', description: '5 consejos para mejorar tu SEO hoy mismo.', channels: 'LinkedIn', status: 'scheduled', date: '2025-11-25', time: '09:00', hashtags: '#seo #marketing', hasImage: true },
-  { id: 3, title: 'Black Friday Teaser', description: 'Prepárate... algo grande viene.', channels: 'Instagram, TikTok', status: 'draft', date: '', time: '', hashtags: '#blackfriday', hasImage: false },
-  { id: 4, title: 'Webinar Invitation', description: 'Únete a nuestro webinar gratuito sobre IA.', channels: 'LinkedIn, Twitter', status: 'review', date: '2025-11-28', time: '15:00', hashtags: '#webinar #ai', hasImage: true },
-  { id: 5, title: 'Meme de Oficina', description: 'Cuando es viernes y el cliente pide cambios...', channels: 'Instagram, Twitter', status: 'draft', date: '', time: '', hashtags: '#humor #agencylife', hasImage: true },
+  { id: 1, title: 'Lanzamiento Verano', description: '¡Llegó la nueva colección! ☀️ #Verano2025', channels: 'Instagram, Facebook', status: 'published', date: '2025-11-10', time: '10:00', hashtags: '#fashion #summer', hasImage: true, created_at: '2025-11-01' },
+  { id: 2, title: 'Tips de Marketing', description: '5 consejos para mejorar tu SEO hoy mismo.', channels: 'LinkedIn', status: 'scheduled', date: '2025-11-25', time: '09:00', hashtags: '#seo #marketing', hasImage: true, created_at: '2025-11-20' },
+  { id: 3, title: 'Black Friday Teaser', description: 'Prepárate... algo grande viene.', channels: 'Instagram, TikTok', status: 'draft', date: '', time: '', hashtags: '#blackfriday', hasImage: false, created_at: new Date().toISOString().split('T')[0] }, // Created today
+  { id: 4, title: 'Webinar Invitation', description: 'Únete a nuestro webinar gratuito sobre IA.', channels: 'LinkedIn, Twitter', status: 'review', date: '2025-11-28', time: '15:00', hashtags: '#webinar #ai', hasImage: true, created_at: '2025-11-21' },
+  { id: 5, title: 'Meme de Oficina', description: 'Cuando es viernes y el cliente pide cambios...', channels: 'Instagram, Twitter', status: 'draft', date: '', time: '', hashtags: '#humor #agencylife', hasImage: true, created_at: '2025-11-15' }, // Old draft (should be deleted)
 ])
+
+// --- AUTO-DELETE EXPIRED DRAFTS ---
+// Logic: Delete drafts older than 2 days
+const EXPIRATION_DAYS = 2;
+
+function checkExpiredDrafts() {
+  const now = new Date();
+  const initialCount = publications.value.length;
+  
+  publications.value = publications.value.filter(pub => {
+    if (pub.status !== 'draft') return true; // Only check drafts
+    
+    const created = new Date(pub.created_at);
+    const diffTime = Math.abs(now - created);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    
+    return diffDays <= EXPIRATION_DAYS;
+  });
+
+  const deletedCount = initialCount - publications.value.length;
+  if (deletedCount > 0) {
+    setTimeout(() => {
+      emit('showToast', `${deletedCount} borradores expirados fueron eliminados automáticamente.`, 'info');
+    }, 1000);
+  }
+}
+
+// Run check on mount
+checkExpiredDrafts();
 
 const emptyForm = {
   id: null,

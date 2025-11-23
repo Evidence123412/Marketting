@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Dashboard from '../views/Dashboard.vue'
 import LoginView from '../views/LoginView.vue'
-import ImageGenerator from '../views/ImageGenerator.vue'
+import BuyerGenerator from '../views/BuyerGenerator.vue'
 import Production from '../views/Production.vue'
 import Scheduling from '../views/Scheduling.vue'
 import Interactions from '../views/Interactions.vue'
@@ -23,9 +23,9 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
-    path: '/generation',
-    name: 'generation',
-    component: ImageGenerator,
+    path: '/buyer-generator',
+    name: 'buyer-generator',
+    component: BuyerGenerator,
     meta: { requiresAuth: true }
   },
   {
@@ -73,7 +73,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem('rememberedUser')
-  
+
   if (to.meta.requiresAuth && !isAuthenticated) {
     next('/login')
   } else if (to.path === '/login' && isAuthenticated) {

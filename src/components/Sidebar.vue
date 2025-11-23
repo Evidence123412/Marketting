@@ -171,7 +171,7 @@ const navGroups = [
   {
     title: 'Gestión',
     items: [
-      { id: 'generation', label: 'Generar IA', icon: Wand2 },
+      { id: 'buyer-generator', label: 'Buyer Generator', icon: Wand2 },
       { id: 'production', label: 'Producción', icon: PenTool },
       { id: 'scheduling', label: 'Calendario', icon: Calendar },
     ]
