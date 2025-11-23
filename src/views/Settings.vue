@@ -7,7 +7,7 @@
       :enter="{ opacity: 1, y: 0, transition: { duration: 500 } }"
     >
       <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Configuración</h1>
-      <p class="text-slate-500 mt-1">Administra tus redes sociales, horarios de publicación y equipo.</p>
+      <p class="text-slate-500 mt-1">Personaliza tu experiencia, gestiona tu marca y configura el sistema.</p>
     </div>
 
     <!-- Tabs Navigation -->
@@ -20,7 +20,7 @@
           :class="[
             'py-4 px-1 border-b-2 font-bold text-sm flex items-center gap-2 transition-all whitespace-nowrap',
             activeTab === tab.id 
-              ? 'border-kapital-dark text-kapital-dark' 
+              ? 'border-kapital-night text-kapital-night' 
               : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
           ]"
         >
@@ -33,15 +33,72 @@
     <!-- Content Area -->
     <div class="flex-1 overflow-y-auto scrollbar-thin pr-2 pb-4">
       
-      <!-- Networks Tab -->
-      <div v-if="activeTab === 'networks'" class="space-y-6">
+      <!-- General Tab (Branding) -->
+      <div v-if="activeTab === 'general'" class="space-y-6">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div class="mb-6">
+            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <Briefcase :size="20" class="text-kapital-night" /> Identidad de Marca
+            </h2>
+            <p class="text-sm text-slate-500 mt-1">Define cómo se presenta tu marca en el contenido generado.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="form-label">Nombre de la Empresa</label>
+              <div class="relative">
+                <input v-model="branding.companyName" type="text" class="form-input" placeholder="Ej: Kapital CMS" />
+                <Building2 :size="16" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Sitio Web</label>
+              <div class="relative">
+                <input v-model="branding.website" type="url" class="form-input" placeholder="Ej: https://kapital.com" />
+                <Globe :size="16" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              </div>
+            </div>
+            <div class="md:col-span-2">
+              <label class="form-label">Tono de Voz</label>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <button 
+                  v-for="tone in tones" 
+                  :key="tone.id"
+                  @click="branding.tone = tone.id"
+                  :class="['p-3 border rounded-xl text-sm font-medium transition-all text-center', branding.tone === tone.id ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300']"
+                >
+                  {{ tone.label }}
+                </button>
+              </div>
+            </div>
+            <div class="md:col-span-2">
+              <label class="form-label">Colores de Marca</label>
+              <div class="flex gap-4">
+                <div v-for="(color, index) in branding.colors" :key="index" class="flex flex-col gap-2">
+                  <input type="color" v-model="branding.colors[index]" class="w-12 h-12 rounded-lg cursor-pointer border-0 p-0" />
+                  <span class="text-xs font-mono text-slate-500 uppercase">{{ branding.colors[index] }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-end pt-6 mt-6 border-t border-slate-100">
+            <button @click="saveGeneral" class="btn-primary shadow-lg shadow-slate-900/20">
+              <Save :size="18" /> Guardar Cambios
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Integrations Tab (Networks) -->
+      <div v-if="activeTab === 'integrations'" class="space-y-6">
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
           <div class="flex justify-between items-center mb-6">
             <div>
               <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                <LinkIcon :size="20" class="text-kapital-dark" /> Redes Sociales Conectadas
+                <LinkIcon :size="20" class="text-kapital-night" /> Redes Sociales
               </h2>
-              <p class="text-sm text-slate-500 mt-1">Selecciona las redes donde deseas publicar y gestionar contenido.</p>
+              <p class="text-sm text-slate-500 mt-1">Conecta tus cuentas para publicar automáticamente.</p>
             </div>
             <div class="bg-blue-50 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold border border-blue-100">
               {{ activeNetworksCount }} Activas
@@ -56,8 +113,8 @@
               :class="[
                 'p-4 border rounded-xl cursor-pointer transition-all flex items-center gap-4 group relative overflow-hidden',
                 network.connected
-                  ? 'border-kapital-dark bg-blue-50/30 ring-1 ring-kapital-dark/20'
-                  : 'border-slate-200 bg-white hover:border-kapital-dark/50 hover:shadow-md'
+                  ? 'border-kapital-night bg-slate-50 ring-1 ring-kapital-night/10'
+                  : 'border-slate-200 bg-white hover:border-kapital-night/50 hover:shadow-md'
               ]"
             >
               <div :class="['w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-sm transition-transform group-hover:scale-110', network.bgClass]">
@@ -70,118 +127,75 @@
                   {{ network.connected ? `${network.followers} seguidores` : 'No conectado' }}
                 </p>
               </div>
-              <div :class="['w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors relative z-10', network.connected ? 'bg-kapital-dark border-kapital-dark' : 'border-slate-300 bg-slate-50']">
+              <div :class="['w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors relative z-10', network.connected ? 'bg-kapital-night border-kapital-night' : 'border-slate-300 bg-slate-50']">
                 <Check v-if="network.connected" :size="14" class="text-white" />
               </div>
-              
-              <!-- Decorative background -->
-              <div v-if="network.connected" class="absolute right-0 top-0 w-24 h-24 bg-gradient-to-br from-blue-500/5 to-transparent rounded-bl-full -mr-4 -mt-4 pointer-events-none"></div>
             </div>
           </div>
 
           <div class="flex justify-end pt-6 border-t border-slate-100">
-            <button @click="saveNetworks" class="btn-primary shadow-lg shadow-kapital-dark/20">
-              <Save :size="18" /> Guardar Cambios
+            <button @click="saveNetworks" class="btn-primary shadow-lg shadow-slate-900/20">
+              <Save :size="18" /> Guardar Integraciones
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Schedule Tab -->
-      <div v-if="activeTab === 'schedule'" class="space-y-6">
+      <!-- AI & Automation Tab -->
+      <div v-if="activeTab === 'ai'" class="space-y-6">
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
           <div class="mb-6">
             <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Clock :size="20" class="text-kapital-dark" /> Horarios de Publicación
+              <Wand2 :size="20" class="text-kapital-night" /> IA y Automatización
             </h2>
-            <p class="text-sm text-slate-500 mt-1">Define las ventanas de tiempo permitidas para tus publicaciones automáticas.</p>
+            <p class="text-sm text-slate-500 mt-1">Configura el comportamiento del generador de contenido y la programación.</p>
           </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Time Range -->
-            <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-5">
-              <h3 class="font-bold text-slate-900 mb-4 flex items-center gap-2 text-sm uppercase tracking-wide">
-                <Hourglass :size="16" class="text-blue-600" /> Rango Horario
-              </h3>
-              <div class="space-y-4">
-                <div>
-                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Inicio</label>
-                  <div class="relative">
-                    <input 
-                      v-model="schedule.startTime"
-                      type="time" 
-                      class="w-full pl-10 pr-4 py-2.5 bg-white border border-blue-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
-                    />
-                    <Sun :size="16" class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400" />
-                  </div>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- AI Settings -->
+            <div class="space-y-6">
+              <h3 class="font-bold text-slate-900 text-sm uppercase tracking-wide border-b border-slate-100 pb-2">Preferencias de IA</h3>
+              
+              <div>
+                <label class="form-label flex justify-between">
+                  <span>Nivel de Creatividad</span>
+                  <span class="text-kapital-night">{{ aiSettings.creativity }}%</span>
+                </label>
+                <input v-model="aiSettings.creativity" type="range" min="0" max="100" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-kapital-night" />
+                <div class="flex justify-between text-xs text-slate-400 mt-1">
+                  <span>Conservador</span>
+                  <span>Balanceado</span>
+                  <span>Creativo</span>
                 </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Fin</label>
-                  <div class="relative">
-                    <input 
-                      v-model="schedule.endTime"
-                      type="time" 
-                      class="w-full pl-10 pr-4 py-2.5 bg-white border border-blue-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
-                    />
-                    <Moon :size="16" class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400" />
-                  </div>
-                </div>
+              </div>
+
+              <div>
+                <label class="form-label">Hashtags por Defecto</label>
+                <textarea v-model="aiSettings.defaultHashtags" rows="3" class="form-input" placeholder="#Marca #Industria #Tendencia"></textarea>
               </div>
             </div>
 
-            <!-- Max Publications -->
-            <div class="bg-emerald-50/50 border border-emerald-100 rounded-xl p-5">
-              <h3 class="font-bold text-slate-900 mb-4 flex items-center gap-2 text-sm uppercase tracking-wide">
-                <BarChart2 :size="16" class="text-emerald-600" /> Límites
-              </h3>
-              <div class="space-y-4">
+            <!-- Schedule Settings -->
+            <div class="space-y-6">
+              <h3 class="font-bold text-slate-900 text-sm uppercase tracking-wide border-b border-slate-100 pb-2">Programación Automática</h3>
+              
+              <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Máximo por día</label>
-                  <div class="flex items-center gap-3">
-                    <input 
-                      v-model.number="schedule.maxPerDay"
-                      type="number" 
-                      min="1"
-                      max="50"
-                      class="w-24 px-4 py-2.5 bg-white border border-emerald-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all"
-                    />
-                    <span class="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-1 rounded-lg">posts/día</span>
-                  </div>
+                  <label class="form-label">Inicio Jornada</label>
+                  <input v-model="schedule.startTime" type="time" class="form-input" />
                 </div>
                 <div>
-                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Máximo por hora</label>
-                  <div class="flex items-center gap-3">
-                    <input 
-                      v-model.number="schedule.maxPerHour"
-                      type="number" 
-                      min="1"
-                      max="10"
-                      class="w-24 px-4 py-2.5 bg-white border border-emerald-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all"
-                    />
-                    <span class="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-1 rounded-lg">posts/hora</span>
-                  </div>
+                  <label class="form-label">Fin Jornada</label>
+                  <input v-model="schedule.endTime" type="time" class="form-input" />
                 </div>
               </div>
-            </div>
 
-            <!-- Auto-publish -->
-            <div class="bg-purple-50/50 border border-purple-100 rounded-xl p-5 flex flex-col">
-              <h3 class="font-bold text-slate-900 mb-4 flex items-center gap-2 text-sm uppercase tracking-wide">
-                <Zap :size="16" class="text-purple-600" /> Automatización
-              </h3>
-              <div class="flex-1 flex items-center">
-                <label class="flex items-start gap-4 cursor-pointer group p-3 rounded-xl hover:bg-purple-50 transition-colors w-full">
-                  <div class="relative flex items-center">
-                    <input 
-                      v-model="schedule.autoPublish"
-                      type="checkbox" 
-                      class="peer sr-only"
-                    />
-                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                  </div>
-                  <div class="flex-1">
-                    <p class="font-bold text-slate-900 text-sm group-hover:text-purple-700 transition-colors">Publicación Automática</p>
-                    <p class="text-xs text-slate-500 mt-1">Si se activa, el sistema publicará automáticamente el contenido programado cuando llegue su hora.</p>
+              <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <input v-model="schedule.autoPublish" type="checkbox" class="w-5 h-5 text-kapital-night rounded border-slate-300 focus:ring-kapital-night" />
+                  <div>
+                    <span class="block font-bold text-slate-900 text-sm">Publicación Automática</span>
+                    <span class="block text-xs text-slate-500">Publicar sin revisión manual si la confianza de la IA es alta.</span>
                   </div>
                 </label>
               </div>
@@ -189,24 +203,60 @@
           </div>
 
           <div class="flex justify-end pt-6 mt-6 border-t border-slate-100">
-            <button @click="saveSchedule" class="btn-primary shadow-lg shadow-kapital-dark/20">
-              <Save :size="18" /> Guardar Configuración
+            <button @click="saveAI" class="btn-primary shadow-lg shadow-slate-900/20">
+              <Save :size="18" /> Guardar Preferencias
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Users Tab -->
-      <div v-if="activeTab === 'users'" class="space-y-6">
+      <!-- Notifications Tab -->
+      <div v-if="activeTab === 'notifications'" class="space-y-6">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div class="mb-6">
+            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <Bell :size="20" class="text-kapital-night" /> Notificaciones
+            </h2>
+            <p class="text-sm text-slate-500 mt-1">Elige qué alertas deseas recibir.</p>
+          </div>
+
+          <div class="space-y-4">
+            <div v-for="notif in notifications" :key="notif.id" class="flex items-center justify-between p-4 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
+              <div class="flex items-center gap-3">
+                <div :class="['w-10 h-10 rounded-full flex items-center justify-center', notif.bgClass]">
+                  <component :is="notif.icon" :size="20" :class="notif.textClass" />
+                </div>
+                <div>
+                  <p class="font-bold text-slate-900 text-sm">{{ notif.label }}</p>
+                  <p class="text-xs text-slate-500">{{ notif.description }}</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" v-model="notif.enabled" class="sr-only peer">
+                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-slate-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-kapital-night"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="flex justify-end pt-6 mt-6 border-t border-slate-100">
+            <button @click="saveNotifications" class="btn-primary shadow-lg shadow-slate-900/20">
+              <Save :size="18" /> Guardar Notificaciones
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team Tab (Users) -->
+      <div v-if="activeTab === 'team'" class="space-y-6">
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div class="p-6 border-b border-slate-100 flex justify-between items-center">
             <div>
               <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                <Users :size="20" class="text-kapital-dark" /> Usuarios del Sistema
+                <Users :size="20" class="text-kapital-night" /> Equipo
               </h2>
               <p class="text-sm text-slate-500 mt-1">Gestiona los miembros de tu equipo y sus permisos.</p>
             </div>
-            <button @click="showNewUserModal = true" class="btn-primary shadow-lg shadow-kapital-dark/20">
+            <button @click="showNewUserModal = true" class="btn-primary shadow-lg shadow-slate-900/20">
               <UserPlus :size="18" /> Nuevo Usuario
             </button>
           </div>
@@ -226,7 +276,7 @@
                 <tr v-for="user in users" :key="user.id" class="hover:bg-slate-50/50 transition-colors group">
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-3">
-                      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-kapital-dark to-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                      <div class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-white text-xs font-bold shadow-sm">
                         {{ user.initials }}
                       </div>
                       <span class="font-bold text-slate-900">{{ user.name }}</span>
@@ -248,7 +298,7 @@
                     <div class="flex gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
                       <button 
                         @click="editUser(user)"
-                        class="p-2 text-slate-400 hover:text-kapital-dark hover:bg-blue-50 rounded-lg transition-colors"
+                        class="p-2 text-slate-400 hover:text-kapital-night hover:bg-slate-100 rounded-lg transition-colors"
                         title="Editar"
                       >
                         <Edit2 :size="16" />
@@ -288,7 +338,7 @@
       >
         <div class="flex justify-between items-center mb-6">
           <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <UserPlus :size="20" class="text-kapital-dark" /> Nuevo Usuario
+            <UserPlus :size="20" class="text-kapital-night" /> Nuevo Usuario
           </h3>
           <button @click="showNewUserModal = false" class="text-slate-400 hover:text-slate-600 p-1 hover:bg-slate-100 rounded-lg transition-colors">
             <X :size="24" />
@@ -297,13 +347,13 @@
 
         <form @submit.prevent="addUser" class="space-y-5">
           <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Nombre completo</label>
+            <label class="form-label">Nombre completo</label>
             <div class="relative">
               <input 
                 v-model="newUser.name"
                 type="text"
                 placeholder="Ej: Juan García"
-                class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20 transition-all text-sm"
+                class="form-input pl-10"
                 required
               />
               <User :size="16" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -311,13 +361,13 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Email</label>
+            <label class="form-label">Email</label>
             <div class="relative">
               <input 
                 v-model="newUser.email"
                 type="email"
                 placeholder="Ej: juan@company.com"
-                class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20 transition-all text-sm"
+                class="form-input pl-10"
                 required
               />
               <Mail :size="16" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -325,11 +375,11 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Rol</label>
+            <label class="form-label">Rol</label>
             <div class="relative">
               <select 
                 v-model="newUser.role"
-                class="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20 transition-all text-sm appearance-none bg-white"
+                class="form-input pl-10 appearance-none"
                 required
               >
                 <option value="">Seleccionar rol</option>
@@ -352,7 +402,7 @@
             </button>
             <button 
               type="submit"
-              class="btn-primary flex-1 shadow-lg shadow-kapital-dark/20"
+              class="btn-primary flex-1 shadow-lg shadow-slate-900/20"
             >
               <UserPlus :size="18" /> Crear Usuario
             </button>
@@ -368,20 +418,38 @@ import { ref, computed } from 'vue'
 import { 
   Link as LinkIcon, Clock, Users, Save, Check, Hourglass, Sun, Moon, 
   BarChart2, Zap, UserPlus, Edit2, Trash2, Lock, Unlock, X, User, Mail, Shield, ChevronDown,
-  Facebook, Instagram, Linkedin, Twitter, Youtube
+  Facebook, Instagram, Linkedin, Twitter, Youtube, Briefcase, Building2, Globe, Wand2, Bell, MessageSquare, FileText
 } from 'lucide-vue-next'
 
 const emit = defineEmits(['showToast'])
 
-const activeTab = ref('networks')
+const activeTab = ref('general')
 const showNewUserModal = ref(false)
 
 const tabs = [
-  { id: 'networks', label: 'Redes Conectadas', iconComponent: LinkIcon },
-  { id: 'schedule', label: 'Horarios', iconComponent: Clock },
-  { id: 'users', label: 'Usuarios', iconComponent: Users }
+  { id: 'general', label: 'General', iconComponent: Briefcase },
+  { id: 'integrations', label: 'Integraciones', iconComponent: LinkIcon },
+  { id: 'ai', label: 'IA & Auto', iconComponent: Wand2 },
+  { id: 'notifications', label: 'Notificaciones', iconComponent: Bell },
+  { id: 'team', label: 'Equipo', iconComponent: Users }
 ]
 
+// --- GENERAL / BRANDING ---
+const branding = ref({
+  companyName: 'Kapital CMS',
+  website: 'https://kapital.com',
+  tone: 'professional',
+  colors: ['#0F172A', '#2563EB', '#F59E0B']
+})
+
+const tones = [
+  { id: 'professional', label: 'Profesional' },
+  { id: 'friendly', label: 'Amigable' },
+  { id: 'witty', label: 'Ingenioso' },
+  { id: 'urgent', label: 'Urgente' }
+]
+
+// --- INTEGRATIONS ---
 const networks = ref([
   { id: 1, name: 'Facebook', iconComponent: Facebook, bgClass: 'bg-blue-600', connected: true, followers: '3.2K' },
   { id: 2, name: 'Instagram', iconComponent: Instagram, bgClass: 'bg-pink-600', connected: true, followers: '5.1K' },
@@ -390,14 +458,29 @@ const networks = ref([
   { id: 5, name: 'YouTube', iconComponent: Youtube, bgClass: 'bg-red-600', connected: false, followers: '-' }
 ])
 
+const activeNetworksCount = computed(() => networks.value.filter(n => n.connected).length)
+
+// --- AI & AUTOMATION ---
+const aiSettings = ref({
+  creativity: 70,
+  defaultHashtags: '#Marketing #Business #Growth'
+})
+
 const schedule = ref({
   startTime: '08:00',
   endTime: '22:00',
-  maxPerDay: 10,
-  maxPerHour: 3,
   autoPublish: true
 })
 
+// --- NOTIFICATIONS ---
+const notifications = ref([
+  { id: 1, label: 'Nuevos Leads', description: 'Recibir alerta cuando entra un nuevo lead al CRM.', icon: Users, bgClass: 'bg-blue-50', textClass: 'text-blue-600', enabled: true },
+  { id: 2, label: 'Publicaciones Programadas', description: 'Recordatorio antes de publicar contenido.', icon: Clock, bgClass: 'bg-amber-50', textClass: 'text-amber-600', enabled: true },
+  { id: 3, label: 'Mensajes Entrantes', description: 'Notificar nuevos mensajes en redes.', icon: MessageSquare, bgClass: 'bg-purple-50', textClass: 'text-purple-600', enabled: false },
+  { id: 4, label: 'Resumen Semanal', description: 'Reporte de rendimiento cada lunes.', icon: FileText, bgClass: 'bg-emerald-50', textClass: 'text-emerald-600', enabled: true }
+])
+
+// --- TEAM ---
 const users = ref([
   { id: 1, initials: 'CL', name: 'Carlos López', email: 'carlos@company.com', role: 'Administrador', active: true },
   { id: 2, initials: 'MG', name: 'María García', email: 'maria@company.com', role: 'Editor', active: true },
@@ -411,7 +494,10 @@ const newUser = ref({
   role: ''
 })
 
-const activeNetworksCount = computed(() => networks.value.filter(n => n.connected).length)
+// --- ACTIONS ---
+function saveGeneral() {
+  emit('showToast', 'Configuración general guardada')
+}
 
 function toggleNetwork(id) {
   const network = networks.value.find(n => n.id === id)
@@ -421,12 +507,15 @@ function toggleNetwork(id) {
 }
 
 function saveNetworks() {
-  const connected = networks.value.filter(n => n.connected).map(n => n.name).join(', ')
-  emit('showToast', `Redes guardadas: ${connected || 'Ninguna'}`)
+  emit('showToast', 'Integraciones actualizadas')
 }
 
-function saveSchedule() {
-  emit('showToast', `Horarios guardados: ${schedule.value.startTime} - ${schedule.value.endTime}`)
+function saveAI() {
+  emit('showToast', 'Preferencias de IA guardadas')
+}
+
+function saveNotifications() {
+  emit('showToast', 'Preferencias de notificaciones guardadas')
 }
 
 function editUser(user) {
@@ -482,8 +571,15 @@ function getRoleBadge(role) {
 </script>
 
 <style scoped lang="postcss">
+.form-label {
+  @apply block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5;
+}
+.form-input {
+  @apply w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-kapital-night focus:ring-2 focus:ring-kapital-night/20 transition-all bg-white text-sm text-slate-700;
+}
+
 .btn-primary {
-  @apply px-5 py-2.5 bg-kapital-dark text-white font-medium rounded-xl transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 active:scale-95 flex items-center gap-2 justify-center text-sm;
+  @apply px-5 py-2.5 bg-kapital-night text-white font-medium rounded-xl transition-all hover:bg-kapital-night-hover hover:shadow-lg hover:shadow-slate-900/30 active:scale-95 flex items-center gap-2 justify-center text-sm;
 }
 
 .btn-secondary {

@@ -63,7 +63,7 @@
             <button
               v-for="item in group.items"
               :key="item.id"
-              @click="$emit('navigate', item.id)"
+              @click="navigateTo(item.id)"
               :class="[
                 'flex items-center gap-3 py-3 rounded-xl w-full transition-all duration-200 group relative',
                 isExpanded ? 'px-4' : 'px-0 justify-center',
@@ -94,7 +94,7 @@
       <div class="flex flex-col gap-2">
         
         <button
-          @click="$emit('navigate', 'settings')"
+          @click="navigateTo('settings')"
           :class="[
             'flex items-center gap-3 py-3 rounded-xl w-full transition-all duration-200 group relative',
             isExpanded ? 'px-4' : 'px-0 justify-center',
@@ -128,7 +128,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { 
   LayoutDashboard, 
   BarChart3, 
@@ -143,17 +144,21 @@ import {
   ChevronRight 
 } from 'lucide-vue-next';
 
+const router = useRouter();
+const route = useRoute();
 const isExpanded = ref(true);
+
+const activeView = computed(() => route.name);
 
 const toggleSidebar = () => {
   isExpanded.value = !isExpanded.value;
 };
 
-defineProps({
-  activeView: String,
-});
+defineEmits(['logout']);
 
-defineEmits(['navigate', 'logout']);
+const navigateTo = (routeName) => {
+  router.push({ name: routeName });
+};
 
 const navGroups = [
   {

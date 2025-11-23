@@ -311,7 +311,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { crmService } from '../services/crmService'
-import CrmKanban from './CrmKanban.vue'
+import CrmKanban from '../components/CrmKanban.vue'
 
 const emit = defineEmits(['showToast'])
 
