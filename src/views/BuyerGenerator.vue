@@ -575,7 +575,7 @@ const generationStatus = ref('')
 const weekDays = [
   { label: 'L', value: 'Monday' },
   { label: 'M', value: 'Tuesday' },
-  { label: 'X', value: 'Wednesday' },
+  { label: 'X', value: 'Wednesdayy' },
   { label: 'J', value: 'Thursday' },
   { label: 'V', value: 'Friday' },
   { label: 'S', value: 'Saturday' },
