@@ -141,6 +141,73 @@
         </div>
       </div>
 
+      <!-- Variables Tab (New) -->
+      <div v-if="activeTab === 'variables'" class="space-y-6">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div class="mb-6">
+            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <Database :size="20" class="text-kapital-night" /> Variables del Sistema
+            </h2>
+            <p class="text-sm text-slate-500 mt-1">Configura las opciones disponibles para la generación de Buyer Persona.</p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Sidebar Selection -->
+            <div class="lg:col-span-1 space-y-2">
+              <button 
+                v-for="list in variableLists" 
+                :key="list.id"
+                @click="activeVariableList = list.id"
+                :class="[
+                  'w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all flex justify-between items-center',
+                  activeVariableList === list.id 
+                    ? 'bg-kapital-night text-white shadow-md shadow-slate-900/20' 
+                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                ]"
+              >
+                {{ list.label }}
+                <span class="bg-white/20 px-2 py-0.5 rounded-full text-xs">{{ list.data.value.length }}</span>
+              </button>
+            </div>
+
+            <!-- Content Editor -->
+            <div class="lg:col-span-2 bg-slate-50 rounded-xl p-4 border border-slate-200">
+              <div class="flex gap-2 mb-4">
+                <input 
+                  v-model="newVariable" 
+                  @keyup.enter="addVariable"
+                  type="text" 
+                  class="form-input" 
+                  :placeholder="`Agregar nueva opción a ${variableLists.find(l => l.id === activeVariableList).label}...`" 
+                />
+                <button @click="addVariable" class="btn-primary whitespace-nowrap">
+                  <Plus :size="18" /> Agregar
+                </button>
+              </div>
+
+              <div class="space-y-2 max-h-[400px] overflow-y-auto scrollbar-thin pr-2">
+                <div 
+                  v-for="(item, index) in variableLists.find(l => l.id === activeVariableList).data.value" 
+                  :key="index"
+                  class="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 group hover:border-kapital-night/30 transition-colors"
+                >
+                  <span class="text-sm font-medium text-slate-700">{{ item }}</span>
+                  <button 
+                    @click="removeVariable(activeVariableList, item)"
+                    class="text-slate-400 hover:text-rose-500 p-1 rounded-md hover:bg-rose-50 transition-colors"
+                  >
+                    <Trash2 :size="16" />
+                  </button>
+                </div>
+                <div v-if="variableLists.find(l => l.id === activeVariableList).data.value.length === 0" class="text-center py-8 text-slate-400">
+                  <p>No hay opciones configuradas.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- AI & Automation Tab -->
       <div v-if="activeTab === 'ai'" class="space-y-6">
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
@@ -415,13 +482,18 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useSettingsStore } from '../stores/settings'
 import { 
   Link as LinkIcon, Clock, Users, Save, Check, Hourglass, Sun, Moon, 
   BarChart2, Zap, UserPlus, Edit2, Trash2, Lock, Unlock, X, User, Mail, Shield, ChevronDown,
-  Facebook, Instagram, Linkedin, Twitter, Youtube, Briefcase, Building2, Globe, Wand2, Bell, MessageSquare, FileText
+  Facebook, Instagram, Linkedin, Twitter, Youtube, Briefcase, Building2, Globe, Wand2, Bell, MessageSquare, FileText,
+  Database, Plus, Minus
 } from 'lucide-vue-next'
 
 const emit = defineEmits(['showToast'])
+const settingsStore = useSettingsStore()
+const { branding, aiSettings, zones, professions, occupations, educationLevels, lifestyles, interests, values } = storeToRefs(settingsStore)
 
 const activeTab = ref('general')
 const showNewUserModal = ref(false)
@@ -429,19 +501,41 @@ const showNewUserModal = ref(false)
 const tabs = [
   { id: 'general', label: 'General', iconComponent: Briefcase },
   { id: 'integrations', label: 'Integraciones', iconComponent: LinkIcon },
+  { id: 'variables', label: 'Variables', iconComponent: Database },
   { id: 'ai', label: 'IA & Auto', iconComponent: Wand2 },
   { id: 'notifications', label: 'Notificaciones', iconComponent: Bell },
   { id: 'team', label: 'Equipo', iconComponent: Users }
 ]
 
-// --- GENERAL / BRANDING ---
-const branding = ref({
-  companyName: 'Kapital CMS',
-  website: 'https://kapital.com',
-  tone: 'professional',
-  colors: ['#0F172A', '#2563EB', '#F59E0B']
-})
+// --- VARIABLES MANAGEMENT ---
+const newVariable = ref('')
+const activeVariableList = ref('zones')
 
+const variableLists = [
+  { id: 'zones', label: 'Zonas Geográficas', data: zones },
+  { id: 'professions', label: 'Profesiones', data: professions },
+  { id: 'occupations', label: 'Ocupaciones', data: occupations },
+  { id: 'educationLevels', label: 'Niveles de Estudio', data: educationLevels },
+  { id: 'lifestyles', label: 'Estilos de Vida', data: lifestyles },
+  { id: 'interests', label: 'Intereses', data: interests },
+  { id: 'values', label: 'Valores', data: values }
+]
+
+function addVariable() {
+  if (newVariable.value.trim()) {
+    settingsStore.addOption(activeVariableList.value, newVariable.value.trim())
+    newVariable.value = ''
+    emit('showToast', 'Variable agregada')
+  }
+}
+
+function removeVariable(listId, value) {
+  settingsStore.removeOption(listId, value)
+  emit('showToast', 'Variable eliminada')
+}
+
+// --- GENERAL / BRANDING ---
+// (Managed by Store)
 const tones = [
   { id: 'professional', label: 'Profesional' },
   { id: 'friendly', label: 'Amigable' },
@@ -461,10 +555,7 @@ const networks = ref([
 const activeNetworksCount = computed(() => networks.value.filter(n => n.connected).length)
 
 // --- AI & AUTOMATION ---
-const aiSettings = ref({
-  creativity: 70,
-  defaultHashtags: '#Marketing #Business #Growth'
-})
+// (Managed by Store)
 
 const schedule = ref({
   startTime: '08:00',

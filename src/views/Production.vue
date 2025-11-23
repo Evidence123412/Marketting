@@ -307,7 +307,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useContentStore } from '../stores/content'
 import { 
   Plus, Search, Calendar, Trash2, Image as ImageIcon, Ghost, Edit3, PenTool, X, 
   Wand2, CheckCircle2, ChevronDown, MoreHorizontal, Heart, ThumbsUp, MessageCircle, 
@@ -315,6 +317,8 @@ import {
 } from 'lucide-vue-next'
 
 const emit = defineEmits(['showToast', 'navigate'])
+const contentStore = useContentStore()
+const { publications } = storeToRefs(contentStore)
 
 // --- ESTADO Y DATOS ---
 const showModal = ref(false)
@@ -328,7 +332,7 @@ const channels = [
   { name: 'Facebook', icon: Facebook, colorClass: 'text-blue-600' },
   { name: 'LinkedIn', icon: Linkedin, colorClass: 'text-blue-700' },
   { name: 'Twitter', icon: Twitter, colorClass: 'text-slate-900' },
-  { name: 'TikTok', icon: Share2, colorClass: 'text-slate-900' } // Using Share2 as placeholder for TikTok
+  { name: 'TikTok', icon: Share2, colorClass: 'text-slate-900' }
 ]
 
 const columns = [
@@ -338,43 +342,15 @@ const columns = [
   { id: 'published', title: 'Publicados', dotColor: 'bg-emerald-400' }
 ]
 
-// Datos iniciales (Simulados)
-const publications = ref([
-  { id: 1, title: 'Lanzamiento Verano', description: '¡Llegó la nueva colección! ☀️ #Verano2025', channels: 'Instagram, Facebook', status: 'published', date: '2025-11-10', time: '10:00', hashtags: '#fashion #summer', hasImage: true, created_at: '2025-11-01' },
-  { id: 2, title: 'Tips de Marketing', description: '5 consejos para mejorar tu SEO hoy mismo.', channels: 'LinkedIn', status: 'scheduled', date: '2025-11-25', time: '09:00', hashtags: '#seo #marketing', hasImage: true, created_at: '2025-11-20' },
-  { id: 3, title: 'Black Friday Teaser', description: 'Prepárate... algo grande viene.', channels: 'Instagram, TikTok', status: 'draft', date: '', time: '', hashtags: '#blackfriday', hasImage: false, created_at: new Date().toISOString().split('T')[0] }, // Created today
-  { id: 4, title: 'Webinar Invitation', description: 'Únete a nuestro webinar gratuito sobre IA.', channels: 'LinkedIn, Twitter', status: 'review', date: '2025-11-28', time: '15:00', hashtags: '#webinar #ai', hasImage: true, created_at: '2025-11-21' },
-  { id: 5, title: 'Meme de Oficina', description: 'Cuando es viernes y el cliente pide cambios...', channels: 'Instagram, Twitter', status: 'draft', date: '', time: '', hashtags: '#humor #agencylife', hasImage: true, created_at: '2025-11-15' }, // Old draft (should be deleted)
-])
-
 // --- AUTO-DELETE EXPIRED DRAFTS ---
-// Logic: Delete drafts older than 2 days
-const EXPIRATION_DAYS = 2;
-
-function checkExpiredDrafts() {
-  const now = new Date();
-  const initialCount = publications.value.length;
-  
-  publications.value = publications.value.filter(pub => {
-    if (pub.status !== 'draft') return true; // Only check drafts
-    
-    const created = new Date(pub.created_at);
-    const diffTime = Math.abs(now - created);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-    
-    return diffDays <= EXPIRATION_DAYS;
-  });
-
-  const deletedCount = initialCount - publications.value.length;
+onMounted(() => {
+  const deletedCount = contentStore.checkExpiredDrafts(2)
   if (deletedCount > 0) {
     setTimeout(() => {
-      emit('showToast', `${deletedCount} borradores expirados fueron eliminados automáticamente.`, 'info');
-    }, 1000);
+      emit('showToast', `${deletedCount} borradores expirados fueron eliminados automáticamente.`, 'info')
+    }, 1000)
   }
-}
-
-// Run check on mount
-checkExpiredDrafts();
+})
 
 const emptyForm = {
   id: null,
@@ -413,12 +389,9 @@ function startDrag(evt, item) {
 
 function onDrop(evt, statusId) {
   if (draggingItem.value) {
-    // Actualizar estado
-    const item = publications.value.find(p => p.id === draggingItem.value.id)
-    if (item && item.status !== statusId) {
-      item.status = statusId
-      emit('showToast', `Publicación movida a: ${getColumnTitle(statusId)}`)
-    }
+    const item = { ...draggingItem.value, status: statusId }
+    contentStore.updatePublication(item)
+    emit('showToast', `Publicación movida a: ${getColumnTitle(statusId)}`)
     draggingItem.value = null
   }
 }
@@ -430,19 +403,17 @@ function getColumnTitle(id) {
 
 // --- ACCIONES ---
 function openNewPostModal() {
-  formData.value = JSON.parse(JSON.stringify(emptyForm)) // Deep copy
-  formData.value.channels = ['Instagram'] // Default
+  formData.value = JSON.parse(JSON.stringify(emptyForm))
+  formData.value.channels = ['Instagram']
   previewChannel.value = 'Instagram'
   showModal.value = true
 }
 
 function editPublication(pub) {
   formData.value = JSON.parse(JSON.stringify(pub))
-  // Asegurar que channels sea un array si viene como string
   if (typeof formData.value.channels === 'string') {
     formData.value.channels = formData.value.channels.split(', ')
   }
-  // Establecer canal de preview al primero disponible
   previewChannel.value = formData.value.channels[0] || 'Instagram'
   showModal.value = true
 }
@@ -457,22 +428,16 @@ function savePost() {
     return
   }
 
-  // Convertir array de canales a string para guardar (simulando backend)
   const postToSave = {
     ...formData.value,
     channels: Array.isArray(formData.value.channels) ? formData.value.channels.join(', ') : formData.value.channels,
-    hasImage: true // Simulamos que siempre tiene imagen por ahora
   }
 
   if (postToSave.id) {
-    // Editar
-    const index = publications.value.findIndex(p => p.id === postToSave.id)
-    if (index !== -1) publications.value[index] = postToSave
+    contentStore.updatePublication(postToSave)
     emit('showToast', 'Publicación actualizada correctamente')
   } else {
-    // Crear
-    postToSave.id = Date.now()
-    publications.value.unshift(postToSave)
+    contentStore.addPublication(postToSave)
     emit('showToast', 'Nueva publicación creada')
   }
   
@@ -481,7 +446,7 @@ function savePost() {
 
 function deletePublication(id) {
   if (confirm('¿Estás seguro de eliminar esta publicación?')) {
-    publications.value = publications.value.filter(p => p.id !== id)
+    contentStore.deletePublication(id)
     emit('showToast', 'Publicación eliminada')
   }
 }

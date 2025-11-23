@@ -43,9 +43,7 @@
               <div class="grid grid-cols-3 gap-3 mt-3">
                 <select v-model="form.segment.geo.zone" class="input-field text-sm" title="Zona">
                   <option value="all">Todas las Zonas</option>
-                  <option value="urbana">Urbana</option>
-                  <option value="rural">Rural</option>
-                  <option value="suburbana">Suburbana</option>
+                  <option v-for="zone in zones" :key="zone" :value="zone">{{ zone }}</option>
                 </select>
                 <select v-model="form.segment.geo.climate" class="input-field text-sm">
                   <option value="all">Cualquier Clima</option>
@@ -66,16 +64,23 @@
             <fieldset class="fieldset-style">
               <legend class="legend-style"><i class="fas fa-user-tie"></i> Perfil Profesional</legend>
               <div class="grid grid-cols-2 gap-4">
-                <input v-model="form.segment.demo.profession" type="text" placeholder="Profesión (ej. Abogado)" class="input-field" />
-                <input v-model="form.segment.demo.occupation" type="text" placeholder="Ocupación Actual" class="input-field" />
+                <div class="relative">
+                  <input v-model="form.segment.demo.profession" list="professionsList" type="text" placeholder="Profesión (ej. Abogado)" class="input-field" />
+                  <datalist id="professionsList">
+                    <option v-for="prof in professions" :key="prof" :value="prof"></option>
+                  </datalist>
+                </div>
+                <div class="relative">
+                  <input v-model="form.segment.demo.occupation" list="occupationsList" type="text" placeholder="Ocupación Actual" class="input-field" />
+                  <datalist id="occupationsList">
+                    <option v-for="occ in occupations" :key="occ" :value="occ"></option>
+                  </datalist>
+                </div>
               </div>
               <div class="mt-3">
                 <select v-model="form.segment.demo.education" class="input-field">
                   <option value="">Nivel de Estudios...</option>
-                  <option value="secundaria">Secundaria</option>
-                  <option value="tecnico">Técnico</option>
-                  <option value="universitario">Universitario</option>
-                  <option value="postgrado">Postgrado / Maestría</option>
+                  <option v-for="edu in educationLevels" :key="edu" :value="edu">{{ edu }}</option>
                 </select>
               </div>
             </fieldset>
@@ -106,12 +111,7 @@
               <div class="grid grid-cols-2 gap-3 mb-3">
                 <select v-model="form.segment.psycho.lifestyle" class="input-field">
                   <option value="all">General</option>
-                  <option value="sofisticados">Sofisticados (Lujo, Exclusividad)</option>
-                  <option value="progresistas">Progresistas (Emprendedores, Prácticos)</option>
-                  <option value="modernas">Modernas (Tendencia, Moda)</option>
-                  <option value="formalistas">Formalistas (Tradicionales)</option>
-                  <option value="conservadoras">Conservadoras (Familia, Hogar)</option>
-                  <option value="austeros">Austeros (Ahorro)</option>
+                  <option v-for="style in lifestyles" :key="style" :value="style">{{ style }}</option>
                 </select>
                 <select v-model="form.segment.psycho.archetype" class="input-field">
                   <option value="all">Arquetipo de Cliente</option>
@@ -124,10 +124,28 @@
                 </select>
               </div>
               
-              <textarea v-model="form.segment.psycho.interests" placeholder="Intereses específicos (ej. Tecnología, Deportes, Finanzas...)" rows="2" class="input-field mb-2"></textarea>
+              <div class="mb-2">
+                <label class="block text-xs font-bold text-gray-500 mb-1">Intereses</label>
+                <div class="flex flex-wrap gap-2">
+                  <button 
+                    v-for="interest in interests" 
+                    :key="interest"
+                    type="button"
+                    @click="toggleInterest(interest)"
+                    :class="['px-2 py-1 rounded-full text-xs border transition-colors', form.segment.psycho.interests.includes(interest) ? 'bg-purple-100 border-purple-300 text-purple-700' : 'bg-white border-gray-200 text-gray-600']"
+                  >
+                    {{ interest }}
+                  </button>
+                </div>
+              </div>
               
               <div class="grid grid-cols-2 gap-3 mb-2">
-                <input v-model="form.segment.psycho.values" type="text" placeholder="Valores (ej. Familia, Éxito, Libertad)" class="input-field text-sm" />
+                <div class="relative">
+                  <input v-model="form.segment.psycho.values" list="valuesList" type="text" placeholder="Valores (ej. Familia, Éxito)" class="input-field text-sm" />
+                  <datalist id="valuesList">
+                    <option v-for="val in values" :key="val" :value="val"></option>
+                  </datalist>
+                </div>
                 <input v-model="form.segment.psycho.aspirations" type="text" placeholder="Aspiraciones / Deseos" class="input-field text-sm" />
               </div>
               
@@ -562,9 +580,15 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
+import { useSettingsStore } from '../stores/settings'
+import { useContentStore } from '../stores/content'
 
 const router = useRouter()
 const emit = defineEmits(['showToast'])
+const settingsStore = useSettingsStore()
+const contentStore = useContentStore()
+const { zones, professions, occupations, educationLevels, lifestyles, interests, values } = storeToRefs(settingsStore)
 
 const currentStep = ref(1)
 const activePreviewNetwork = ref('instagram')
@@ -608,7 +632,7 @@ const form = ref({
     },
     psycho: { 
       lifestyle: 'all', 
-      interests: '',
+      interests: [],
       archetype: 'all',
       values: '',
       painPoints: '',
@@ -685,6 +709,15 @@ const availableNetworks = ref([
 function nextStep() { if (currentStep.value < 5) currentStep.value++ }
 function prevStep() { if (currentStep.value > 1) currentStep.value-- }
 
+function toggleInterest(interest) {
+  const index = form.value.segment.psycho.interests.indexOf(interest)
+  if (index === -1) {
+    form.value.segment.psycho.interests.push(interest)
+  } else {
+    form.value.segment.psycho.interests.splice(index, 1)
+  }
+}
+
 function selectFormat(val) {
   form.value.format = val
   form.value.networks = []
@@ -752,7 +785,18 @@ function generateContent() {
 }
 
 function sendToProduction() {
-  // In a real app, this would send data to a store or API
+  const newPost = {
+    title: `Campaña ${form.value.advertisingConcept.brandArchetype} - ${form.value.segment.demo.profession}`,
+    description: generatedData.value.copy,
+    hashtags: generatedData.value.hashtags.join(' '),
+    channels: form.value.networks.map(n => getNetworkName(n)).join(', '),
+    date: form.value.production.campaignStart || new Date().toISOString().split('T')[0],
+    time: form.value.production.time,
+    status: form.value.production.autoPublish ? 'published' : 'scheduled',
+    hasImage: true
+  }
+
+  contentStore.addPublication(newPost)
   emit('showToast', `Programado: ${form.value.production.day} a las ${form.value.production.time}`)
   router.push('/production')
 }
