@@ -1046,12 +1046,22 @@ function sendToProduction() {
     channels: form.value.networks.map(n => getNetworkName(n)).join(', '),
     date: form.value.production.campaignStart || new Date().toISOString().split('T')[0],
     time: form.value.production.time,
-    status: form.value.production.autoPublish ? 'published' : 'scheduled',
-    hasImage: true
+    status: 'created', // Initial status for AI generated content
+    hasImage: true,
+    strategy: {
+      segment: form.value.segment,
+      concept: form.value.advertisingConcept,
+      objective: form.value.contentObjective,
+      style: {
+        visual: form.value.visualStyle,
+        color: form.value.colorPrimary,
+        format: form.value.format
+      }
+    }
   }
 
   contentStore.addPublication(newPost)
-  emit('showToast', `Programado: ${form.value.production.day} a las ${form.value.production.time}`)
+  emit('showToast', `Contenido enviado a Producción`)
   router.push('/production')
 }
 </script>

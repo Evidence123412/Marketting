@@ -154,6 +154,27 @@
           <div class="w-full lg:w-1/2 p-6 overflow-y-auto border-r border-slate-100 bg-slate-50/30">
             <form @submit.prevent="savePost" class="space-y-6">
               
+              <!-- Strategy Context (Read Only) -->
+              <div v-if="formData.strategy" class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-6">
+                <h3 class="text-xs font-bold text-indigo-900 uppercase tracking-wide mb-3 flex items-center gap-2">
+                  <Wand2 :size="14" /> Contexto Estratégico
+                </h3>
+                <div class="grid grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <span class="block text-indigo-400 font-medium mb-0.5">Buyer Persona</span>
+                    <span class="text-indigo-900 font-semibold">{{ formData.strategy.segment?.demo?.profession || 'N/A' }}</span>
+                  </div>
+                  <div>
+                    <span class="block text-indigo-400 font-medium mb-0.5">Arquetipo</span>
+                    <span class="text-indigo-900 font-semibold">{{ formData.strategy.concept?.brandArchetype || 'N/A' }}</span>
+                  </div>
+                  <div class="col-span-2">
+                    <span class="block text-indigo-400 font-medium mb-0.5">Objetivo</span>
+                    <span class="text-indigo-900">{{ formData.strategy.objective?.description || 'N/A' }}</span>
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <label class="form-label">Título Interno</label>
                 <input v-model="formData.title" type="text" class="form-input" placeholder="Ej: Promo Verano 2025" required />
@@ -213,6 +234,7 @@
                 <label class="form-label">Estado</label>
                 <div class="relative">
                   <select v-model="formData.status" class="form-input appearance-none cursor-pointer">
+                    <option value="created">✨ Creado por IA</option>
                     <option value="draft">📝 Borrador</option>
                     <option value="review">👀 En Revisión</option>
                     <option value="scheduled">📅 Programado</option>
@@ -336,6 +358,7 @@ const channels = [
 ]
 
 const columns = [
+  { id: 'created', title: 'Creado por IA', dotColor: 'bg-indigo-400' },
   { id: 'draft', title: 'Borradores', dotColor: 'bg-slate-400' },
   { id: 'review', title: 'En Revisión', dotColor: 'bg-blue-400' },
   { id: 'scheduled', title: 'Programados', dotColor: 'bg-amber-400' },

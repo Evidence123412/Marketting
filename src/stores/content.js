@@ -33,7 +33,7 @@ export const useContentStore = defineStore('content', () => {
         const initialCount = publications.value.length
 
         publications.value = publications.value.filter(pub => {
-            if (pub.status !== 'draft') return true
+            if (pub.status !== 'draft' && pub.status !== 'created') return true
 
             const created = new Date(pub.created_at)
             const diffTime = Math.abs(now - created)
