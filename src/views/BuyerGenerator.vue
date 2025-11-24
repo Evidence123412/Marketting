@@ -182,11 +182,11 @@
           <!-- STEP 2: Advertising Concept (NEW) -->
           <div v-show="currentStep === 2" class="space-y-6 animate-fade-in">
             
-            <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 p-4 rounded-lg mb-4">
-              <h3 class="text-sm font-bold text-yellow-900 mb-1 flex items-center gap-2">
-                <i class="fas fa-lightbulb"></i> El Mejor Publicista del Mundo
+            <div class="bg-white border border-gray-200 p-4 rounded-lg mb-4">
+              <h3 class="text-sm font-bold text-gray-900 mb-1 flex items-center gap-2">
+                <i class="fas fa-lightbulb text-yellow-500"></i> El Mejor Publicista del Mundo
               </h3>
-              <p class="text-xs text-yellow-800">Define el concepto publicitario que conectará con tu Buyer Persona. La IA actuará como un publicista ganador de Cannes Lions para crear anuncios que cierren ventas.</p>
+              <p class="text-xs text-gray-600">Define el concepto publicitario que conectará con tu Buyer Persona. La IA actuará como un publicista ganador de Cannes Lions para crear anuncios que cierren ventas.</p>
             </div>
 
             <fieldset class="fieldset-style bg-purple-50/50 border-purple-100">
@@ -271,9 +271,9 @@
           <!-- STEP 3: Content Objective (formerly Step 2) -->
           <div v-show="currentStep === 3" class="space-y-6 animate-fade-in">
             
-            <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-lg mb-4">
-              <h3 class="text-sm font-bold text-yellow-800 mb-1"><i class="fas fa-target"></i> Objetivo del Contenido</h3>
-              <p class="text-xs text-yellow-700">Ahora que definiste tu concepto, especifica qué acción quieres que tome tu audiencia.</p>
+            <div class="bg-white border border-gray-200 p-4 rounded-lg mb-4">
+              <h3 class="text-sm font-bold text-gray-900 mb-1"><i class="fas fa-target text-red-500"></i> Objetivo del Contenido</h3>
+              <p class="text-xs text-gray-600">Ahora que definiste tu concepto, especifica qué acción quieres que tome tu audiencia.</p>
             </div>
 
             <div>
@@ -281,7 +281,7 @@
               <select v-model="form.contentObjective.objective" class="input-field">
                 <option value="awareness">Reconocimiento de Marca</option>
                 <option value="traffic">Tráfico al Sitio Web</option>
-                <option value="sales">Ventas / Conversión 💰</option>
+                <option value="sales">Ventas / Conversión</option>
                 <option value="engagement">Interacción / Engagement</option>
                 <option value="leads">Generación de Leads</option>
                 <option value="app-install">Instalación de App</option>
@@ -318,80 +318,137 @@
             </div>
           </div>
 
-          <!-- STEP 4: Visuals & Format (formerly Step 3) -->
+          <!-- STEP 4: Platform & Format Selection -->
           <div v-show="currentStep === 4" class="space-y-6 animate-fade-in">
-             <fieldset class="fieldset-style">
-              <legend class="legend-style"><i class="fas fa-palette"></i> Identidad Visual</legend>
-              
-              <div class="mb-4">
-                <label class="block text-xs font-bold text-gray-700 mb-1">Estilo Visual</label>
-                <select v-model="form.visualStyle" class="input-field text-sm">
-                  <option value="studio">Fotografía de Estudio (Clean)</option>
-                  <option value="lifestyle">Lifestyle (Personas reales)</option>
-                  <option value="minimal">Minimalista / Tech</option>
-                  <option value="3d">Render 3D / Abstracto</option>
-                  <option value="illustration">Ilustración Moderna</option>
-                </select>
+            <div class="bg-white border border-gray-200 p-4 rounded-lg mb-4">
+              <h3 class="text-sm font-bold text-gray-900 mb-1 flex items-center gap-2">
+                <i class="fas fa-share-alt text-blue-500"></i> Plataformas y Formatos
+              </h3>
+              <p class="text-xs text-gray-600">Elige tus redes sociales y el formato visual. La vista previa se adaptará a tu selección.</p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6">
+              <!-- Networks -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">1. Redes Sociales</label>
+                <div class="grid grid-cols-2 gap-3">
+                  <label 
+                    v-for="network in availableNetworks" 
+                    :key="network.id"
+                    :class="[
+                      'checkbox-label p-3 border rounded-lg transition-all cursor-pointer hover:border-kapital-dark',
+                      form.networks.includes(network.id) ? 'border-kapital-dark bg-blue-50' : 'border-gray-200'
+                    ]"
+                    @click="activePreviewNetwork = network.id"
+                  >
+                    <input 
+                      type="checkbox" 
+                      :value="network.id"
+                      v-model="form.networks"
+                      class="checkbox-input"
+                    />
+                    <i :class="['bi', network.icon, 'text-lg']" :style="{ color: network.color }"></i>
+                    <div class="flex-1">
+                      <div class="font-medium text-gray-900">{{ network.name }}</div>
+                      <div class="text-xs text-gray-500">Formatos: {{ network.formats.join(', ') }}</div>
+                    </div>
+                  </label>
+                </div>
               </div>
 
-              <div class="grid grid-cols-2 gap-3 mb-3">
-                <div class="col-span-2">
-                  <label class="block text-xs font-bold text-gray-700 mb-1">Color Principal</label>
-                  <div class="flex items-center gap-2">
-                    <input v-model="form.colorPrimary" type="color" class="h-10 w-10 rounded cursor-pointer border border-gray-300" />
-                    <input v-model="form.colorPrimary" type="text" class="input-field uppercase" />
+              <!-- Visual Style & Formats -->
+              <div v-if="form.networks.length > 0" class="animate-fade-in">
+                <div class="border-t border-gray-200 pt-6 mt-2">
+                  <label class="block text-sm font-medium text-gray-700 mb-4">2. Estilo y Formato</label>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Visual Identity -->
+                    <div class="space-y-4">
+                      <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-2">Estilo Visual</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                          <button 
+                            v-for="style in visualStyles" 
+                            :key="style.id"
+                            type="button"
+                            @click="form.visualStyle = style.id"
+                            :class="['flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all', form.visualStyle === style.id ? 'border-kapital-dark bg-blue-50 text-kapital-dark' : 'border-gray-100 bg-white text-gray-500 hover:border-gray-200 hover:bg-gray-50']"
+                          >
+                            <i :class="['fas', style.icon, 'text-xl mb-1']"></i>
+                            <span class="text-xs font-bold">{{ style.name }}</span>
+                            <span class="text-[10px] opacity-70">{{ style.desc }}</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-2">Color de Marca</label>
+                        
+                        <!-- Color Swatches -->
+                        <div class="grid grid-cols-4 gap-2 mb-3">
+                          <button 
+                            v-for="color in brandColors" 
+                            :key="color.value"
+                            type="button"
+                            @click="form.colorPrimary = color.value"
+                            :class="['w-full h-8 rounded-md border transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-1', form.colorPrimary === color.value ? 'ring-2 ring-offset-1 ring-gray-400 scale-105' : 'border-gray-200']"
+                            :style="{ backgroundColor: color.value }"
+                            :title="color.name"
+                          ></button>
+                        </div>
+
+                        <!-- Custom Picker -->
+                        <div class="flex items-center gap-2">
+                          <div class="relative">
+                            <input v-model="form.colorPrimary" type="color" class="h-9 w-9 rounded cursor-pointer border border-gray-300 p-0 overflow-hidden" />
+                          </div>
+                          <input v-model="form.colorPrimary" type="text" class="input-field uppercase text-xs py-2" placeholder="#HEX" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Format Selection -->
+                    <div>
+                      <div class="bg-blue-50 border border-blue-200 p-3 rounded-lg mb-3">
+                        <p class="text-xs text-blue-800">
+                          <i class="fas fa-info-circle mr-1"></i>
+                          Formatos compatibles con: <strong>{{ selectedNetworksNames }}</strong>
+                        </p>
+                      </div>
+                      
+                      <div class="grid grid-cols-2 gap-3">
+                        <button 
+                          type="button" 
+                          v-for="format in availableFormatsForNetworks" 
+                          :key="format.name"
+                          @click="selectFormat(format.value)"
+                          :class="['visual-selector', form.format === format.value ? 'selected' : '']"
+                        >
+                          <i :class="['fas', format.icon, 'text-xl mb-1 block']"></i>
+                          <span class="text-sm font-medium">{{ format.name }}</span>
+                          <span v-if="format.compatibleNetworks" class="text-xs text-gray-500 mt-1 block">
+                            {{ format.compatibleNetworks }}
+                          </span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </fieldset>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Formato</label>
-              <div class="grid grid-cols-3 gap-3">
-                <button 
-                  type="button" 
-                  v-for="format in allFormats" 
-                  :key="format.name"
-                  @click="selectFormat(format.value)"
-                  :class="['visual-selector', form.format === format.value ? 'selected' : '']"
-                >
-                  <i :class="['fas', format.icon, 'text-xl mb-1 block']"></i>
-                  <span class="text-sm font-medium">{{ format.name }}</span>
-                </button>
+              
+              <div v-else class="text-center py-8 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                <i class="fas fa-mouse-pointer text-gray-400 text-2xl mb-2"></i>
+                <p class="text-sm text-gray-500">Selecciona al menos una red social para configurar el formato.</p>
               </div>
             </div>
           </div>
 
-          <!-- STEP 5: Production & Scheduling (formerly Step 4) -->
+          <!-- STEP 5: Production & Scheduling -->
           <div v-show="currentStep === 5" class="space-y-6 animate-fade-in">
             
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Redes Sociales</label>
-              <div class="grid grid-cols-2 gap-3">
-                <label 
-                  v-for="network in availableNetworks" 
-                  :key="network.id"
-                  :class="[
-                    'checkbox-label p-3 border rounded-lg transition-all',
-                    isNetworkCompatible(network.id) ? 'cursor-pointer hover:border-kapital-dark' : 'opacity-50 cursor-not-allowed bg-gray-50'
-                  ]"
-                >
-                  <input 
-                    type="checkbox" 
-                    :value="network.id"
-                    v-model="form.networks"
-                    :disabled="!isNetworkCompatible(network.id)"
-                    class="checkbox-input"
-                  />
-                  <i :class="['bi', network.icon, 'text-lg']" :style="{ color: network.color }"></i>
-                  {{ network.name }}
-                </label>
-              </div>
-            </div>
-
-            <div class="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg border border-purple-200">
-              <h4 class="font-bold text-sm text-purple-900 mb-3 flex items-center gap-2">
-                <i class="fas fa-magic"></i> Generación de Anuncios con IA
+            <div class="bg-white p-4 rounded-lg border border-gray-200">
+              <h4 class="font-bold text-sm text-gray-900 mb-3 flex items-center gap-2">
+                <i class="fas fa-magic text-purple-600"></i> Generación de Anuncios con IA
               </h4>
               
               <div class="grid grid-cols-2 gap-4">
@@ -485,9 +542,10 @@
         </form>
 
         <div class="flex justify-between mt-6 pt-6 border-t border-gray-200">
-          <button type="button" @click="prevStep" :disabled="currentStep === 1" class="btn-secondary">
+          <button v-if="currentStep > 1" type="button" @click="prevStep" class="btn-secondary">
             <i class="fas fa-arrow-left"></i> Anterior
           </button>
+          <div v-else></div>
           
           <button 
             v-if="currentStep < 5" 
@@ -536,20 +594,126 @@
           
           <div v-else-if="!generating && (generated || form.format)" class="w-full flex justify-center">
             <!-- Mockup Component (Simplified for brevity, similar to previous but dynamic) -->
-             <div :class="['bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200 flex flex-col transition-all duration-500 max-w-sm w-full']">
-               <div class="p-3 flex items-center gap-2 border-b border-gray-100">
-                 <div class="w-8 h-8 rounded-full bg-gray-200"></div>
-                 <div class="text-xs font-bold text-gray-800">Kapital Preview</div>
+             <div :class="['shadow-xl rounded-xl overflow-hidden border transition-all duration-500 max-w-sm w-full flex flex-col', previewStyles.container]">
+               
+               <!-- Network Header (Hidden for TikTok) -->
+               <div v-if="activePreviewNetwork !== 'tiktok'" :class="['p-3 flex items-center gap-2 border-b', previewStyles.header]">
+                 <div class="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
+                   <img src="https://ui-avatars.com/api/?name=Kapital&background=random" alt="Avatar" class="w-full h-full object-cover" />
+                 </div>
+                 <div class="flex-1">
+                   <div :class="['text-xs font-bold', previewStyles.textPrimary]">Kapital App</div>
+                   <div v-if="activePreviewNetwork === 'instagram' || activePreviewNetwork === 'facebook'" class="text-[10px] text-gray-500">Publicidad</div>
+                   <div v-if="activePreviewNetwork === 'linkedin'" class="text-[10px] text-gray-500">Promocionado</div>
+                 </div>
+                 <i :class="['fas fa-ellipsis-h text-gray-400']"></i>
                </div>
-               <div class="w-full bg-gray-200 flex items-center justify-center relative overflow-hidden text-white text-center p-6" 
+
+               <!-- Content / Image -->
+               <div class="w-full bg-gray-200 flex items-center justify-center relative overflow-hidden text-white text-center group" 
+                    :class="[activePreviewNetwork === 'tiktok' ? 'p-0' : 'p-6']"
                     :style="{ aspectRatio: getAspectRatio(form.format), background: `linear-gradient(135deg, ${form.colorPrimary} 0%, #000 100%)` }">
-                  <span class="text-lg font-bold drop-shadow-md">{{ generated ? form.concept.description.substring(0, 50) : 'Tu Anuncio Aquí' }}</span>
+                  
+                  <!-- TikTok UI Overlay -->
+                  <div v-if="activePreviewNetwork === 'tiktok'" class="absolute inset-0 z-20 flex flex-col justify-between p-4 bg-gradient-to-b from-black/20 via-transparent to-black/60">
+                    <!-- Top Bar -->
+                    <div class="flex justify-center pt-2 text-white/80 font-bold text-sm gap-4">
+                      <span class="opacity-70">Siguiendo</span>
+                      <span class="border-b-2 border-white pb-1">Para ti</span>
+                    </div>
+
+                    <!-- Right Sidebar -->
+                    <div class="absolute right-2 bottom-20 flex flex-col gap-6 items-center">
+                      <div class="relative">
+                        <div class="w-10 h-10 rounded-full border border-white overflow-hidden">
+                           <img src="https://ui-avatars.com/api/?name=Kapital&background=random" alt="Avatar" class="w-full h-full object-cover" />
+                        </div>
+                        <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-red-500 rounded-full w-4 h-4 flex items-center justify-center text-[10px] text-white font-bold">+</div>
+                      </div>
+                      
+                      <div class="flex flex-col items-center gap-1">
+                        <i class="fas fa-heart text-white text-2xl drop-shadow-md"></i>
+                        <span class="text-xs font-bold text-white drop-shadow-md">12.5K</span>
+                      </div>
+                      
+                      <div class="flex flex-col items-center gap-1">
+                        <i class="fas fa-comment-dots text-white text-2xl drop-shadow-md"></i>
+                        <span class="text-xs font-bold text-white drop-shadow-md">842</span>
+                      </div>
+                      
+                      <div class="flex flex-col items-center gap-1">
+                        <i class="fas fa-bookmark text-white text-2xl drop-shadow-md"></i>
+                        <span class="text-xs font-bold text-white drop-shadow-md">1.2K</span>
+                      </div>
+
+                      <div class="flex flex-col items-center gap-1">
+                        <i class="fas fa-share text-white text-2xl drop-shadow-md"></i>
+                        <span class="text-xs font-bold text-white drop-shadow-md">Share</span>
+                      </div>
+                    </div>
+
+                    <!-- Bottom Info -->
+                    <div class="flex flex-col items-start text-left pr-16 pb-2">
+                      <div class="font-bold text-white text-shadow-sm mb-1">@kapital_app</div>
+                      <p class="text-sm text-white/90 text-shadow-sm line-clamp-2 mb-2">
+                        {{ generated ? generatedData.copy : 'Tu copy generado aparecerá aquí...' }} 
+                        <span class="font-bold">{{ generated ? generatedData.hashtags.join(' ') : '#fyp #viral #marketing' }}</span>
+                      </p>
+                      <div class="flex items-center gap-2 text-white/80 text-xs">
+                        <i class="fas fa-music"></i>
+                        <div class="w-24 overflow-hidden whitespace-nowrap">Sonido Original - Kapital App</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Instagram Reels Overlay (Simplified) -->
+                  <div v-else-if="activePreviewNetwork === 'instagram' && form.format === '9:16'" class="absolute right-2 bottom-20 flex flex-col gap-4 items-center z-20">
+                    <div class="bg-black/20 p-2 rounded-full backdrop-blur-sm"><i class="fas fa-heart text-white text-xl"></i></div>
+                    <div class="bg-black/20 p-2 rounded-full backdrop-blur-sm"><i class="fas fa-comment-dots text-white text-xl"></i></div>
+                    <div class="bg-black/20 p-2 rounded-full backdrop-blur-sm"><i class="fas fa-share text-white text-xl"></i></div>
+                  </div>
+
+                  <span v-if="activePreviewNetwork !== 'tiktok'" class="text-lg font-bold drop-shadow-md relative z-10 px-6">{{ generated ? form.concept.description?.substring(0, 50) : 'Tu Anuncio Aquí' }}</span>
+                  <span v-else class="text-2xl font-bold drop-shadow-md relative z-10 px-12 text-white/90">{{ generated ? form.concept.description?.substring(0, 30) : 'VIDEO CONTENT' }}</span>
+                  
+                  <!-- Watermark for preview -->
+                  <div class="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+                    <i :class="['bi', getNetworkIcon(activePreviewNetwork), 'text-9xl']"></i>
+                  </div>
                </div>
-               <div class="p-3">
-                 <p class="text-xs text-gray-800 mb-2">
-                   <span class="font-bold">kapital_app</span> {{ generated ? generatedData.copy : 'El copy generado aparecerá aquí...' }}
+
+               <!-- Network Footer / Actions (Hidden for TikTok) -->
+               <div v-if="activePreviewNetwork !== 'tiktok'" :class="['p-3', previewStyles.footer]">
+                 <!-- Instagram Actions -->
+                 <div v-if="activePreviewNetwork === 'instagram'" class="flex justify-between mb-2">
+                   <div class="flex gap-3">
+                     <i class="far fa-heart text-xl hover:text-red-500 cursor-pointer"></i>
+                     <i class="far fa-comment text-xl hover:text-gray-500 cursor-pointer"></i>
+                     <i class="far fa-paper-plane text-xl hover:text-gray-500 cursor-pointer"></i>
+                   </div>
+                   <i class="far fa-bookmark text-xl hover:text-gray-500 cursor-pointer"></i>
+                 </div>
+
+                 <!-- Facebook Actions -->
+                 <div v-if="activePreviewNetwork === 'facebook'" class="flex justify-between border-t border-b border-gray-100 py-1 mb-2 text-gray-500">
+                   <div class="flex items-center gap-1 text-xs font-medium"><i class="far fa-thumbs-up"></i> Me gusta</div>
+                   <div class="flex items-center gap-1 text-xs font-medium"><i class="far fa-comment-alt"></i> Comentar</div>
+                   <div class="flex items-center gap-1 text-xs font-medium"><i class="fas fa-share"></i> Compartir</div>
+                 </div>
+
+                 <!-- LinkedIn Actions -->
+                 <div v-if="activePreviewNetwork === 'linkedin'" class="flex justify-between border-t border-gray-100 pt-2 mb-2 text-gray-600">
+                   <div class="flex flex-col items-center"><i class="far fa-thumbs-up text-sm"></i> <span class="text-[10px]">Recomendar</span></div>
+                   <div class="flex flex-col items-center"><i class="far fa-comment-dots text-sm"></i> <span class="text-[10px]">Comentar</span></div>
+                   <div class="flex flex-col items-center"><i class="fas fa-share text-sm"></i> <span class="text-[10px]">Compartir</span></div>
+                   <div class="flex flex-col items-center"><i class="far fa-paper-plane text-sm"></i> <span class="text-[10px]">Enviar</span></div>
+                 </div>
+
+                 <p class="text-xs text-gray-800 mb-1">
+                   <span class="font-bold mr-1">kapital_app</span> 
+                   {{ generated ? generatedData.copy : 'El copy generado aparecerá aquí...' }}
                  </p>
-                 <p class="text-blue-600 text-xs">{{ generated ? generatedData.hashtags.join(' ') : '#hashtags' }}</p>
+                 <p class="text-blue-600 text-xs">{{ generated ? generatedData.hashtags.join(' ') : '#hashtags #marketing #ai' }}</p>
                </div>
              </div>
           </div>
@@ -610,7 +774,7 @@ const wizardSteps = [
   { title: 'Paso 1: Buyer Persona', subtitle: 'Define quién es tu cliente ideal' },
   { title: 'Paso 2: Concepto Publicitario', subtitle: 'Define el enfoque creativo y mensaje' },
   { title: 'Paso 3: Objetivo de Contenido', subtitle: 'Define qué quieres lograr' },
-  { title: 'Paso 4: Estilo Visual', subtitle: 'Define la estética de tu anuncio' },
+  { title: 'Paso 4: Plataformas y Formatos', subtitle: 'Elige dónde y cómo publicar' },
   { title: 'Paso 5: Producción', subtitle: 'Programa la publicación' }
 ]
 
@@ -689,6 +853,14 @@ watch(() => form.value.networks, (newNetworks) => {
   if (newNetworks.length > 0 && !newNetworks.includes(activePreviewNetwork.value)) {
     activePreviewNetwork.value = newNetworks[0]
   }
+  
+  // Auto-clear format if it's no longer compatible with selected networks
+  if (form.value.format && newNetworks.length > 0) {
+    const compatibleFormats = availableFormatsForNetworks.value.map(f => f.value)
+    if (!compatibleFormats.includes(form.value.format)) {
+      form.value.format = ''
+    }
+  }
 })
 
 // --- FORMATS & NETWORKS ---
@@ -705,6 +877,65 @@ const availableNetworks = ref([
   { id: 'tiktok', name: 'TikTok', icon: 'bi-tiktok', color: '#010101', formats: ['9:16'] }
 ])
 
+const brandColors = [
+  { name: 'Tech Blue', value: '#2B66FF' },
+  { name: 'Luxury Gold', value: '#D4AF37' },
+  { name: 'Energetic Red', value: '#FF4B4B' },
+  { name: 'Growth Green', value: '#00C853' },
+  { name: 'Trust Navy', value: '#0D47A1' },
+  { name: 'Creative Purple', value: '#9C27B0' },
+  { name: 'Sleek Black', value: '#000000' },
+  { name: 'Vibrant Orange', value: '#FF9800' }
+]
+
+const visualStyles = [
+  { id: 'studio', name: 'Estudio', icon: 'fa-camera', desc: 'Limpio y profesional' },
+  { id: 'lifestyle', name: 'Lifestyle', icon: 'fa-user-friends', desc: 'Personas reales' },
+  { id: 'minimal', name: 'Minimalista', icon: 'fa-crop-alt', desc: 'Simple y Tech' },
+  { id: '3d', name: '3D / Abstracto', icon: 'fa-cube', desc: 'Moderno y digital' },
+  { id: 'illustration', name: 'Ilustración', icon: 'fa-pen-nib', desc: 'Artístico' }
+]
+
+// --- COMPUTED PROPERTIES ---
+const availableFormatsForNetworks = computed(() => {
+  // If no networks selected, show all formats
+  if (form.value.networks.length === 0) {
+    return Object.values(allFormats)
+  }
+  
+  // Get all formats supported by selected networks
+  const selectedNetworks = availableNetworks.value.filter(n => form.value.networks.includes(n.id))
+  const supportedFormats = new Set()
+  
+  selectedNetworks.forEach(network => {
+    network.formats.forEach(format => supportedFormats.add(format))
+  })
+  
+  // Filter and enhance format objects with compatibility info
+  return Object.values(allFormats).filter(format => {
+    return supportedFormats.has(format.value)
+  }).map(format => {
+    // Add info about which networks support this format
+    const compatibleNets = selectedNetworks
+      .filter(n => n.formats.includes(format.value))
+      .map(n => n.name)
+    
+    return {
+      ...format,
+      compatibleNetworks: compatibleNets.length < selectedNetworks.length 
+        ? `Solo: ${compatibleNets.join(', ')}` 
+        : ''
+    }
+  })
+})
+
+const selectedNetworksNames = computed(() => {
+  return form.value.networks
+    .map(id => availableNetworks.value.find(n => n.id === id)?.name)
+    .filter(Boolean)
+    .join(', ')
+})
+
 // --- METHODS ---
 function nextStep() { if (currentStep.value < 5) currentStep.value++ }
 function prevStep() { if (currentStep.value > 1) currentStep.value-- }
@@ -720,18 +951,11 @@ function toggleInterest(interest) {
 
 function selectFormat(val) {
   form.value.format = val
-  form.value.networks = []
 }
 
-function isNetworkCompatible(netId) {
-  const net = availableNetworks.value.find(n => n.id === netId)
-  return net && net.formats.includes(form.value.format)
-}
-
-function getAspectRatio(fmt) {
-  if (!fmt) return '1 / 1'
-  const [w, h] = fmt.split(':').map(Number)
-  return `${w} / ${h}`
+function getNetworkIcon(id) {
+  const net = availableNetworks.value.find(n => n.id === id)
+  return net ? net.icon : 'bi-app'
 }
 
 function getNetworkName(id) {
@@ -739,10 +963,40 @@ function getNetworkName(id) {
   return net ? net.name : id
 }
 
-function getNetworkIcon(id) {
-  const net = availableNetworks.value.find(n => n.id === id)
-  return net ? net.icon : 'bi-app'
+function getAspectRatio(format) {
+  if (!format) return '1/1'
+  const [w, h] = format.split(':')
+  return `${w}/${h}`
 }
+
+const previewStyles = computed(() => {
+  const styles = {
+    container: 'bg-white border-gray-200',
+    header: 'border-gray-100 bg-white',
+    textPrimary: 'text-gray-900',
+    footer: 'bg-white'
+  }
+
+  if (activePreviewNetwork.value === 'facebook') {
+    styles.container = 'bg-white border-blue-100'
+    styles.header = 'bg-white border-gray-100'
+    styles.textPrimary = 'text-[#1877F2]'
+  } else if (activePreviewNetwork.value === 'linkedin') {
+    styles.container = 'bg-white border-gray-300'
+    styles.header = 'bg-white border-gray-200'
+    styles.textPrimary = 'text-[#0A66C2]'
+  } else if (activePreviewNetwork.value === 'tiktok') {
+    styles.container = 'bg-black border-gray-800'
+    styles.header = 'bg-black border-gray-800 text-white'
+    styles.textPrimary = 'text-white'
+    styles.footer = 'bg-black text-white'
+  }
+
+  return styles
+})
+
+
+
 
 function generateContent() {
   generating.value = true
@@ -773,7 +1027,7 @@ function generateContent() {
     const objective = form.value.contentObjective
     
     generatedData.value = {
-      copy: `🚀 ¡Atención ${persona}! \n\n${concept.problemSolved || 'Resolvemos tu problema'}. \n\n✨ ${concept.uniqueBenefit || 'Beneficio único'}. \n\n👉 Descubre más aquí.`,
+      copy: `¡Atención ${persona}! \n\n${concept.problemSolved || 'Resolvemos tu problema'}. \n\n${concept.uniqueBenefit || 'Beneficio único'}. \n\nDescubre más aquí.`,
       hashtags: ['#Kapital', `#${form.value.segment.psycho.lifestyle}`, ...(form.value.advertisingConcept.primaryKeywords ? form.value.advertisingConcept.primaryKeywords.split(',').map(k => '#' + k.trim()) : [])],
       imagePrompt: `/imagine prompt: High quality advertisement for ${objective.description}, target audience ${persona}, style ${style}, professional lighting, 8k --ar ${form.value.format.replace(':','-')}`
     }
@@ -835,5 +1089,8 @@ function sendToProduction() {
 }
 .result-title {
   @apply text-xs font-bold text-gray-700 mb-2 uppercase tracking-wide;
+}
+.text-shadow-sm {
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 </style>
