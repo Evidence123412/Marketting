@@ -8,38 +8,38 @@
       class="flex flex-col gap-6"
     >
       <div>
-        <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Reportes y Análisis</h1>
-        <p class="text-slate-500 mt-1">Visualiza el rendimiento de tus campañas y redes sociales.</p>
+        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Reportes y Análisis</h1>
+        <p class="text-gray-500 mt-1">Visualiza el rendimiento de tus campañas y redes sociales.</p>
       </div>
 
       <div class="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-white/20 shadow-soft flex flex-col md:flex-row gap-4 items-end">
         <div class="flex-1 w-full">
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">
+          <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">
             <Calendar :size="14" class="inline mr-1" /> Rango de Fechas
           </label>
           <div class="flex gap-2 items-center">
             <input 
               v-model="dateRange.start"
               type="date" 
-              class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20 transition-all"
+              class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20 transition-all"
             />
-            <span class="text-slate-400">-</span>
+            <span class="text-gray-400">-</span>
             <input 
               v-model="dateRange.end"
               type="date" 
-              class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20 transition-all"
+              class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20 transition-all"
             />
           </div>
         </div>
         
         <div class="flex-1 w-full">
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">
+          <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">
             <Share2 :size="14" class="inline mr-1" /> Canal
           </label>
           <div class="relative">
             <select 
               v-model="selectedChannel"
-              class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:border-kapital-dark appearance-none cursor-pointer"
+              class="w-full pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 focus:outline-none focus:border-kapital-dark appearance-none cursor-pointer"
             >
               <option value="">Todos los canales</option>
               <option value="instagram">Instagram</option>
@@ -47,7 +47,7 @@
               <option value="linkedin">LinkedIn</option>
               <option value="twitter">Twitter</option>
             </select>
-            <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" :size="16" />
+            <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" :size="16" />
           </div>
         </div>
 
@@ -63,7 +63,7 @@
     </div>
 
     <!-- Tabs -->
-    <div class="border-b border-slate-200/60">
+    <div class="border-b border-gray-200/60">
       <nav class="-mb-px flex gap-8 overflow-x-auto scrollbar-hide" aria-label="Tabs">
         <button 
           @click="activeTab = 'resumen'" 
@@ -71,7 +71,7 @@
             'py-4 px-1 border-b-2 font-bold text-sm flex items-center gap-2 transition-all whitespace-nowrap',
             activeTab === 'resumen' 
               ? 'border-kapital-dark text-kapital-dark' 
-              : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
           ]"
         >
           <LayoutDashboard :size="18" /> Resumen General
@@ -82,7 +82,7 @@
             'py-4 px-1 border-b-2 font-bold text-sm flex items-center gap-2 transition-all whitespace-nowrap',
             activeTab === 'analisis' 
               ? 'border-kapital-dark text-kapital-dark' 
-              : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
           ]"
         >
           <PieChart :size="18" /> Análisis de KPIs
@@ -93,7 +93,7 @@
             'py-4 px-1 border-b-2 font-bold text-sm flex items-center gap-2 transition-all whitespace-nowrap',
             activeTab === 'canales' 
               ? 'border-kapital-dark text-kapital-dark' 
-              : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
           ]"
         >
           <Share2 :size="18" /> Desempeño por Canal
@@ -116,7 +116,7 @@
             :enter="{ opacity: 1, y: 0, transition: { delay: index * 100 } }"
             :class="[
               'bg-white p-5 rounded-2xl border transition-all cursor-pointer group relative overflow-hidden',
-              selectedKpi && selectedKpi.id === kpi.id ? 'border-kapital-dark ring-1 ring-kapital-dark shadow-md' : 'border-slate-200 hover:border-kapital-dark/50 hover:shadow-sm'
+              selectedKpi && selectedKpi.id === kpi.id ? 'border-kapital-dark ring-1 ring-kapital-dark shadow-md' : 'border-gray-200 hover:border-kapital-dark/50 hover:shadow-sm'
             ]"
             @click="selectKpiForDetail(kpi)"
           >
@@ -129,15 +129,15 @@
                 {{ Math.abs(kpi.trend) }}%
               </span>
             </div>
-            <h4 class="text-sm font-bold text-slate-500 mb-1 relative z-10">{{ kpi.label }}</h4>
-            <p class="text-3xl font-bold text-slate-900 mb-3 relative z-10">{{ kpi.value }}</p>
-            <div class="w-full bg-slate-100 rounded-full h-1.5 relative z-10">
+            <h4 class="text-sm font-bold text-gray-500 mb-1 relative z-10">{{ kpi.label }}</h4>
+            <p class="text-3xl font-bold text-gray-900 mb-3 relative z-10">{{ kpi.value }}</p>
+            <div class="w-full bg-gray-100 rounded-full h-1.5 relative z-10">
               <div 
                 class="h-1.5 rounded-full transition-all duration-1000 ease-out" 
                 :style="{ width: kpi.progress + '%', backgroundColor: kpi.color }"
               ></div>
             </div>
-            <p class="text-[10px] text-slate-400 mt-3 font-medium relative z-10">{{ kpi.detail }}</p>
+            <p class="text-[10px] text-gray-400 mt-3 font-medium relative z-10">{{ kpi.detail }}</p>
             
             <!-- Background decoration -->
             <div :class="['absolute -bottom-6 -right-6 w-24 h-24 rounded-full opacity-5 transition-transform group-hover:scale-150', kpi.bgClass]"></div>
@@ -149,27 +149,27 @@
             <Lightbulb :size="20" />
           </div>
           <div>
-            <h3 class="font-bold text-slate-900 text-sm">Insight: {{ selectedKpi.label }}</h3>
-            <p class="text-sm text-slate-600 mt-0.5">{{ computedInsightText }}</p>
+            <h3 class="font-bold text-gray-900 text-sm">Insight: {{ selectedKpi.label }}</h3>
+            <p class="text-sm text-gray-600 mt-0.5">{{ computedInsightText }}</p>
           </div>
         </div>
 
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
           <div class="flex justify-between items-center mb-8">
             <div>
-              <h2 class="text-lg font-bold text-slate-900">{{ computedChartTitle }}</h2>
-              <p class="text-sm text-slate-500 mt-1">Últimos 7 días</p>
+              <h2 class="text-lg font-bold text-gray-900">{{ computedChartTitle }}</h2>
+              <p class="text-sm text-gray-500 mt-1">Últimos 7 días</p>
             </div>
-            <div class="flex bg-slate-100 p-1 rounded-xl">
+            <div class="flex bg-gray-100 p-1 rounded-xl">
               <button 
                 @click="chartView = 'performance'"
-                :class="['px-4 py-1.5 text-xs font-bold rounded-lg transition-all', chartView === 'performance' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700']"
+                :class="['px-4 py-1.5 text-xs font-bold rounded-lg transition-all', chartView === 'performance' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700']"
               >
                 Comparativa
               </button>
               <button 
                 @click="chartView = 'reach'"
-                :class="['px-4 py-1.5 text-xs font-bold rounded-lg transition-all', chartView === 'reach' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700']"
+                :class="['px-4 py-1.5 text-xs font-bold rounded-lg transition-all', chartView === 'reach' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700']"
               >
                 {{ selectedKpi ? selectedKpi.label : 'Detalle' }}
               </button>
@@ -184,7 +184,7 @@
             >
               <div class="flex gap-1 h-full w-full items-end justify-center">
                 <div 
-                  class="bg-slate-800 rounded-t-md w-full transition-all group-hover:opacity-80 relative"
+                  class="bg-slate-900 rounded-t-md w-full transition-all group-hover:opacity-80 relative"
                   :style="{ height: bar.height + '%' }"
                 >
                   <div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded pointer-events-none whitespace-nowrap z-20">
@@ -200,7 +200,7 @@
                   </div>
                 </div>
               </div>
-              <span class="text-xs font-bold text-slate-400">{{ bar.day }}</span>
+              <span class="text-xs font-bold text-gray-400">{{ bar.day }}</span>
             </div>
           </div>
 
@@ -212,18 +212,18 @@
             >
               <div class="relative w-full h-full flex items-end justify-center">
                 <div 
-                  :class="['w-full max-w-[40px] rounded-t-lg transition-all group-hover:opacity-80', selectedKpi ? selectedKpi.bgClass.replace('/10', '') : 'bg-slate-800']"
+                  :class="['w-full max-w-[40px] rounded-t-lg transition-all group-hover:opacity-80', selectedKpi ? selectedKpi.bgClass.replace('/10', '') : 'bg-slate-900']"
                   :style="{ height: bar.height + '%', backgroundColor: selectedKpi ? selectedKpi.color : undefined }"
                 ></div>
-                <span class="absolute -top-8 text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">{{ bar.reach }}</span>
+                <span class="absolute -top-8 text-xs font-bold text-gray-700 bg-gray-100 px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">{{ bar.reach }}</span>
               </div>
-              <span class="text-xs font-bold text-slate-400">{{ bar.day }}</span>
+              <span class="text-xs font-bold text-gray-400">{{ bar.day }}</span>
             </div>
           </div>
 
-          <div class="border-t border-slate-100 pt-4 flex justify-center gap-8 text-xs font-medium text-slate-500">
+          <div class="border-t border-gray-100 pt-4 flex justify-center gap-8 text-xs font-medium text-gray-500">
             <div v-if="chartView === 'performance'" class="flex items-center gap-2">
-              <div class="w-3 h-3 rounded-full bg-slate-800"></div>
+              <div class="w-3 h-3 rounded-full bg-slate-900"></div>
               <span>Alcance</span>
             </div>
             <div v-if="chartView === 'performance'" class="flex items-center gap-2">
@@ -242,11 +242,11 @@
       <!-- TAB: ANALISIS -->
       <div v-show="activeTab === 'analisis'" class="space-y-6">
         
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-          <h2 class="text-lg font-bold text-slate-900 mb-6">Comparativa KPIs - Período Anterior vs Actual</h2>
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <h2 class="text-lg font-bold text-gray-900 mb-6">Comparativa KPIs - Período Anterior vs Actual</h2>
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
             <div>
-              <h3 class="font-bold text-slate-700 mb-6 text-sm uppercase tracking-wide">Rendimiento Comparativo</h3>
+              <h3 class="font-bold text-gray-700 mb-6 text-sm uppercase tracking-wide">Rendimiento Comparativo</h3>
               <div class="space-y-6">
                 <div v-for="kpi in kpis" :key="kpi.id" class="space-y-2">
                   <div class="flex justify-between items-center mb-1">
@@ -254,19 +254,19 @@
                       <div :class="['w-8 h-8 rounded-lg flex items-center justify-center', kpi.bgClass, kpi.textClass]">
                         <component :is="kpi.iconComponent" :size="14" />
                       </div>
-                      <span class="font-bold text-slate-700 text-sm">{{ kpi.label }}</span>
+                      <span class="font-bold text-gray-700 text-sm">{{ kpi.label }}</span>
                     </div>
-                    <span class="font-bold text-slate-900">{{ kpi.value }}</span>
+                    <span class="font-bold text-gray-900">{{ kpi.value }}</span>
                   </div>
                   <div class="flex gap-1 h-2.5 w-full">
-                    <div class="flex-1 bg-slate-100 rounded-l-full overflow-hidden relative group">
+                    <div class="flex-1 bg-gray-100 rounded-l-full overflow-hidden relative group">
                       <div 
                         class="h-full rounded-l-full transition-all duration-500 opacity-40"
                         :style="{ width: '65%', backgroundColor: kpi.color }"
                       ></div>
                       <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/5 text-[8px] font-bold transition-opacity">ANTERIOR</div>
                     </div>
-                    <div class="flex-1 bg-slate-100 rounded-r-full overflow-hidden relative group">
+                    <div class="flex-1 bg-gray-100 rounded-r-full overflow-hidden relative group">
                       <div 
                         class="h-full rounded-r-full transition-all duration-500"
                         :style="{ width: '85%', backgroundColor: kpi.color }"
@@ -274,7 +274,7 @@
                       <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/5 text-[8px] font-bold transition-opacity">ACTUAL</div>
                     </div>
                   </div>
-                  <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wide">
+                  <div class="flex justify-between text-[10px] font-bold text-gray-400 uppercase tracking-wide">
                     <span>Anterior</span>
                     <span class="text-emerald-600">Actual (+{{ kpi.trend }}%)</span>
                   </div>
@@ -283,9 +283,9 @@
             </div>
 
             <div>
-              <h3 class="font-bold text-slate-700 mb-6 text-sm uppercase tracking-wide">Progreso hacia Metas</h3>
+              <h3 class="font-bold text-gray-700 mb-6 text-sm uppercase tracking-wide">Progreso hacia Metas</h3>
               <div class="grid grid-cols-2 gap-6">
-                <div v-for="kpi in kpis" :key="'goal-' + kpi.id" class="flex flex-col items-center bg-slate-50/50 rounded-xl p-4 border border-slate-100">
+                <div v-for="kpi in kpis" :key="'goal-' + kpi.id" class="flex flex-col items-center bg-gray-50/50 rounded-xl p-4 border border-gray-100">
                   <div class="relative w-24 h-24 mb-3">
                     <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                       <circle cx="50" cy="50" r="40" fill="none" stroke="#e2e8f0" stroke-width="8" />
@@ -303,32 +303,32 @@
                       />
                     </svg>
                     <div class="absolute inset-0 flex items-center justify-center flex-col">
-                      <span class="text-xl font-bold text-slate-900">{{ kpi.progress }}%</span>
+                      <span class="text-xl font-bold text-gray-900">{{ kpi.progress }}%</span>
                     </div>
                   </div>
-                  <p class="text-xs font-bold text-slate-600 text-center">{{ kpi.label }}</p>
+                  <p class="text-xs font-bold text-gray-600 text-center">{{ kpi.label }}</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
           <div class="flex justify-between items-center mb-8">
             <div>
-              <h2 class="text-lg font-bold text-slate-900">Tendencia de Engagement</h2>
-              <p class="text-sm text-slate-500 mt-1">Comportamiento semanal - CTR vs Engagement</p>
+              <h2 class="text-lg font-bold text-gray-900">Tendencia de Engagement</h2>
+              <p class="text-sm text-gray-500 mt-1">Comportamiento semanal - CTR vs Engagement</p>
             </div>
-            <div class="flex bg-slate-100 p-1 rounded-xl">
+            <div class="flex bg-gray-100 p-1 rounded-xl">
               <button 
                 @click="engagementView = 'comparative'"
-                :class="['px-4 py-1.5 text-xs font-bold rounded-lg transition-all', engagementView === 'comparative' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700']"
+                :class="['px-4 py-1.5 text-xs font-bold rounded-lg transition-all', engagementView === 'comparative' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700']"
               >
                 Comparativa
               </button>
               <button 
                 @click="engagementView = 'engagement'"
-                :class="['px-4 py-1.5 text-xs font-bold rounded-lg transition-all', engagementView === 'engagement' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700']"
+                :class="['px-4 py-1.5 text-xs font-bold rounded-lg transition-all', engagementView === 'engagement' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700']"
               >
                 Engagement
               </button>
@@ -343,7 +343,7 @@
             >
               <div class="relative w-full h-full flex items-end justify-center gap-1">
                 <div 
-                  class="flex-1 bg-slate-800 rounded-t transition-all group-hover:opacity-80 relative"
+                  class="flex-1 bg-slate-900 rounded-t transition-all group-hover:opacity-80 relative"
                   :style="{ height: point.height + '%' }"
                 >
                    <div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded pointer-events-none whitespace-nowrap z-20">
@@ -359,7 +359,7 @@
                   </div>
                 </div>
               </div>
-              <small class="text-slate-500 font-bold text-xs">{{ point.day }}</small>
+              <small class="text-gray-500 font-bold text-xs">{{ point.day }}</small>
             </div>
           </div>
 
@@ -371,18 +371,18 @@
             >
               <div class="relative w-full h-full flex items-end justify-center">
                 <div 
-                  class="w-2/3 bg-slate-800 rounded-t-lg transition-all group-hover:opacity-80"
+                  class="w-2/3 bg-slate-900 rounded-t-lg transition-all group-hover:opacity-80"
                   :style="{ height: point.height + '%' }"
                 ></div>
-                <span class="absolute -top-8 text-xs font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">{{ point.engagement }}%</span>
+                <span class="absolute -top-8 text-xs font-bold text-gray-900 bg-gray-100 px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">{{ point.engagement }}%</span>
               </div>
-              <small class="text-slate-500 font-bold text-xs">{{ point.day }}</small>
+              <small class="text-gray-500 font-bold text-xs">{{ point.day }}</small>
             </div>
           </div>
 
-          <div class="border-t border-slate-100 pt-4 flex justify-center gap-8 text-xs font-medium text-slate-500">
+          <div class="border-t border-gray-100 pt-4 flex justify-center gap-8 text-xs font-medium text-gray-500">
             <div v-if="engagementView === 'comparative'" class="flex items-center gap-2">
-              <div class="w-3 h-3 rounded-full bg-slate-800"></div>
+              <div class="w-3 h-3 rounded-full bg-slate-900"></div>
               <span>Engagement</span>
             </div>
             <div v-if="engagementView === 'comparative'" class="flex items-center gap-2">
@@ -401,13 +401,13 @@
       <!-- TAB: CANALES -->
       <div v-show="activeTab === 'canales'" class="space-y-6">
         
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div class="p-6 border-b border-slate-100">
-            <h2 class="text-lg font-bold text-slate-900">Desempeño por Red Social</h2>
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div class="p-6 border-b border-gray-100">
+            <h2 class="text-lg font-bold text-gray-900">Desempeño por Red Social</h2>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-sm text-left">
-              <thead class="bg-slate-50 text-slate-500 font-bold uppercase text-xs tracking-wider">
+              <thead class="bg-gray-50 text-gray-500 font-bold uppercase text-xs tracking-wider">
                 <tr>
                   <th class="px-6 py-4">Red Social</th>
                   <th class="px-6 py-4">Alcance</th>
@@ -418,35 +418,35 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100">
-                <tr v-for="network in networkPerformance" :key="network.id" class="hover:bg-slate-50/50 transition-colors">
+                <tr v-for="network in networkPerformance" :key="network.id" class="hover:bg-gray-50/50 transition-colors">
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-3">
                       <div :class="['w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm', network.bgClass]">
                         <component :is="network.iconComponent" :size="16" />
                       </div>
-                      <span class="font-bold text-slate-900">{{ network.name }}</span>
+                      <span class="font-bold text-gray-900">{{ network.name }}</span>
                     </div>
                   </td>
                   <td class="px-6 py-4">
-                    <span class="font-bold text-slate-900 block">{{ network.reach }}</span>
+                    <span class="font-bold text-gray-900 block">{{ network.reach }}</span>
                     <small class="text-emerald-600 font-bold text-[10px]">+{{ network.reachChange }}%</small>
                   </td>
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-3">
-                      <div class="w-16 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                      <div class="w-16 bg-gray-100 rounded-full h-1.5 overflow-hidden">
                         <div 
                           class="h-full rounded-full" 
                           :style="{ width: network.engagement + '%', backgroundColor: network.color }"
                         ></div>
                       </div>
-                      <span class="font-bold text-slate-700">{{ network.engagement }}%</span>
+                      <span class="font-bold text-gray-700">{{ network.engagement }}%</span>
                     </div>
                   </td>
                   <td class="px-6 py-4">
-                    <span class="font-bold text-slate-700">{{ network.ctr }}%</span>
+                    <span class="font-bold text-gray-700">{{ network.ctr }}%</span>
                   </td>
                   <td class="px-6 py-4">
-                    <span class="font-bold text-slate-900">{{ network.followers }}</span>
+                    <span class="font-bold text-gray-900">{{ network.followers }}</span>
                   </td>
                   <td class="px-6 py-4">
                     <span :class="['text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 w-fit', network.growth > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700']">
@@ -461,13 +461,13 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="bg-slate-900 rounded-2xl p-6 text-white relative overflow-hidden">
+          <div class="bg-gray-900 rounded-2xl p-6 text-white relative overflow-hidden">
             <div class="relative z-10">
               <h3 class="font-bold text-lg mb-2 flex items-center gap-2">
                 <FileText :size="20" class="text-blue-400" /> Exportar Datos
               </h3>
-              <p class="text-slate-400 text-sm mb-6">Descarga el reporte completo en formato CSV para realizar tus propios análisis.</p>
-              <button @click="exportCSV" class="w-full py-3 bg-white text-slate-900 font-bold rounded-xl hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
+              <p class="text-gray-400 text-sm mb-6">Descarga el reporte completo en formato CSV para realizar tus propios análisis.</p>
+              <button @click="exportCSV" class="w-full py-3 bg-white text-gray-900 font-bold rounded-xl hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
                 <Download :size="18" /> Descargar CSV
               </button>
             </div>
@@ -519,7 +519,7 @@ const kpis = ref([
     label: 'Alcance Total', 
     value: '45.2K', 
     trend: 12,
-    bgClass: 'bg-slate-900',
+    bgClass: 'bg-gray-900',
     textClass: 'text-white',
     color: '#0f172a',
     progress: 75,
@@ -556,7 +556,7 @@ const kpis = ref([
     value: '87', 
     trend: 25,
     bgClass: 'bg-cyan-400',
-    textClass: 'text-slate-900',
+    textClass: 'text-gray-900',
     color: '#22d3ee',
     progress: 85,
     detail: '+25 desde el período anterior'
@@ -590,7 +590,7 @@ const networkPerformance = ref([
   { id: 1, name: 'Instagram', iconComponent: Instagram, bgClass: 'bg-pink-600', color: '#db2777', reach: '18.5K', reachChange: 15, engagement: 5.2, ctr: 2.8, followers: '5.2K', growth: 8 },
   { id: 2, name: 'Facebook', iconComponent: Facebook, bgClass: 'bg-blue-600', color: '#2563eb', reach: '14.2K', reachChange: 9, engagement: 3.1, ctr: 1.9, followers: '3.8K', growth: 5 },
   { id: 3, name: 'LinkedIn', iconComponent: Linkedin, bgClass: 'bg-blue-700', color: '#1d4ed8', reach: '8.6K', reachChange: 12, engagement: 4.5, ctr: 3.2, followers: '2.1K', growth: 12 },
-  { id: 4, name: 'X / Twitter', iconComponent: Twitter, bgClass: 'bg-slate-900', color: '#0f172a', reach: '3.9K', reachChange: 6, engagement: 2.1, ctr: 1.5, followers: '1.4K', growth: -2 },
+  { id: 4, name: 'X / Twitter', iconComponent: Twitter, bgClass: 'bg-gray-900', color: '#0f172a', reach: '3.9K', reachChange: 6, engagement: 2.1, ctr: 1.5, followers: '1.4K', growth: -2 },
   { id: 5, name: 'YouTube', iconComponent: Youtube, bgClass: 'bg-red-600', color: '#dc2626', reach: '22.3K', reachChange: 21, engagement: 6.3, ctr: 4.2, followers: '7.4K', growth: 14 },
 ])
 
@@ -656,7 +656,7 @@ function emailReport() {
 }
 
 .btn-secondary {
-  @apply px-5 py-2.5 bg-white text-slate-700 font-medium rounded-xl border border-slate-200 transition-all hover:bg-slate-50 hover:border-slate-300 flex items-center gap-2 justify-center text-sm;
+  @apply px-5 py-2.5 bg-white text-gray-700 font-medium rounded-xl border border-gray-200 transition-all hover:bg-gray-50 hover:border-gray-300 flex items-center gap-2 justify-center text-sm;
 }
 
 /* Scrollbar fina */

@@ -12,19 +12,19 @@
         <p class="text-slate-500 mt-1 text-sm">Visualiza y orquesta tu estrategia de contenido global.</p>
       </div>
       
-      <div class="flex items-center gap-3 bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm">
+      <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-gray-200 shadow-sm">
         <button 
           v-for="view in viewOptions" 
           :key="view.id"
           @click="currentView = view.id"
           :class="[
-            'px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2',
+            'px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2',
             currentView === view.id 
-              ? 'bg-slate-900 text-white shadow-md' // Cambiado a bg-slate-900 para el color oscuro
-              : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+              ? 'bg-kapital-dark text-white shadow-md' 
+              : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
           ]"
         >
-          <component :is="view.icon" :size="16" />
+          <component :is="view.icon" :size="14" />
           {{ view.label }}
         </button>
       </div>
@@ -36,16 +36,16 @@
 
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
       <div v-for="(stat, index) in stats" :key="index" 
-        class="bg-white/60 backdrop-blur-sm border border-slate-200/60 p-4 rounded-2xl flex items-center gap-4 hover:bg-white transition-all duration-300 group"
+        class="bg-white border border-gray-200 p-4 rounded-xl flex items-center gap-4 hover:shadow-md transition-all duration-300 group"
       >
-        <div :class="['w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110', stat.bg, stat.color]">
-          <component :is="stat.icon" :size="24" stroke-width="2" />
+        <div :class="['w-10 h-10 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110', stat.bg, stat.color]">
+          <component :is="stat.icon" :size="20" stroke-width="2" />
         </div>
         <div>
-          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">{{ stat.label }}</p>
+          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{{ stat.label }}</p>
           <div class="flex items-baseline gap-2">
-            <span class="text-2xl font-bold text-slate-900">{{ stat.value }}</span>
-            <span v-if="stat.trend" :class="['text-xs font-bold px-1.5 py-0.5 rounded', stat.trend > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700']">
+            <span class="text-xl font-bold text-gray-900">{{ stat.value }}</span>
+            <span v-if="stat.trend" :class="['text-[10px] font-bold px-1.5 py-0.5 rounded', stat.trend > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600']">
               {{ stat.trend > 0 ? '+' : ''}}{{ stat.trend }}%
             </span>
           </div>
@@ -68,15 +68,15 @@
               </div>
             </div>
             
-            <div class="flex gap-2">
+            <div class="flex gap-1">
                 <button 
                     v-for="filter in networkFilters" :key="filter.name"
                     @click="toggleFilter(filter.name)"
-                    :class="['w-8 h-8 rounded-full flex items-center justify-center transition-all border-2', activeFilters.includes(filter.name) ? 'border-current bg-slate-50 grayscale-0' : 'border-transparent grayscale opacity-50 hover:opacity-100']"
+                    :class="['w-7 h-7 rounded-full flex items-center justify-center transition-all border', activeFilters.includes(filter.name) ? 'border-gray-300 bg-white grayscale-0 shadow-sm' : 'border-transparent grayscale opacity-40 hover:opacity-100']"
                     :style="{ color: activeFilters.includes(filter.name) ? filter.color : '' }"
                     :title="filter.name"
                 >
-                    <component :is="filter.icon" :size="14" />
+                    <component :is="filter.icon" :size="12" />
                 </button>
             </div>
           </div>
@@ -91,12 +91,12 @@
                 :key="idx"
                 @click="day.date && openDayDetails(day)"
                 :class="[
-                  'relative rounded-xl border p-2 transition-all flex flex-col gap-1 group min-h-[100px]',
-                  day.isCurrentMonth ? 'bg-white border-slate-100 hover:border-slate-400 hover:shadow-md cursor-pointer' : 'bg-slate-50/50 border-transparent text-slate-300 pointer-events-none',
-                  day.isToday ? 'ring-2 ring-slate-900 ring-offset-2 z-10' : ''
+                  'relative rounded-lg border p-1.5 transition-all flex flex-col gap-1 group min-h-[100px]',
+                  day.isCurrentMonth ? 'bg-white border-gray-100 hover:border-gray-300 hover:shadow-sm cursor-pointer' : 'bg-gray-50/50 border-transparent text-gray-300 pointer-events-none',
+                  day.isToday ? 'ring-1 ring-kapital-dark ring-offset-1 z-10' : ''
                 ]"
               >
-                <span :class="['text-sm font-bold w-7 h-7 flex items-center justify-center rounded-full', day.isToday ? 'bg-slate-900 text-white' : 'text-slate-700']">
+                <span :class="['text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full', day.isToday ? 'bg-kapital-dark text-white' : 'text-gray-700']">
                   {{ day.date }}
                 </span>
 
@@ -104,16 +104,16 @@
                   <div 
                     v-for="event in getEventsForDay(day)" 
                     :key="event.id"
-                    class="text-[10px] font-semibold px-2 py-1 rounded-md border-l-2 bg-slate-50 truncate transition-colors hover:bg-white shadow-sm flex items-center justify-between"
+                    class="text-[9px] font-medium px-1.5 py-0.5 rounded border bg-white truncate transition-colors hover:border-gray-300 shadow-sm flex items-center justify-between"
                     :class="getNetworkBorderClass(event.network)"
                   >
-                    <span class="truncate">{{ event.title }}</span>
-                    <component :is="getNetworkIcon(event.network)" :size="10" class="text-slate-400 flex-shrink-0 ml-1" />
+                    <span class="truncate text-gray-700">{{ event.title }}</span>
+                    <component :is="getNetworkIcon(event.network)" :size="8" class="text-gray-400 flex-shrink-0 ml-1" />
                   </div>
                 </div>
                 
-                <button v-if="day.isCurrentMonth" class="absolute bottom-2 right-2 w-6 h-6 bg-slate-900 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:scale-110">
-                    <Plus :size="14" />
+                <button v-if="day.isCurrentMonth" class="absolute bottom-1 right-1 w-5 h-5 bg-kapital-dark text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:scale-110">
+                    <Plus :size="10" />
                 </button>
               </div>
             </div>
@@ -129,36 +129,36 @@
                 </div>
             <div class="flex-1 overflow-y-auto scrollbar-thin">
                 <table class="w-full text-sm text-left">
-                    <thead class="bg-slate-50 text-slate-500 font-bold uppercase text-xs sticky top-0 z-10">
+                    <thead class="bg-gray-50 text-gray-500 font-bold uppercase text-[10px] sticky top-0 z-10 border-b border-gray-200">
                         <tr>
-                            <th class="px-4 py-3 rounded-tl-xl">Estado</th>
+                            <th class="px-4 py-3 rounded-tl-lg">Estado</th>
                             <th class="px-4 py-3">Contenido</th>
                             <th class="px-4 py-3">Canales</th>
                             <th class="px-4 py-3">Fecha</th>
-                            <th class="px-4 py-3 rounded-tr-xl">Acciones</th>
+                            <th class="px-4 py-3 rounded-tr-lg">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        <tr v-for="event in filteredEvents" :key="event.id" class="hover:bg-slate-50 group">
+                    <tbody class="divide-y divide-gray-100">
+                        <tr v-for="event in filteredEvents" :key="event.id" class="hover:bg-gray-50 group transition-colors">
                             <td class="px-4 py-3">
-                                <span :class="['px-2 py-1 rounded-full text-[10px] font-bold uppercase', getStatusBadge(event.status)]">{{ event.status }}</span>
+                                <span :class="['px-2 py-0.5 rounded text-[10px] font-bold uppercase border', getStatusBadge(event.status)]">{{ event.status }}</span>
                             </td>
                             <td class="px-4 py-3">
-                                <p class="font-bold text-slate-900">{{ event.title }}</p>
-                                <p class="text-xs text-slate-500 truncate w-48">{{ event.description || 'Sin descripción' }}</p>
+                                <p class="font-bold text-gray-900 text-xs">{{ event.title }}</p>
+                                <p class="text-[10px] text-gray-500 truncate w-48">{{ event.description || 'Sin descripción' }}</p>
                             </td>
                             <td class="px-4 py-3">
                                 <div class="flex -space-x-2">
-                                    <div v-for="net in event.networks" :key="net" class="w-6 h-6 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-sm z-0 relative hover:z-10 hover:scale-110 transition-transform">
+                                    <div v-for="net in event.networks" :key="net" class="w-6 h-6 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm z-0 relative hover:z-10 hover:scale-110 transition-transform">
                                         <component :is="getNetworkIcon(net)" :size="12" />
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-4 py-3 font-medium text-slate-600">
-                                {{ event.date }} <span class="text-slate-400 text-xs">{{ event.time }}</span>
+                            <td class="px-4 py-3 font-medium text-gray-600 text-xs">
+                                {{ event.date }} <span class="text-gray-400 text-[10px] ml-1">{{ event.time }}</span>
                             </td>
                             <td class="px-4 py-3">
-                                <button class="p-1.5 hover:bg-white rounded-lg text-slate-400 hover:text-slate-900 transition-colors shadow-sm border border-transparent hover:border-slate-200">
+                                <button class="p-1.5 hover:bg-white rounded-md text-gray-400 hover:text-gray-900 transition-colors shadow-sm border border-transparent hover:border-gray-200">
                                     <Edit3 :size="14" />
                                 </button>
                             </td>
@@ -179,55 +179,56 @@
 
       <div class="flex-1 min-w-[300px] flex flex-col gap-6">
         
-        <div class="card p-0 overflow-hidden border-0 shadow-lg ring-1 ring-slate-900/5 relative group">
-          <div class="h-24 bg-gradient-to-r from-slate-900 to-indigo-600 relative p-6"> <div class="absolute bottom-0 right-0 opacity-10 transform translate-y-4 translate-x-4"><Rocket :size="100" /></div>
-             <span class="text-[10px] font-bold uppercase tracking-widest text-white/80 bg-white/10 px-2 py-1 rounded backdrop-blur-md">Siguiente en cola</span>
-             <h3 class="text-white font-bold text-lg mt-2 truncate pr-8">{{ nextEvent?.title || 'Nada programado' }}</h3>
+        <div class="card p-0 overflow-hidden border border-gray-200 shadow-sm relative group">
+          <div class="h-20 bg-gray-50 border-b border-gray-100 relative p-5 flex flex-col justify-center"> 
+             <div class="absolute bottom-0 right-0 opacity-5 transform translate-y-2 translate-x-2 text-kapital-dark"><Rocket :size="80" /></div>
+             <span class="text-[9px] font-bold uppercase tracking-widest text-kapital-dark/60 mb-1">Siguiente en cola</span>
+             <h3 class="text-gray-900 font-bold text-base truncate pr-8">{{ nextEvent?.title || 'Nada programado' }}</h3>
           </div>
           
-          <div class="p-6 pt-2 relative bg-white">
-             <div class="absolute -top-8 right-6 bg-white rounded-xl shadow-md p-2 text-center min-w-[60px]">
-                <span class="block text-xs font-bold text-slate-400 uppercase">{{ getMonthShort(nextEvent?.date) }}</span>
-                <span class="block text-xl font-black text-slate-900">{{ getDayNumber(nextEvent?.date) }}</span>
+          <div class="p-5 pt-2 relative bg-white">
+             <div class="absolute -top-6 right-5 bg-white rounded-lg border border-gray-200 shadow-sm p-2 text-center min-w-[50px]">
+                <span class="block text-[10px] font-bold text-gray-400 uppercase">{{ getMonthShort(nextEvent?.date) }}</span>
+                <span class="block text-lg font-black text-gray-900">{{ getDayNumber(nextEvent?.date) }}</span>
              </div>
 
              <div v-if="nextEvent" class="mt-4 space-y-4">
-                <div class="flex items-center justify-between text-sm text-slate-600 border-b border-slate-100 pb-3">
-                    <div class="flex items-center gap-2"><Clock :size="16" class="text-slate-900"/> {{ nextEvent.time }}</div> <div class="flex -space-x-2">
-                        <div v-for="net in nextEvent.networks" :key="net" class="w-6 h-6 rounded-full bg-slate-50 border border-white shadow-sm flex items-center justify-center">
-                            <component :is="getNetworkIcon(net)" :size="12" />
+                <div class="flex items-center justify-between text-xs text-gray-600 border-b border-gray-50 pb-3">
+                    <div class="flex items-center gap-2"><Clock :size="14" class="text-gray-900"/> {{ nextEvent.time }}</div> <div class="flex -space-x-2">
+                        <div v-for="net in nextEvent.networks" :key="net" class="w-5 h-5 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center">
+                            <component :is="getNetworkIcon(net)" :size="10" />
                         </div>
                     </div>
                 </div>
                 
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden border-2 border-white shadow-sm">
+                    <div class="w-8 h-8 rounded-full bg-gray-100 overflow-hidden border border-gray-200">
                         <img src="https://ui-avatars.com/api/?name=Ana+G&background=random" alt="User">
                     </div>
                     <div>
-                        <p class="text-xs font-bold text-slate-900">Asignado a Ana</p>
-                        <p class="text-[10px] text-slate-500">Copywriter</p>
+                        <p class="text-xs font-bold text-gray-900">Asignado a Ana</p>
+                        <p class="text-[10px] text-gray-500">Copywriter</p>
                     </div>
-                    <button class="ml-auto text-xs text-slate-900 font-bold hover:underline">Ver detalles</button> </div>
+                    <button class="ml-auto text-xs text-kapital-dark font-bold hover:underline">Ver detalles</button> </div>
              </div>
-             <div v-else class="mt-8 text-center text-sm text-slate-400">
+             <div v-else class="mt-8 text-center text-xs text-gray-400">
                 ¡Todo listo! No hay publicaciones pendientes próximas.
              </div>
           </div>
         </div>
 
-        <div class="card flex-1 flex flex-col">
+        <div class="card flex-1 flex flex-col border border-gray-200 shadow-sm">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2"><Sparkles :size="16" class="text-amber-500"/> Borradores / Ideas</h3>
-                <button class="p-1 hover:bg-slate-50 rounded"><Plus :size="16" class="text-slate-400" /></button>
+                <h3 class="font-bold text-gray-800 text-sm flex items-center gap-2"><Sparkles :size="16" class="text-amber-500"/> Borradores / Ideas</h3>
+                <button class="p-1 hover:bg-gray-50 rounded"><Plus :size="16" class="text-gray-400" /></button>
             </div>
             <div class="flex-1 overflow-y-auto space-y-3 scrollbar-thin pr-1">
-                <div v-for="draft in drafts" :key="draft.id" class="p-3 rounded-xl border border-slate-100 hover:border-amber-200 hover:bg-amber-50/30 transition-all cursor-pointer group">
+                <div v-for="draft in drafts" :key="draft.id" class="p-3 rounded-lg border border-gray-100 hover:border-amber-200 hover:bg-amber-50/30 transition-all cursor-pointer group bg-white">
                     <div class="flex justify-between mb-1">
-                        <span class="font-bold text-xs text-slate-700">{{ draft.title }}</span>
-                        <MoreHorizontal :size="14" class="text-slate-300 group-hover:text-slate-500" />
+                        <span class="font-bold text-xs text-gray-700">{{ draft.title }}</span>
+                        <MoreHorizontal :size="14" class="text-gray-300 group-hover:text-gray-500" />
                     </div>
-                    <p class="text-[10px] text-slate-500 line-clamp-2">{{ draft.notes }}</p>
+                    <p class="text-[10px] text-gray-500 line-clamp-2">{{ draft.notes }}</p>
                 </div>
             </div>
         </div>
@@ -313,10 +314,10 @@ const nextEvent = computed(() => {
 })
 
 const stats = computed(() => [
-    { label: 'Programados', value: events.value.filter(e => e.status === 'scheduled').length, icon: CalendarIcon, bg: 'bg-blue-50', color: 'text-blue-600', trend: 12 },
-    { label: 'Publicados', value: events.value.filter(e => e.status === 'published').length, icon: CheckCircle2, bg: 'bg-emerald-50', color: 'text-emerald-600', trend: 5 },
-    { label: 'Borradores', value: events.value.filter(e => e.status === 'draft').length, icon: Edit3, bg: 'bg-slate-50', color: 'text-slate-500' },
-    { label: 'Pendientes', value: 1, icon: AlertCircle, bg: 'bg-amber-50', color: 'text-amber-500', trend: -2 }
+    { label: 'Programados', value: events.value.filter(e => e.status === 'scheduled').length, icon: CalendarIcon, bg: 'bg-gray-50', color: 'text-gray-500', trend: 12 },
+    { label: 'Publicados', value: events.value.filter(e => e.status === 'published').length, icon: CheckCircle2, bg: 'bg-gray-50', color: 'text-gray-500', trend: 5 },
+    { label: 'Borradores', value: events.value.filter(e => e.status === 'draft').length, icon: Edit3, bg: 'bg-gray-50', color: 'text-gray-500' },
+    { label: 'Pendientes', value: 1, icon: AlertCircle, bg: 'bg-gray-50', color: 'text-gray-500', trend: -2 }
 ])
 
 const monthName = computed(() => currentDate.value.toLocaleString('es-ES', { month: 'long' }))
@@ -391,15 +392,15 @@ function getNetworkBorderClass(networkArray) {
     return 'border-slate-400'
 }
 function getStatusBadge(status) {
-    if (status === 'published') return 'bg-emerald-100 text-emerald-700'
-    if (status === 'scheduled') return 'bg-blue-100 text-blue-700'
-    return 'bg-slate-100 text-slate-500'
+    if (status === 'published') return 'bg-emerald-50 text-emerald-700 border-emerald-100'
+    if (status === 'scheduled') return 'bg-blue-50 text-blue-700 border-blue-100'
+    return 'bg-gray-50 text-gray-500 border-gray-200'
 }
 </script>
 
 <style scoped lang="postcss">
 .card {
-  @apply bg-white/80 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-soft;
+  @apply bg-white border border-gray-200 rounded-xl p-6 shadow-sm;
 }
 
 /* ESTILOS ACTUALIZADOS PARA EL COLOR SOLICITADO (AZUL MUY OSCURO/NEGRO) */

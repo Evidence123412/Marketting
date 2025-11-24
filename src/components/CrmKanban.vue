@@ -5,23 +5,23 @@
       v-motion
       :initial="{ opacity: 0, y: -20 }"
       :enter="{ opacity: 1, y: 0, transition: { duration: 500 } }"
-      class="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-white/50 backdrop-blur-sm p-4 rounded-2xl border border-white/20 shadow-sm"
+      class="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-white p-4 rounded-xl border border-gray-200 shadow-sm"
     >
       <div class="relative w-full md:w-96">
-        <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" :size="18" />
+        <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" :size="16" />
         <input 
           v-model="searchQuery"
           type="text" 
           placeholder="Buscar por nombre, empresa o email..." 
-          class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-kapital-dark/20 text-sm text-slate-700 placeholder-slate-400 transition-all"
+          class="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-kapital-dark focus:ring-1 focus:ring-kapital-dark text-xs font-medium text-gray-700 placeholder-gray-400 transition-all"
         />
       </div>
 
       <button 
         @click="showNewLeadModal = true"
-        class="btn-primary w-full md:w-auto shadow-lg shadow-kapital-dark/20"
+        class="btn-primary w-full md:w-auto shadow-lg shadow-slate-900/20"
       >
-        <Plus :size="18" /> Nuevo Lead
+        <Plus :size="16" /> Nuevo Lead
       </button>
     </div>
 
@@ -40,9 +40,9 @@
           <div class="column-header">
             <div class="flex items-center gap-2">
               <div :class="['w-2 h-2 rounded-full', getStatusColorClass(status.value)]"></div>
-              <h3 class="font-bold text-sm text-slate-700 uppercase tracking-wide">{{ status.label }}</h3>
+              <h3 class="font-bold text-xs text-gray-500 uppercase tracking-wider">{{ status.label }}</h3>
             </div>
-            <span class="text-xs font-bold text-slate-500 bg-white/50 border border-slate-200 rounded-full px-2.5 py-0.5">
+            <span class="text-[10px] font-bold text-gray-400 bg-white border border-gray-200 rounded-full px-2 py-0.5">
               {{ leadsByStatus[status.value] ? leadsByStatus[status.value].length : 0 }}
             </span>
           </div>
@@ -212,7 +212,7 @@ function handleDragChange(event, newStatus) {
 }
 
 .kanban-column {
-  @apply flex-shrink-0 w-80 bg-slate-100/50 rounded-2xl p-3 flex flex-col border border-slate-200/60 backdrop-blur-sm transition-colors hover:bg-slate-100/80;
+  @apply flex-shrink-0 w-80 bg-gray-50 rounded-xl p-3 flex flex-col border border-gray-200 transition-colors hover:bg-gray-100;
 }
 
 .column-header {

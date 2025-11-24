@@ -6,22 +6,22 @@
       v-motion
       :initial="{ opacity: 0, y: -10 }"
       :enter="{ opacity: 1, y: 0, transition: { duration: 500 } }"
-      class="flex flex-col md:flex-row justify-between md:items-end gap-4 border-b border-slate-200 pb-6"
+      class="flex flex-col md:flex-row justify-between md:items-end gap-4 border-b border-gray-200 pb-6"
     >
       <div>
-        <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
-        <p class="text-slate-500 mt-1">Visión general del rendimiento y actividad reciente.</p>
+        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
+        <p class="text-gray-500 mt-1">Visión general del rendimiento y actividad reciente.</p>
       </div>
       <div class="flex items-center gap-4">
         <div class="text-right hidden md:block">
-          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Periodo</p>
-          <p class="text-sm font-medium text-slate-900">Últimos 30 días</p>
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Periodo</p>
+          <p class="text-sm font-medium text-gray-900">Últimos 30 días</p>
         </div>
-        <div class="h-8 w-px bg-slate-200 hidden md:block"></div>
+        <div class="h-8 w-px bg-gray-200 hidden md:block"></div>
         <button class="btn-secondary text-sm">
           <Calendar :size="16" /> Filtrar
         </button>
-        <button class="btn-primary text-sm shadow-lg shadow-slate-900/20">
+        <button class="btn-primary text-sm shadow-lg shadow-gray-900/20">
           <Download :size="16" /> Exportar
         </button>
       </div>
@@ -38,11 +38,11 @@
         class="flex flex-col"
       >
         <div class="flex items-center gap-3 mb-3">
-          <component :is="metric.icon" class="text-slate-400" :size="20" />
-          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">{{ metric.label }}</span>
+          <component :is="metric.icon" class="text-gray-400" :size="20" />
+          <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">{{ metric.label }}</span>
         </div>
         <div class="flex items-baseline gap-3">
-          <span class="text-4xl font-bold text-slate-900 tracking-tight">{{ metric.value }}</span>
+          <span class="text-4xl font-bold text-gray-900 tracking-tight">{{ metric.value }}</span>
           <span :class="['text-sm font-medium flex items-center', metric.trend > 0 ? 'text-emerald-600' : 'text-rose-600']">
             <component :is="metric.trend > 0 ? ArrowUp : ArrowDown" :size="14" />
             {{ Math.abs(metric.trend) }}%
@@ -52,7 +52,7 @@
     </div>
 
     <!-- Divider -->
-    <div class="h-px bg-slate-200"></div>
+    <div class="h-px bg-gray-200"></div>
 
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-12">
@@ -63,12 +63,12 @@
         <!-- Weekly Performance Chart -->
         <div>
           <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold text-slate-900">Rendimiento Semanal</h2>
+            <h2 class="text-xl font-bold text-gray-900">Rendimiento Semanal</h2>
             <div class="flex gap-2">
-              <span class="flex items-center gap-2 text-xs font-medium text-slate-500">
-                <span class="w-2 h-2 rounded-full bg-kapital-night"></span> Publicaciones
+              <span class="flex items-center gap-2 text-xs font-medium text-gray-500">
+                <span class="w-2 h-2 rounded-full bg-kapital-dark"></span> Publicaciones
               </span>
-              <span class="flex items-center gap-2 text-xs font-medium text-slate-500">
+              <span class="flex items-center gap-2 text-xs font-medium text-gray-500">
                 <span class="w-2 h-2 rounded-full bg-blue-400"></span> Engagement
               </span>
             </div>
@@ -80,23 +80,23 @@
 
         <!-- Recent Activity List -->
         <div>
-          <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-2">
-            <h2 class="text-lg font-bold text-slate-900">Actividad Reciente</h2>
-            <button @click="goTo('production')" class="text-sm text-kapital-night font-medium hover:underline">Ver todo</button>
+          <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-2">
+            <h2 class="text-lg font-bold text-gray-900">Actividad Reciente</h2>
+            <button @click="goTo('production')" class="text-sm text-kapital-dark font-medium hover:underline">Ver todo</button>
           </div>
           <div class="space-y-0">
             <div 
               v-for="activity in recentActivity"
               :key="activity.id"
-              class="flex items-center gap-4 py-4 border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors px-2 -mx-2 rounded-lg group"
+              class="flex items-center gap-4 py-4 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors px-2 -mx-2 rounded-lg group"
             >
               <div :class="['w-2 h-2 rounded-full', getStatusColorClass(activity.status)]"></div>
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-bold text-slate-900 group-hover:text-kapital-night transition-colors">{{ activity.title }}</p>
-                <p class="text-xs text-slate-500 mt-0.5">{{ activity.description }}</p>
+                <p class="text-sm font-bold text-gray-900 group-hover:text-kapital-dark transition-colors">{{ activity.title }}</p>
+                <p class="text-xs text-gray-500 mt-0.5">{{ activity.description }}</p>
               </div>
               <div class="flex items-center gap-4">
-                <span class="text-xs text-slate-400 font-medium">{{ activity.date }}</span>
+                <span class="text-xs text-gray-400 font-medium">{{ activity.date }}</span>
                 <span :class="['text-xs font-bold px-2.5 py-1 rounded-full border', getStatusBadgeClass(activity.status)]">
                   {{ getStatusLabel(activity.status) }}
                 </span>
@@ -112,27 +112,27 @@
         
         <!-- Pending Interactions -->
         <div>
-          <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-2">
-            <h2 class="text-lg font-bold text-slate-900">Mensajes Pendientes</h2>
+          <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-2">
+            <h2 class="text-lg font-bold text-gray-900">Mensajes Pendientes</h2>
             <span class="bg-rose-100 text-rose-700 text-xs font-bold px-2 py-0.5 rounded-full">{{ pendingInteractions.length }}</span>
           </div>
           <div class="space-y-4">
             <div v-for="msg in pendingInteractions" :key="msg.id" class="group cursor-pointer" @click="goTo('interactions')">
               <div class="flex justify-between items-start mb-1">
-                <span class="text-sm font-bold text-slate-900 group-hover:text-kapital-night transition-colors">{{ msg.name }}</span>
-                <span class="text-[10px] text-slate-400 font-medium uppercase">{{ msg.time }}</span>
+                <span class="text-sm font-bold text-gray-900 group-hover:text-kapital-dark transition-colors">{{ msg.name }}</span>
+                <span class="text-[10px] text-gray-400 font-medium uppercase">{{ msg.time }}</span>
               </div>
-              <p class="text-sm text-slate-600 line-clamp-2 leading-relaxed">{{ msg.preview }}</p>
+              <p class="text-sm text-gray-600 line-clamp-2 leading-relaxed">{{ msg.preview }}</p>
             </div>
           </div>
-          <button @click="goTo('interactions')" class="w-full mt-6 py-2 text-sm font-medium text-slate-500 hover:text-slate-900 border border-slate-200 rounded-lg hover:bg-slate-50 transition-all">
+          <button @click="goTo('interactions')" class="w-full mt-6 py-2 text-sm font-medium text-gray-500 hover:text-gray-900 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all">
             Responder Mensajes
           </button>
         </div>
 
         <!-- Content Distribution -->
         <div>
-          <h2 class="text-lg font-bold text-slate-900 mb-6 border-b border-slate-100 pb-2">Distribución</h2>
+          <h2 class="text-lg font-bold text-gray-900 mb-6 border-b border-gray-100 pb-2">Distribución</h2>
           <div class="flex items-center gap-6">
             <div class="w-32 h-32 relative">
               <Doughnut v-if="contentChartData" :data="contentChartData" :options="contentChartOptions" />
@@ -141,34 +141,34 @@
               <div v-for="item in contentChartLegend" :key="item.label" class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <div class="w-2 h-2 rounded-full" :style="{ backgroundColor: item.color }"></div>
-                  <span class="text-xs font-medium text-slate-600">{{ item.label.split(' (')[0] }}</span>
+                  <span class="text-xs font-medium text-gray-600">{{ item.label.split(' (')[0] }}</span>
                 </div>
-                <span class="text-xs font-bold text-slate-900">{{ item.label.split(' (')[1].replace(')', '') }}</span>
+                <span class="text-xs font-bold text-gray-900">{{ item.label.split(' (')[1].replace(')', '') }}</span>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Quick Actions -->
-        <div class="bg-slate-50 rounded-2xl p-6 border border-slate-100">
-          <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide mb-4">Accesos Rápidos</h3>
+        <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+          <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wide mb-4">Accesos Rápidos</h3>
           <div class="space-y-3">
-            <button @click="goTo('production')" class="w-full flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl hover:border-kapital-night hover:shadow-md transition-all group text-left">
-              <div class="w-8 h-8 rounded-lg bg-kapital-night text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+            <button @click="goTo('production')" class="w-full flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-xl hover:border-kapital-dark hover:shadow-md transition-all group text-left">
+              <div class="w-8 h-8 rounded-lg bg-kapital-dark text-white flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Plus :size="16" />
               </div>
               <div>
-                <p class="text-sm font-bold text-slate-900">Crear Publicación</p>
-                <p class="text-xs text-slate-500">Programar nuevo contenido</p>
+                <p class="text-sm font-bold text-gray-900">Crear Publicación</p>
+                <p class="text-xs text-gray-500">Programar nuevo contenido</p>
               </div>
             </button>
-            <button @click="goTo('generation')" class="w-full flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl hover:border-purple-500 hover:shadow-md transition-all group text-left">
+            <button @click="goTo('generation')" class="w-full flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-xl hover:border-purple-500 hover:shadow-md transition-all group text-left">
               <div class="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Wand2 :size="16" />
               </div>
               <div>
-                <p class="text-sm font-bold text-slate-900">Generar con IA</p>
-                <p class="text-xs text-slate-500">Crear ideas y textos</p>
+                <p class="text-sm font-bold text-gray-900">Generar con IA</p>
+                <p class="text-xs text-gray-500">Crear ideas y textos</p>
               </div>
             </button>
           </div>
@@ -273,17 +273,17 @@ const contentChartOptions = ref({
 // --- UTILS ---
 
 function getStatusColorClass(status) {
-  const classes = { 'published': 'bg-emerald-500', 'scheduled': 'bg-blue-500', 'draft': 'bg-slate-400' }
-  return classes[status] || 'bg-slate-400'
+  const classes = { 'published': 'bg-emerald-500', 'scheduled': 'bg-blue-500', 'draft': 'bg-gray-400' }
+  return classes[status] || 'bg-gray-400'
 }
 
 function getStatusBadgeClass(status) {
   const classes = {
     'published': 'bg-emerald-50 text-emerald-700 border-emerald-100',
     'scheduled': 'bg-blue-50 text-blue-700 border-blue-100',
-    'draft': 'bg-slate-50 text-slate-600 border-slate-200'
+    'draft': 'bg-gray-50 text-gray-600 border-gray-200'
   }
-  return classes[status] || 'bg-slate-50 text-slate-600'
+  return classes[status] || 'bg-gray-50 text-gray-600'
 }
 
 function getStatusLabel(status) {
@@ -295,10 +295,10 @@ function getStatusLabel(status) {
 
 <style scoped lang="postcss">
 .btn-primary {
-  @apply px-4 py-2 bg-kapital-night text-white font-medium rounded-lg transition-all hover:bg-kapital-night-hover active:scale-95 flex items-center gap-2 justify-center;
+  @apply px-4 py-2 bg-kapital-dark text-white font-medium rounded-lg transition-all hover:bg-gray-700 active:scale-95 flex items-center gap-2 justify-center;
 }
 
 .btn-secondary {
-  @apply px-4 py-2 bg-white text-slate-700 font-medium rounded-lg border border-slate-200 transition-all hover:bg-slate-50 hover:border-slate-300 flex items-center gap-2 justify-center;
+  @apply px-4 py-2 bg-white text-gray-700 font-medium rounded-lg border border-gray-200 transition-all hover:bg-gray-50 hover:border-gray-300 flex items-center gap-2 justify-center;
 }
 </style>

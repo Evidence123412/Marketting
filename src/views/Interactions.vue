@@ -17,53 +17,53 @@
 
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <!-- Stat Card 1 -->
-        <div class="card group hover:border-kapital-dark/30 transition-colors">
+        <div class="card group hover:shadow-md transition-all">
           <div class="flex items-center gap-4">
-            <div class="p-3 rounded-xl bg-blue-50 text-blue-600 group-hover:scale-110 transition-transform">
-              <MessageSquare :size="24" stroke-width="2" />
+            <div class="p-3 rounded-lg bg-gray-50 text-gray-500 group-hover:scale-110 transition-transform">
+              <MessageSquare :size="20" stroke-width="2" />
             </div>
             <div>
-              <p class="text-3xl font-bold text-slate-900 leading-none">{{ totalMessages }}</p>
-              <p class="text-sm font-medium text-slate-500 mt-1">Mensajes Totales</p>
+              <p class="text-2xl font-bold text-gray-900 leading-none">{{ totalMessages }}</p>
+              <p class="text-xs font-bold text-gray-400 mt-1 uppercase tracking-wider">Total</p>
             </div>
           </div>
         </div>
 
         <!-- Stat Card 2 -->
-        <div class="card group hover:border-kapital-dark/30 transition-colors">
+        <div class="card group hover:shadow-md transition-all">
           <div class="flex items-center gap-4">
-            <div class="p-3 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform">
-              <CheckCircle2 :size="24" stroke-width="2" />
+            <div class="p-3 rounded-lg bg-gray-50 text-gray-500 group-hover:scale-110 transition-transform">
+              <CheckCircle2 :size="20" stroke-width="2" />
             </div>
             <div>
-              <p class="text-3xl font-bold text-slate-900 leading-none">{{ repliedMessages }}</p>
-              <p class="text-sm font-medium text-slate-500 mt-1">Resueltos</p>
+              <p class="text-2xl font-bold text-gray-900 leading-none">{{ repliedMessages }}</p>
+              <p class="text-xs font-bold text-gray-400 mt-1 uppercase tracking-wider">Resueltos</p>
             </div>
           </div>
         </div>
 
         <!-- Stat Card 3 -->
-        <div class="card group hover:border-kapital-dark/30 transition-colors">
+        <div class="card group hover:shadow-md transition-all">
           <div class="flex items-center gap-4">
-            <div class="p-3 rounded-xl bg-amber-50 text-amber-600 group-hover:scale-110 transition-transform">
-              <Clock :size="24" stroke-width="2" />
+            <div class="p-3 rounded-lg bg-gray-50 text-gray-500 group-hover:scale-110 transition-transform">
+              <Clock :size="20" stroke-width="2" />
             </div>
             <div>
-              <p class="text-3xl font-bold text-slate-900 leading-none">{{ pendingMessages }}</p>
-              <p class="text-sm font-medium text-slate-500 mt-1">Pendientes</p>
+              <p class="text-2xl font-bold text-gray-900 leading-none">{{ pendingMessages }}</p>
+              <p class="text-xs font-bold text-gray-400 mt-1 uppercase tracking-wider">Pendientes</p>
             </div>
           </div>
         </div>
 
         <!-- Stat Card 4 -->
-        <div class="card group hover:border-kapital-dark/30 transition-colors">
+        <div class="card group hover:shadow-md transition-all">
           <div class="flex items-center gap-4">
-            <div class="p-3 rounded-xl bg-purple-50 text-purple-600 group-hover:scale-110 transition-transform">
-              <UserCheck :size="24" stroke-width="2" />
+            <div class="p-3 rounded-lg bg-gray-50 text-gray-500 group-hover:scale-110 transition-transform">
+              <UserCheck :size="20" stroke-width="2" />
             </div>
             <div>
-              <p class="text-3xl font-bold text-slate-900 leading-none">{{ assignedMessages }}</p>
-              <p class="text-sm font-medium text-slate-500 mt-1">Asignados</p>
+              <p class="text-2xl font-bold text-gray-900 leading-none">{{ assignedMessages }}</p>
+              <p class="text-xs font-bold text-gray-400 mt-1 uppercase tracking-wider">Asignados</p>
             </div>
           </div>
         </div>
@@ -81,14 +81,14 @@
       <!-- Sidebar List -->
       <div class="w-80 xl:w-96 flex flex-col card p-0 overflow-hidden">
         
-        <div class="p-4 border-b border-slate-100/50 bg-white/50 backdrop-blur-sm sticky top-0 z-10">
+        <div class="p-4 border-b border-gray-100 bg-white sticky top-0 z-10">
           <div class="relative group">
-            <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" :size="18" />
+            <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-kapital-dark transition-colors" :size="16" />
             <input 
               v-model="searchQuery"
               type="text" 
               placeholder="Buscar conversación..." 
-              class="w-full pl-10 pr-4 py-2.5 bg-slate-50/50 border-none rounded-xl text-sm font-medium text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all"
+              class="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-xs font-medium text-gray-700 placeholder-gray-400 focus:ring-1 focus:ring-kapital-dark focus:border-kapital-dark transition-all"
             />
           </div>
         </div>
@@ -99,30 +99,30 @@
             :key="convo.id" 
             @click="selectConversation(convo)"
             :class="[
-              'px-4 py-3 rounded-xl cursor-pointer transition-all border border-transparent',
+              'px-4 py-3 rounded-lg cursor-pointer transition-all border border-transparent',
               selectedConversation?.id === convo.id 
-                ? 'bg-blue-50 border-blue-100 shadow-sm' 
-                : 'hover:bg-slate-50 hover:border-slate-100/50'
+                ? 'bg-kapital-dark text-white shadow-md' 
+                : 'hover:bg-gray-50 hover:border-gray-100'
             ]"
           >
             <div class="flex gap-3 items-start">
               <div class="relative flex-shrink-0">
-                <div :class="['w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold text-white shadow-sm', getStatusColor(convo.status)]">
+                <div :class="['w-10 h-10 rounded-lg flex items-center justify-center text-xs font-bold shadow-sm', selectedConversation?.id === convo.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600']">
                   {{ convo.leadInitials }}
                 </div>
-                <div class="absolute -bottom-1 -right-1 bg-white rounded-full p-1 shadow-sm border border-slate-100">
-                   <component :is="getNetworkIcon(convo.channel)" :size="12" :class="getNetworkColor(convo.channel)" />
+                <div class="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm border border-gray-100">
+                   <component :is="getNetworkIcon(convo.channel)" :size="10" :class="getNetworkColor(convo.channel)" />
                 </div>
               </div>
 
               <div class="flex-1 min-w-0 pt-0.5">
                 <div class="flex justify-between items-baseline mb-0.5">
-                  <h4 :class="['text-sm truncate', selectedConversation?.id === convo.id ? 'font-bold text-slate-900' : 'font-semibold text-slate-700']">
+                  <h4 :class="['text-xs truncate', selectedConversation?.id === convo.id ? 'font-bold text-white' : 'font-bold text-gray-900']">
                     {{ convo.leadName }}
                   </h4>
-                  <span class="text-[10px] font-medium text-slate-400">{{ formatTimeShort(convo.lastActivity) }}</span>
+                  <span :class="['text-[10px] font-medium', selectedConversation?.id === convo.id ? 'text-white/60' : 'text-gray-400']">{{ formatTimeShort(convo.lastActivity) }}</span>
                 </div>
-                <p :class="['text-xs truncate leading-relaxed', convo.status === 'pending' ? 'text-slate-900 font-medium' : 'text-slate-500']">
+                <p :class="['text-[10px] truncate leading-relaxed', selectedConversation?.id === convo.id ? 'text-white/80' : 'text-gray-500']">
                   {{ convo.preview }}
                 </p>
               </div>
@@ -139,7 +139,7 @@
       </div>
 
       <!-- Chat Area -->
-      <div class="flex-1 flex flex-col card p-0 overflow-hidden relative">
+      <div class="flex-1 flex flex-col card p-0 overflow-hidden relative border border-gray-200 shadow-sm">
         
         <template v-if="selectedConversation">
           <!-- Chat Header -->
@@ -188,17 +188,17 @@
           </div>
 
           <!-- Messages -->
-          <div class="flex-1 overflow-y-auto bg-slate-50/30 p-6 space-y-6" ref="chatContainer">
+          <div class="flex-1 overflow-y-auto bg-gray-50/50 p-6 space-y-6" ref="chatContainer">
             <div v-for="(msg, idx) in selectedConversation.messages" :key="idx" :class="['flex w-full group', msg.sender === 'me' || msg.sender === 'user' ? 'justify-end' : 'justify-start']">
               <div :class="['max-w-[70%] flex flex-col', msg.sender === 'me' || msg.sender === 'user' ? 'items-end' : 'items-start']">
-                <div :class="['px-5 py-3.5 text-sm leading-relaxed shadow-sm relative', 
+                <div :class="['px-4 py-3 text-sm leading-relaxed shadow-sm relative', 
                   msg.sender === 'me' || msg.sender === 'user' 
-                    ? 'bg-blue-600 text-white rounded-2xl rounded-tr-sm' 
-                    : 'bg-white text-slate-700 border border-slate-100 rounded-2xl rounded-tl-sm'
+                    ? 'bg-kapital-dark text-white rounded-2xl rounded-tr-sm' 
+                    : 'bg-white text-gray-700 border border-gray-200 rounded-2xl rounded-tl-sm'
                 ]">
                   <p>{{ msg.text }}</p>
                 </div>
-                <span class="text-[10px] font-medium text-slate-400 mt-1.5 px-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span class="text-[10px] font-medium text-gray-400 mt-1.5 px-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   {{ formatTimeMessage(msg.createdAt) }}
                 </span>
               </div>
@@ -206,19 +206,19 @@
           </div>
 
           <!-- Input Area -->
-          <div class="p-5 bg-white/50 backdrop-blur-sm border-t border-slate-100/50">
-            <div class="flex gap-2 mb-4 overflow-x-auto scrollbar-hide pb-1">
-               <button @click="setTemplate('info')" class="template-pill ring-1 ring-blue-100 text-blue-600 bg-blue-50 hover:bg-blue-100">👋 Info General</button>
-               <button @click="setTemplate('promo')" class="template-pill ring-1 ring-purple-100 text-purple-600 bg-purple-50 hover:bg-purple-100">🏷️ Promoción</button>
-               <button @click="setTemplate('support')" class="template-pill ring-1 ring-amber-100 text-amber-600 bg-amber-50 hover:bg-amber-100">🛠️ Soporte</button>
+          <div class="p-4 bg-white border-t border-gray-100">
+            <div class="flex gap-2 mb-3 overflow-x-auto scrollbar-hide pb-1">
+               <button @click="setTemplate('info')" class="template-pill ring-1 ring-gray-200 text-gray-600 bg-gray-50 hover:bg-white hover:shadow-sm">👋 Info General</button>
+               <button @click="setTemplate('promo')" class="template-pill ring-1 ring-gray-200 text-gray-600 bg-gray-50 hover:bg-white hover:shadow-sm">🏷️ Promoción</button>
+               <button @click="setTemplate('support')" class="template-pill ring-1 ring-gray-200 text-gray-600 bg-gray-50 hover:bg-white hover:shadow-sm">🛠️ Soporte</button>
             </div>
 
-            <div class="flex items-end gap-3 bg-white border border-slate-200 rounded-2xl p-2 focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-400 transition-all shadow-sm">
-              <button class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors">
-                <Smile :size="20"/>
+            <div class="flex items-end gap-2 bg-white border border-gray-200 rounded-xl p-2 focus-within:ring-1 focus-within:ring-kapital-dark focus-within:border-kapital-dark transition-all shadow-sm">
+              <button class="p-2 text-gray-400 hover:text-kapital-dark hover:bg-gray-50 rounded-lg transition-colors">
+                <Smile :size="18"/>
               </button>
-              <button class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors">
-                <Paperclip :size="20"/>
+              <button class="p-2 text-gray-400 hover:text-kapital-dark hover:bg-gray-50 rounded-lg transition-colors">
+                <Paperclip :size="18"/>
               </button>
               
               <textarea 
@@ -227,15 +227,15 @@
                 @input="autoResize"
                 @keydown.enter.exact.prevent="sendMessage"
                 placeholder="Escribe tu respuesta..."
-                class="flex-1 bg-transparent border-none focus:ring-0 text-sm text-slate-800 px-2 py-2.5 resize-none max-h-32 placeholder:text-slate-400"
+                class="flex-1 bg-transparent border-none focus:ring-0 text-sm text-gray-800 px-2 py-2.5 resize-none max-h-32 placeholder:text-gray-400"
               ></textarea>
               
               <button 
                 @click="sendMessage"
                 :disabled="!replyMessage.trim()"
-                class="p-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg active:scale-95"
+                class="p-2 bg-kapital-dark text-white rounded-lg hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm active:scale-95"
               >
-                <Send :size="18" />
+                <Send :size="16" />
               </button>
             </div>
           </div>
@@ -461,7 +461,7 @@ function getNetworkColor(network) {
 
 <style scoped lang="postcss">
 .card {
-  @apply bg-white/80 backdrop-blur-sm border border-white/20 rounded-2xl shadow-soft;
+  @apply bg-white border border-gray-200 rounded-xl shadow-sm;
 }
 
 .template-pill {

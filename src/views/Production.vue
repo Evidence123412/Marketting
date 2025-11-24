@@ -83,7 +83,8 @@
               draggable="true"
               @dragstart="startDrag($event, pub)"
               @click="editPublication(pub)"
-              class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-kapital-dark/30 transition-all group relative"
+              class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-kapital-dark/30 transition-all group relative overflow-hidden"
+              :style="{ borderLeft: pub.strategy?.style?.color ? `4px solid ${pub.strategy.style.color}` : '' }"
             >
               <div v-if="pub.hasImage" class="h-32 w-full bg-slate-100 rounded-lg mb-3 overflow-hidden relative group-hover:opacity-90 transition-opacity">
                  <div class="absolute inset-0 flex items-center justify-center text-slate-300">
@@ -98,7 +99,17 @@
 
               <div class="mb-3">
                 <h4 class="font-bold text-slate-900 text-sm leading-tight mb-1 line-clamp-2">{{ pub.title }}</h4>
-                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">{{ pub.description }}</p>
+                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-2">{{ pub.description }}</p>
+                
+                <!-- Strategy Tags -->
+                <div v-if="pub.strategy" class="flex flex-wrap gap-1.5">
+                  <span v-if="pub.strategy.segment?.demo?.profession" class="px-1.5 py-0.5 bg-slate-100 text-slate-600 text-[10px] rounded-md font-medium border border-slate-200 flex items-center gap-1">
+                    <i class="fas fa-user text-slate-400 text-[9px]"></i> {{ pub.strategy.segment.demo.profession }}
+                  </span>
+                  <span v-if="pub.strategy.objective?.objective" class="px-1.5 py-0.5 bg-indigo-50 text-indigo-600 text-[10px] rounded-md font-medium border border-indigo-100 flex items-center gap-1">
+                    <i class="fas fa-bullseye text-indigo-400 text-[9px]"></i> {{ pub.strategy.objective.objective }}
+                  </span>
+                </div>
               </div>
 
               <div class="flex justify-between items-center pt-3 border-t border-slate-50">

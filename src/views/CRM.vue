@@ -6,44 +6,53 @@
     </div>
 
     <!-- Stats Cards -->
+    <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all">
         <div class="flex items-center gap-3 mb-2">
-          <i class="fas fa-users text-kapital-dark text-xl"></i>
-          <span class="text-sm text-gray-600">Total Leads</span>
+          <div class="p-2 bg-gray-50 rounded-lg text-gray-500">
+            <i class="fas fa-users text-lg"></i>
+          </div>
+          <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Leads</span>
         </div>
-        <p class="text-2xl font-bold text-kapital-dark">{{ leads.length }}</p>
+        <p class="text-2xl font-bold text-gray-900">{{ leads.length }}</p>
       </div>
-      <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+      <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all">
         <div class="flex items-center gap-3 mb-2">
-          <i class="fas fa-star text-green-600 text-xl"></i>
-          <span class="text-sm text-gray-600">Nuevos</span>
+          <div class="p-2 bg-gray-50 rounded-lg text-gray-500">
+            <i class="fas fa-star text-lg"></i>
+          </div>
+          <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Nuevos</span>
         </div>
-        <p class="text-2xl font-bold text-green-600">{{ leads.filter(l => l.status === 'new').length }}</p>
+        <p class="text-2xl font-bold text-gray-900">{{ leads.filter(l => l.status === 'new').length }}</p>
       </div>
-      <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+      <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all">
         <div class="flex items-center gap-3 mb-2">
-          <i class="fas fa-hourglass-half text-yellow-600 text-xl"></i>
-          <span class="text-sm text-gray-600">En Seguimiento</span>
+          <div class="p-2 bg-gray-50 rounded-lg text-gray-500">
+            <i class="fas fa-hourglass-half text-lg"></i>
+          </div>
+          <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">En Seguimiento</span>
         </div>
-        <p class="text-2xl font-bold text-yellow-600">{{ leads.filter(l => l.status === 'following').length }}</p>
+        <p class="text-2xl font-bold text-gray-900">{{ leads.filter(l => l.status === 'following').length }}</p>
       </div>
-      <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+      <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all">
         <div class="flex items-center gap-3 mb-2">
-          <i class="fas fa-check-circle text-purple-600 text-xl"></i>
-          <span class="text-sm text-gray-600">Cerrados</span>
+          <div class="p-2 bg-gray-50 rounded-lg text-gray-500">
+            <i class="fas fa-check-circle text-lg"></i>
+          </div>
+          <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Cerrados</span>
         </div>
-        <p class="text-2xl font-bold text-purple-600">{{ leads.filter(l => l.status === 'closed').length }}</p>
+        <p class="text-2xl font-bold text-gray-900">{{ leads.filter(l => l.status === 'closed').length }}</p>
       </div>
     </div>
 
     <!-- Filters and Actions -->
     <div class="flex flex-col md:flex-row gap-4 mb-6 items-start md:items-end">
       <div class="flex-1 w-full md:w-auto">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Filtrar por estado</label>
+        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Filtrar por estado</label>
         <select 
           v-model="filterStatus"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-blue-100"
+          class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-kapital-dark focus:ring-1 focus:ring-kapital-dark transition-all"
         >
           <option value="">Todos los estados</option>
           <option value="new">Nuevo</option>
@@ -53,33 +62,36 @@
       </div>
 
       <div class="flex-1 w-full md:w-auto">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Búsqueda</label>
-        <input 
-          v-model="searchQuery"
-          type="text" 
-          placeholder="Buscar por nombre, email..." 
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-kapital-dark focus:ring-2 focus:ring-blue-100"
-        />
+        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Búsqueda</label>
+        <div class="relative">
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input 
+            v-model="searchQuery"
+            type="text" 
+            placeholder="Buscar por nombre, email..." 
+            class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-kapital-dark focus:ring-1 focus:ring-kapital-dark transition-all"
+            />
+        </div>
       </div>
 
-      <div class="flex bg-gray-100 p-1 rounded-lg">
+      <div class="flex bg-white border border-gray-200 p-1 rounded-xl shadow-sm">
         <button 
           @click="viewMode = 'list'"
-          :class="['px-3 py-2 rounded-md text-sm font-medium transition-all', viewMode === 'list' ? 'bg-white text-kapital-dark shadow-sm' : 'text-gray-500 hover:text-gray-700']"
+          :class="['px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2', viewMode === 'list' ? 'bg-kapital-dark text-white shadow-md' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900']"
         >
-          <i class="fas fa-list mr-2"></i>Lista
+          <i class="fas fa-list"></i>Lista
         </button>
         <button 
           @click="viewMode = 'kanban'"
-          :class="['px-3 py-2 rounded-md text-sm font-medium transition-all', viewMode === 'kanban' ? 'bg-white text-kapital-dark shadow-sm' : 'text-gray-500 hover:text-gray-700']"
+          :class="['px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2', viewMode === 'kanban' ? 'bg-kapital-dark text-white shadow-md' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900']"
         >
-          <i class="fas fa-columns mr-2"></i>Kanban
+          <i class="fas fa-columns"></i>Kanban
         </button>
       </div>
 
       <button 
         @click="showNewLeadModal = true"
-        class="btn-primary w-full md:w-auto"
+        class="btn-primary w-full md:w-auto shadow-lg shadow-slate-900/20"
       >
         <i class="fas fa-plus"></i> Nuevo Lead
       </button>
@@ -101,43 +113,43 @@
     </div>
 
     <!-- Table View -->
-    <div v-else class="card overflow-hidden">
+    <div v-else class="card overflow-hidden border border-gray-200 shadow-sm rounded-xl">
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
-          <thead class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+          <thead class="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th class="px-6 py-4 text-left font-semibold text-gray-700">
-                <i class="fas fa-user mr-2 text-kapital-dark"></i>Nombre
+              <th class="px-6 py-4 text-left font-bold text-gray-500 uppercase tracking-wider text-xs">
+                Nombre
               </th>
-              <th class="px-6 py-4 text-left font-semibold text-gray-700">
-                <i class="fas fa-envelope mr-2 text-kapital-dark"></i>Contacto
+              <th class="px-6 py-4 text-left font-bold text-gray-500 uppercase tracking-wider text-xs">
+                Contacto
               </th>
-              <th class="px-6 py-4 text-left font-semibold text-gray-700">
-                <i class="fas fa-link mr-2 text-kapital-dark"></i>Origen
+              <th class="px-6 py-4 text-left font-bold text-gray-500 uppercase tracking-wider text-xs">
+                Origen
               </th>
-              <th class="px-6 py-4 text-left font-semibold text-gray-700">
-                <i class="fas fa-calendar mr-2 text-kapital-dark"></i>Fecha
+              <th class="px-6 py-4 text-left font-bold text-gray-500 uppercase tracking-wider text-xs">
+                Fecha
               </th>
-              <th class="px-6 py-4 text-left font-semibold text-gray-700">
-                <i class="fas fa-flag mr-2 text-kapital-dark"></i>Estado
+              <th class="px-6 py-4 text-left font-bold text-gray-500 uppercase tracking-wider text-xs">
+                Estado
               </th>
-              <th class="px-6 py-4 text-left font-semibold text-gray-700">
-                <i class="fas fa-cogs mr-2 text-kapital-dark"></i>Acciones
+              <th class="px-6 py-4 text-left font-bold text-gray-500 uppercase tracking-wider text-xs">
+                Acciones
               </th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-200">
+          <tbody class="divide-y divide-gray-100">
             <tr 
               v-for="lead in filteredLeads" 
               :key="lead.id" 
-              class="hover:bg-blue-50 transition-colors duration-200"
+              class="hover:bg-gray-50 transition-colors duration-200 group"
             >
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-full bg-gradient-to-br from-kapital-dark to-kapital-light-1 flex items-center justify-center text-white text-xs font-bold">
+                  <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-600 text-xs font-bold group-hover:bg-kapital-dark group-hover:text-white transition-colors">
                     {{ lead.initials }}
                   </div>
-                  <span class="font-medium text-gray-900">{{ lead.name }}</span>
+                  <span class="font-bold text-gray-900">{{ lead.name }}</span>
                 </div>
               </td>
               <td class="px-6 py-4">
@@ -165,24 +177,24 @@
                 </span>
               </td>
               <td class="px-6 py-4">
-                <div class="flex gap-2">
+                <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button 
                     @click="editLead(lead)"
-                    class="px-3 py-2 text-kapital-dark hover:bg-blue-100 rounded transition-colors"
+                    class="p-1.5 text-gray-400 hover:text-kapital-dark hover:bg-white rounded-lg transition-colors border border-transparent hover:border-gray-200 shadow-sm"
                     title="Editar"
                   >
                     <i class="fas fa-edit"></i>
                   </button>
                   <button 
                     @click="changeLead(lead)"
-                    class="px-3 py-2 text-purple-600 hover:bg-purple-100 rounded transition-colors"
+                    class="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-purple-200 shadow-sm"
                     title="Cambiar estado"
                   >
                     <i class="fas fa-arrow-right"></i>
                   </button>
                   <button 
                     @click="deleteLead(lead.id)"
-                    class="px-3 py-2 text-red-600 hover:bg-red-100 rounded transition-colors"
+                    class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-red-200 shadow-sm"
                     title="Eliminar"
                   >
                     <i class="fas fa-trash"></i>
@@ -492,7 +504,7 @@ function handleViewConversations(leadId) {
 
 <style scoped lang="postcss">
 .btn-primary {
-  @apply px-6 py-3 bg-kapital-dark text-white font-medium rounded-md transition-all hover:bg-blue-700 active:scale-95 flex items-center gap-2;
+  @apply px-6 py-2.5 bg-kapital-dark text-white font-medium rounded-xl transition-all hover:bg-slate-700 hover:shadow-lg hover:shadow-slate-900/30 active:scale-95 flex items-center gap-2 justify-center;
 }
 
 .btn-secondary {
